@@ -1702,7 +1702,7 @@ compile函数根据一个模式字符串和可选的标志参数生成一个正�
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.lsowl.xyz/2018/06/05/主动信息收集—二层发现/">
+    <link itemprop="mainEntityOfPage" href="https://www.lsowl.xyz/2018/06/05/基于TCP-IP的三层发现.md/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Demos">
@@ -1721,7 +1721,7 @@ compile函数根据一个模式字符串和可选的标志参数生成一个正�
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/06/05/主动信息收集—二层发现/" itemprop="url">主动信息收集</a></h1>
+                <a class="post-title-link" href="/2018/06/05/基于TCP-IP的三层发现.md/" itemprop="url">主动信息收集——三层发现</a></h1>
         
 
         <div class="post-meta">
@@ -1796,23 +1796,28 @@ compile函数根据一个模式字符串和可选的标志参数生成一个正�
         
           
           
-被动收集的信息可能不是最新的信息，通过主动的手段去发现更精确的信息
+三层发现的优点
+可路由
+速度快
 
 
-直接与目标系统交互通信
-无法避免留下访问的痕迹（如果目标系统有完善的系统日志）
-使用受控的第三方电脑进行探测
-使用代理或已经被控制的主机
-做好本封杀的准备
-使用噪声迷惑目标，淹没真实的探测流量
+缺点
+速度比二层慢
+经常被边界防火墙过滤(还有可能出现宕机状态）
 
 
-扫描
-发送不同的探测，根据返
+IP、ICMP、TCP协议
+
+
+ping
+
+使用ping命令的时候如果可以接发包，使用的是数据包的type8，如果不可以使用的是type0
+
+ping -192.168.0.102 -c 5 
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2018/06/05/主动信息收集—二层发现/#more" rel="contents">
+            <a class="btn" href="/2018/06/05/基于TCP-IP的三层发现.md/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
