@@ -5,8 +5,8 @@
     <url>%2F2018%2F08%2F29%2Fpython%E5%AD%97%E7%AC%A6%E6%93%8D%E4%BD%9C%2F</url>
     <content type="text"><![CDATA[字符串操作需求 123456&gt; string模块定义了一些常用的属性（包含所有的数字，字母，可打印的所有ascii码等）&gt; python的字符串操作可以通过两部分的方法函数基本上就可以解决所有的字符串操作需求：&gt; 1.python的字符串属性函数&gt; 2.python的string模块&gt; 一次python对字符的操作，人生苦短!&gt; 文档练习实例如下：123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109# coding:utf-8import string"""string模块定义了一些常用的属性（包含所有的数字，字母，可打印的所有ascii码等）python的字符串操作可以通过两部分的方法函数基本上就可以解决所有的字符串操作需求：1.python的字符串属性函数2.python的string模块"""#1.字符串输出格式对齐 str = 'PyTHON heLLo'print str.center(20) #生成20个字符长度，str处于中间位置print str.ljust(20) #生成20个字符，str左对齐print str.rjust(20) #2.大小写转换print str.upper() #转大写print str.lower() #转小写print str.capitalize() #字符串首字母大写，其余小写print str.swapcase() #大小写对换print str.title() #以分隔符为标记，首字符为大写，其余为小写 #3.字符串判断条件str1 = '01234'print str1.isalnum() #判断是否全是数字和字母，并至少有一个字符print str1.isdigit() #判断是否全是数字，并至少有一个字符 str2 = 'string' print str2.isalnum() #判断是否全是数字或字母，并至少有一个字符print str2.isalpha() #判断是否全是字母，并至少有一个字符print str2.islower() #判断是否全是小写字母，当全是小写和数字的组合时也会返回Trueprint str2.isspace() #判断是否全是空白字符，并至少有一个字符print str2.isspace() #判断是否全是大写，如果全是大写和数字也会返回Trueprint str2.istitle() #判断是否每个单词的首字母为大写print str2.startswith('str') #判断字符是否以str开头print str2.endswith('ing') #判断字符是否以ing结尾 #4.字符串搜索定位与替换str3 = 'string IEarn'print str3.find('z') #查找字符串，没有则返回-1，有则返回查找到的第一个索引print str3.rfind('n') #返回索引的最后一次匹配print str3.index('s') #没有匹配则报错，如果匹配到则和find类似，返回第一次索引print str3.count('a') #返回字符串中匹配的次数print str3.replace('n','N') #搜索替换print str3.strip('n') #删除字符串首尾匹配的字符，通常用于默认删除回车符print str3.lstrip('n') #左配符print str3.rstrip('n') #右配符 str4 = 'tab' print str4.expandtabs() #把制表符转换为空格print str4.expandtabs(5)#指定空格数 #5.字符串编码与解码 str5 = "字符串学习"print str5print str5.decode('utf-8') #6.字符串分割变换 str6 = 'Learn string'print '-'.join(str6) str7 = ['Learn','string']print '-'.join(str7) print str6.split('n')print str6.split('n',1) print str6.rstrip('n')print str6.rsplit('n',1)print str6.splitlines()print str6.partition('n')print str6.rpartition('n') #7.打印出一些常用的字符print string.lettersprint string.ascii_letters #两个都是打印出大小写字母 print string.lowercaseprint string.ascii_lowercase #打印小写字母 print string.uppercaseprint string.ascii_uppercase #打印大写字母 print string.digits #打印十进制数字print string.octdigits #打印八进制数字print string.hexdigits #打印十六进制数字print string.printable #打印数字，大小写字母和特殊字符print string.punctuation #打印特殊字符print string.whitespace #打印一些如制表符一样的符号 #8.string中定义的方法"string.capwords(s, sep=None)是多个字符串方法的组合split(),capitalize(),join()"s = 'ahelloaworld'print string.capwords(s, 'a')#等价于：print 'a'.join([i.capitalize() for i in s.split('a')]) #实例：生成200的随机优惠券（长度是20位的） import randomkey = string.letters + string.digitsfor i in range(200): k = [random.choice(key) for i in range(20)] print ''.join(k) 练习图示：]]></content>
       <tags>
-        <tag>python</tag>
         <tag>编程</tag>
+        <tag>python</tag>
       </tags>
   </entry>
   <entry>
@@ -43,8 +43,8 @@
         <category>python</category>
       </categories>
       <tags>
-        <tag>python</tag>
         <tag>编程</tag>
+        <tag>python</tag>
         <tag>CGI编程</tag>
       </tags>
   </entry>
@@ -56,8 +56,8 @@
         <category>python</category>
       </categories>
       <tags>
-        <tag>python</tag>
         <tag>编程</tag>
+        <tag>python</tag>
         <tag>多进程</tag>
       </tags>
   </entry>
@@ -81,21 +81,8 @@
         <category>python</category>
       </categories>
       <tags>
-        <tag>python</tag>
         <tag>编程</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[阿里云OSS智能上传图床]]></title>
-    <url>%2F2018%2F06%2F13%2F%E9%98%BF%E9%87%8C%E4%BA%91OSS%E5%82%A8%E5%AD%98%E6%99%BA%E8%83%BD%E4%B8%8A%E4%BC%A0%E5%9B%BE%E5%BA%8A%2F</url>
-    <content type="text"><![CDATA[背景：由于现在云储存的发展，许多东西储存到云端更加方便，比如：图片；网上最多的工具就是七牛云以及上传利用工具，但是七牛云需要手持身份证实名认证，所以放弃；其次没有关注腾讯云，所以选择了阿里云，其实优惠力度还是腾讯的比较大；为了避免麻烦，就没有在做迁移了，使用过的可以与阿里云关联的极简图床，但是我们还是需要一张张的拖图片，然后复制makedown连接，这样还是太麻烦了，有一天看到大佬写了一个腾讯云的工具，所以，在学习之余写了这个工具。 程序流程图如下： 功能实现图片截图以后，从粘贴板获取图片保存到本地Image文件夹下 使用win32clipboard，win32con，PIL模块 1234import win32conimport win32clipboard as wfrom PIL import ImageGrabfrom PIL import Image 123im = ImageGrab.grabclipboard() #从粘贴板获取内容 if isinstance(im,Image.Image): #判断是不是图片 name = str(time.time()) + ".png" 获取到图片以后判断是否为图片然后保存到本地 这里说明一点：PIL模块是处理图像的，使用PIL处理过图像以后是使图像变小，有利于进行云储存 将图片上传以后的生成的访问地址添加到粘贴板 使用win32clipboard，win32con模块 12345def setText(self,aString): w.OpenClipboard() w.EmptyClipboard() w.SetClipboardData(win32con.CF_TEXT,aString) w.CloseClipboard() 这里存在一个坑：win32con.CF_TEXT这里在Python2中会将所有的字符串添加到粘贴板，早Python3中只会添加首个字符，解决办法：将CF_TEXT替换为CF_UNICODETEXT，如果在Python2中使用CF_UNICODETEXT会出现添加到粘贴板的字符是乱码 上传图片到OSS 使用oss2、shutil 模块，oss2是官方提供的Python OSS SDK，支持Python2、3 123456def upload(self,file_name,name): bucket = oss2.Bucket(oss2.Auth(self.acc_id,self.acc_secret),self.endpoint,self.bucket_name) data = bucket.put_object_from_file(key='Blog/'+ name,filename='image/'+ name, headers=None, progress_callback=None) str = "https://xxxxxx.xx/" + name shutil.rmtree('image') 这里要在外部的 config文件中配置好阿里云提供的：Access Key ID、Access Key Secret、bucket_name、endpoint 说明：由于阿里云的SDK默认不支持文件夹，目录的概念，所以通过添加’/‘来表示在那个文件夹下；又由于没有返回文件访问连接地址的接口，所以通过固有的形式进行组合 shutil模块进行清空本地存放已经上传完的的图片（这样会删除文件夹，比遍历更加快速），这一点看个人了，可有可无，也可以使用os模块进行相应的操作。 设置阿里云OSS的接口信息 通过外部的config文件导入 123456789101112131415try: infoDict = &#123;&#125; with open("config.conf","r") as file: ApiInfo = file.readlines() for info in ApiInfo: try: if info != "\n" and info != "": tmp = info.split("=") infoDict[tmp[0].strip()] = tmp[1].strip() except Exception as e: print u"[-] 请按照要求配置config.conf" sys.exit() except Exception as e: print u"[-] 请在config.conf中配置阿里云 API信息" sys.exit() 结果示例 参考文章 [OSS SDK-Python]:https://github.com/aliyun/aliyun-oss-python-sdk 更新说明 现在已经修改可以支持python3的环境，详情请看github]]></content>
-      <categories>
-        <category>python</category>
-      </categories>
-      <tags>
         <tag>python</tag>
-        <tag>编程</tag>
-        <tag>开发</tag>
       </tags>
   </entry>
   <entry>
@@ -109,6 +96,19 @@
         <tag>安全</tag>
         <tag>parrot</tag>
         <tag>渗透测试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[阿里云OSS智能上传图床]]></title>
+    <url>%2F2018%2F06%2F13%2F%E9%98%BF%E9%87%8C%E4%BA%91OSS%E5%82%A8%E5%AD%98%E6%99%BA%E8%83%BD%E4%B8%8A%E4%BC%A0%E5%9B%BE%E5%BA%8A%2F</url>
+    <content type="text"><![CDATA[背景：由于现在云储存的发展，许多东西储存到云端更加方便，比如：图片；网上最多的工具就是七牛云以及上传利用工具，但是七牛云需要手持身份证实名认证，所以放弃；其次没有关注腾讯云，所以选择了阿里云，其实优惠力度还是腾讯的比较大；为了避免麻烦，就没有在做迁移了，使用过的可以与阿里云关联的极简图床，但是我们还是需要一张张的拖图片，然后复制makedown连接，这样还是太麻烦了，有一天看到大佬写了一个腾讯云的工具，所以，在学习之余写了这个工具。 程序流程图如下： 功能实现图片截图以后，从粘贴板获取图片保存到本地Image文件夹下 使用win32clipboard，win32con，PIL模块 1234import win32conimport win32clipboard as wfrom PIL import ImageGrabfrom PIL import Image 123im = ImageGrab.grabclipboard() #从粘贴板获取内容 if isinstance(im,Image.Image): #判断是不是图片 name = str(time.time()) + ".png" 获取到图片以后判断是否为图片然后保存到本地 这里说明一点：PIL模块是处理图像的，使用PIL处理过图像以后是使图像变小，有利于进行云储存 将图片上传以后的生成的访问地址添加到粘贴板 使用win32clipboard，win32con模块 12345def setText(self,aString): w.OpenClipboard() w.EmptyClipboard() w.SetClipboardData(win32con.CF_TEXT,aString) w.CloseClipboard() 这里存在一个坑：win32con.CF_TEXT这里在Python2中会将所有的字符串添加到粘贴板，早Python3中只会添加首个字符，解决办法：将CF_TEXT替换为CF_UNICODETEXT，如果在Python2中使用CF_UNICODETEXT会出现添加到粘贴板的字符是乱码 上传图片到OSS 使用oss2、shutil 模块，oss2是官方提供的Python OSS SDK，支持Python2、3 123456def upload(self,file_name,name): bucket = oss2.Bucket(oss2.Auth(self.acc_id,self.acc_secret),self.endpoint,self.bucket_name) data = bucket.put_object_from_file(key='Blog/'+ name,filename='image/'+ name, headers=None, progress_callback=None) str = "https://xxxxxx.xx/" + name shutil.rmtree('image') 这里要在外部的 config文件中配置好阿里云提供的：Access Key ID、Access Key Secret、bucket_name、endpoint 说明：由于阿里云的SDK默认不支持文件夹，目录的概念，所以通过添加’/‘来表示在那个文件夹下；又由于没有返回文件访问连接地址的接口，所以通过固有的形式进行组合 shutil模块进行清空本地存放已经上传完的的图片（这样会删除文件夹，比遍历更加快速），这一点看个人了，可有可无，也可以使用os模块进行相应的操作。 设置阿里云OSS的接口信息 通过外部的config文件导入 123456789101112131415try: infoDict = &#123;&#125; with open("config.conf","r") as file: ApiInfo = file.readlines() for info in ApiInfo: try: if info != "\n" and info != "": tmp = info.split("=") infoDict[tmp[0].strip()] = tmp[1].strip() except Exception as e: print u"[-] 请按照要求配置config.conf" sys.exit() except Exception as e: print u"[-] 请在config.conf中配置阿里云 API信息" sys.exit() 结果示例 参考文章 [OSS SDK-Python]:https://github.com/aliyun/aliyun-oss-python-sdk 更新说明 现在已经修改可以支持python3的环境，详情请看github]]></content>
+      <categories>
+        <category>python</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>python</tag>
+        <tag>开发</tag>
       </tags>
   </entry>
   <entry>
