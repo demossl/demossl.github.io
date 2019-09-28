@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="安全,渗透测试,漏洞挖掘," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Demos's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="逻辑漏洞挖掘学习（总结完善） 近学习了一下挖逻辑漏洞，针对逻辑漏洞学习到的点做一下总结，主要以看思路和漏洞实例在 学习，参考链接就是总结中的链接以及与这些链接相关的网站，太多了，就直接在文章总列举出 来了。逻辑漏洞的挖掘主要还是在数据包的各个参数上，一定要细心。  工具：BurpSuit(主要的逻辑漏洞的挖掘工具)思路：复杂灵活核心：绕过真实身份认证或者正常业务流程达到预期目的用户身份：认证（用户">
+<meta name="keywords" content="安全,渗透测试,漏洞挖掘">
+<meta property="og:type" content="article">
+<meta property="og:title" content="逻辑漏洞挖掘学习总结">
+<meta property="og:url" content="https://www.lsowl.top/2018/09/17/逻辑漏洞挖掘学习总结/index.html">
+<meta property="og:site_name" content="Demos&#39;s Blog">
+<meta property="og:description" content="逻辑漏洞挖掘学习（总结完善） 近学习了一下挖逻辑漏洞，针对逻辑漏洞学习到的点做一下总结，主要以看思路和漏洞实例在 学习，参考链接就是总结中的链接以及与这些链接相关的网站，太多了，就直接在文章总列举出 来了。逻辑漏洞的挖掘主要还是在数据包的各个参数上，一定要细心。  工具：BurpSuit(主要的逻辑漏洞的挖掘工具)思路：复杂灵活核心：绕过真实身份认证或者正常业务流程达到预期目的用户身份：认证（用户">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1539268118.0.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1539265914.99.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1539266990.35.png">
+<meta property="og:updated_time" content="2018-10-11T14:37:57.082Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="逻辑漏洞挖掘学习总结">
+<meta name="twitter:description" content="逻辑漏洞挖掘学习（总结完善） 近学习了一下挖逻辑漏洞，针对逻辑漏洞学习到的点做一下总结，主要以看思路和漏洞实例在 学习，参考链接就是总结中的链接以及与这些链接相关的网站，太多了，就直接在文章总列举出 来了。逻辑漏洞的挖掘主要还是在数据包的各个参数上，一定要细心。  工具：BurpSuit(主要的逻辑漏洞的挖掘工具)思路：复杂灵活核心：绕过真实身份认证或者正常业务流程达到预期目的用户身份：认证（用户">
+<meta name="twitter:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1539268118.0.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.lsowl.top/2018/09/17/逻辑漏洞挖掘学习总结/"/>
+
+
+
+
+
+  <title>逻辑漏洞挖掘学习总结 | Demos's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Demos's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">It's A Long Road</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.lsowl.top/2018/09/17/逻辑漏洞挖掘学习总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Demos">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Demos's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">逻辑漏洞挖掘学习总结</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-17T21:48:43+08:00">
+                2018-09-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/渗透测试/" itemprop="url" rel="index">
+                    <span itemprop="name">渗透测试</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="逻辑漏洞挖掘学习（总结完善）"><a href="#逻辑漏洞挖掘学习（总结完善）" class="headerlink" title="逻辑漏洞挖掘学习（总结完善）"></a>逻辑漏洞挖掘学习（总结完善）</h2><blockquote>
+<p>近学习了一下挖逻辑漏洞，针对逻辑漏洞学习到的点做一下总结，主要以看思路和漏洞实例在 学习，参考链接就是总结中的链接以及与这些链接相关的网站，太多了，就直接在文章总列举出 来了。逻辑漏洞的挖掘主要还是在数据包的各个参数上，一定要细心。</p>
+</blockquote>
+<h3 id="工具：BurpSuit-主要的逻辑漏洞的挖掘工具"><a href="#工具：BurpSuit-主要的逻辑漏洞的挖掘工具" class="headerlink" title="工具：BurpSuit(主要的逻辑漏洞的挖掘工具)"></a>工具：BurpSuit(主要的逻辑漏洞的挖掘工具)</h3><h3 id="思路：复杂灵活"><a href="#思路：复杂灵活" class="headerlink" title="思路：复杂灵活"></a>思路：复杂灵活</h3><h3 id="核心：绕过真实身份认证或者正常业务流程达到预期目的"><a href="#核心：绕过真实身份认证或者正常业务流程达到预期目的" class="headerlink" title="核心：绕过真实身份认证或者正常业务流程达到预期目的"></a>核心：绕过真实身份认证或者正常业务流程达到预期目的</h3><h3 id="用户身份：认证（用户身份特性认证）"><a href="#用户身份：认证（用户身份特性认证）" class="headerlink" title="用户身份：认证（用户身份特性认证）"></a>用户身份：认证（用户身份特性认证）</h3><ul>
+<li>本地认证</li>
+<li>服务端认证</li>
+</ul>
+<h3 id="业务流程：对业务流程的熟悉程度（各类型网站-业务模式）"><a href="#业务流程：对业务流程的熟悉程度（各类型网站-业务模式）" class="headerlink" title="业务流程：对业务流程的熟悉程度（各类型网站+业务模式）"></a>业务流程：对业务流程的熟悉程度（各类型网站+业务模式）</h3><ul>
+<li>制定漏洞模型</li>
+<li>重点业务功能区：个人信息区域、密码修改区域、密码忘记区域、支付区域、手机号区域等</li>
+</ul>
+<h3 id="逻辑漏洞的类型："><a href="#逻辑漏洞的类型：" class="headerlink" title="逻辑漏洞的类型："></a>逻辑漏洞的类型：</h3><h4 id="支付漏洞：价格、数量、订单、结算、优惠券积分等利用（比如原价100元的A产品可以利用漏洞小于100元去购买，在支付中一般分为三步：订购、确认信息、结算）"><a href="#支付漏洞：价格、数量、订单、结算、优惠券积分等利用（比如原价100元的A产品可以利用漏洞小于100元去购买，在支付中一般分为三步：订购、确认信息、结算）" class="headerlink" title="支付漏洞：价格、数量、订单、结算、优惠券积分等利用（比如原价100元的A产品可以利用漏洞小于100元去购买，在支付中一般分为三步：订购、确认信息、结算）"></a>支付漏洞：价格、数量、订单、结算、优惠券积分等利用（比如原价100元的A产品可以利用漏洞小于100元去购买，在支付中一般分为三步：订购、确认信息、结算）</h4><h5 id="订单："><a href="#订单：" class="headerlink" title="订单："></a>订单：</h5><ul>
+<li>选择商品时修改商品的价格（也可以在确认订单的时候修改订单，可以改小或者改为负数）</li>
+<li>选择商品时更改商品的数量（如设置为负数）<ul>
+<li>比如在一个服务器购买网站，他们的硬盘是按G来算的，就好像1G只要1元(假设)，2G只要2元，以此类推，比如那个服务器总共需要200元，我们是否可以修改G的数量来减少支付价格呢，比如我们把G改成-19</li>
+</ul>
+</li>
+<li>商品剩余为一件时，多人同时购买是否产出冲突</li>
+<li>生成订单时修改订单的金额</li>
+<li>商品为0时是否还可以购买</li>
+</ul>
+<h5 id="结算："><a href="#结算：" class="headerlink" title="结算："></a>结算：</h5><ul>
+<li>优惠活动时打折、优惠券的多次使用<ul>
+<li>比如在某商城活动的时候领取优惠券，20元的产品规定只能使用5元的，可以修改为15元等</li>
+<li><a href="https://www.secpulse.com/archives/40336.html" target="_blank" rel="noopener">https://www.secpulse.com/archives/40336.html</a></li>
+</ul>
+</li>
+<li>截断数据包，结算的时候修改订单数量、金额<ul>
+<li>比如A产品100元，改为-90元</li>
+<li>在很多时候，我们都忽略了一个问题，那就是在购买一件商品的时候，我们都喜欢修改成0.01或者负数，但是这里是有一个积分的，就是比如我们在购买1元产品的时候可以获得100积分，但是我们如果将金额数小于1元的话积分就肯定是为空的了，因为这里的积分是按100/元来算的，也就是说，如果我们看到购买xx元有送积分的，我们可以来尝试一下把金额数改成积分最低数，就比如1元。</li>
+<li>比如我们在某网站，他们用的是自家的钱包(迷你钱包),这个钱包作用也仅是用于这一个站，在提现时，没有任何验证码或者校验机制，只要输入体现金额就可以提现，并且是秒到账，如果什么负数，修改金额都测试过了都不行，那么你就可以试试多线程并发问题,提现时抓包，比如我现在钱包内有0.1元，那么按理说每提0.01可以提现10次，也就是发送10次进程，但是利用这个问题可以达到多发现几次成功的进程，提现时抓包，然后把数据包发送到BurpSuite工具的Intruder当中，进行批量发送18次，然后可以看到成功的提现到了12次（并发、数据库操作加锁）</li>
+<li>比如a产品为999元，当我们购买的时候我们可以试试修改数量成-1个，看是否有变成-999元，我们点击支付一下，一般来说，都可能支付失败的，因为这个时候服务器验证了这个价格是否和服务器中对应的价格是否一样，此时我们可以将-999元的产品放到购物车，再去此网站购买一个1000元产品的购物车，然后我们可以来点击购买，可以看到支付价格就变成了1元(1000+(-999)=1)了</li>
+</ul>
+</li>
+<li>截断数据包，结算的时候修改支付方式（第三方的支付接口逻辑设计不严格就会产生）<ul>
+<li>比如将百度钱包的接口、微信支付等改为一个其他的接口，如果逻辑设计不严格就会产生漏洞</li>
+</ul>
+</li>
+<li>伪造订单，刷单<ul>
+<li>例如：在购买一个产品的时候，目标程序时用过A参数判断是否支付，比如A=1实时表示支付，A=0时表示未支付，通过修改可控的A来验证是否可以伪造订单、等。</li>
+</ul>
+</li>
+<li>重复支付（请求重放、多次下单）<ul>
+<li>比如一些商场中有一些试用卡之类的，通过某种渠道获得的(比如签到，分享网站信息，购买某个商品送来的)，当我们试用的时候主动取消试用，那么这个时候试用卡可能会返回到我们账户中，这里的问题就是如果没有进行对订单多重提交的校验，那么就可导致无限制刷牌子。</li>
+<li>比如，我在试用某个产品的时候，每次试用都会产生一个订单号，然后利用刚抓到的数据包进行批量提交，你就可以看到每次提交的订单号不一样，然后这时你再看订单可以看到同一个商品的无数订单，但试用牌子数只扣了你第一个试验时的牌子数，那么这时你申请批量退出试用，那么这么多订单，每退一个就会退相应的牌子数量到账户当中，这就构成了无限制刷得问题</li>
+</ul>
+</li>
+<li>越权支付<ul>
+<li>比如我们在购买某产品的时候，支付时会出现当前用户的ID，如果没有加以验证，其支付也是一次性支付没有要求输入密码什么的机制，那么就可以修改这个用户ID为其它用户ID，达到用其他用户的账号进行支付你的商品</li>
+</ul>
+</li>
+<li>参数污染 请求没该参数，却返回该参数，可请求该参数污染返回值</li>
+</ul>
+<h5 id="支付漏洞突破口："><a href="#支付漏洞突破口：" class="headerlink" title="支付漏洞突破口："></a>支付漏洞突破口：</h5><ul>
+<li>截断数据包，伪造第三方的确认信息</li>
+<li>绕过商家确认直接退货</li>
+<li>绕过商品类型直接退货（退货是否被允许，比如虚拟商品，话费等）</li>
+<li>绕过客户端验证直接确认收货</li>
+</ul>
+<h5 id="支付漏洞实例："><a href="#支付漏洞实例：" class="headerlink" title="支付漏洞实例："></a>支付漏洞实例：</h5><ul>
+<li><a href="https://www.0dayhack.com/post-832.html" target="_blank" rel="noopener">https://www.0dayhack.com/post-832.html</a></li>
+<li><a href="https://www.bigniu.com/bug/view/935" target="_blank" rel="noopener">https://www.bigniu.com/bug/view/935</a></li>
+<li><a href="https://www.bigniu.com/bug/view/929" target="_blank" rel="noopener">https://www.bigniu.com/bug/view/929</a></li>
+<li><a href="https://www.secpulse.com/archives/47665.html" target="_blank" rel="noopener">https://www.secpulse.com/archives/47665.html</a></li>
+<li><a href="https://www.secpulse.com/archives/41144.html" target="_blank" rel="noopener">https://www.secpulse.com/archives/41144.html</a></li>
+<li><a href="https://www.secpulse.com/archives/39768.html" target="_blank" rel="noopener">https://www.secpulse.com/archives/39768.html</a></li>
+<li><a href="https://www.secpulse.com/archives/36412.html" target="_blank" rel="noopener">https://www.secpulse.com/archives/36412.html</a></li>
+<li><a href="https://www.secpulse.com/archives/35976.html（绕过手机号验证的多种方式）" target="_blank" rel="noopener">https://www.secpulse.com/archives/35976.html（绕过手机号验证的多种方式）</a></li>
+<li><a href="https://www.secpulse.com/archives/35701.html" target="_blank" rel="noopener">https://www.secpulse.com/archives/35701.html</a></li>
+<li><a href="https://www.secpulse.com/archives/35188.html" target="_blank" rel="noopener">https://www.secpulse.com/archives/35188.html</a></li>
+<li><a href="http://www.freebuf.com/vuls/151196.html" target="_blank" rel="noopener">http://www.freebuf.com/vuls/151196.html</a></li>
+</ul>
+<h5 id="支付漏洞修复方案："><a href="#支付漏洞修复方案：" class="headerlink" title="支付漏洞修复方案："></a>支付漏洞修复方案：</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">和银行交易时，做数据签名，对用户金额和订单签名。</span><br><span class="line">敏感参数不要明文放在URL中</span><br><span class="line">服务端效验客户端提交的参数</span><br><span class="line">在服务端计算金额的时候，一定要判断是否为正数。</span><br><span class="line">支付过程中加一个服务器生成的key，用户校验参数有没有被串改。</span><br><span class="line">如果一定需要用URL传递相关参数，建议进行后端的签名验证</span><br><span class="line">订单金额和充值接口返回的数据进行校验</span><br><span class="line">提交订单时后台判断单价是否与数据库中相符，如不符则返回错误。</span><br><span class="line">支付时应从服务器拉取数据，而不是直接读客户端的值！！</span><br></pre></td></tr></table></figure>
+<h4 id="密码重置漏洞："><a href="#密码重置漏洞：" class="headerlink" title="密码重置漏洞："></a>密码重置漏洞：</h4><h5 id="用户密码找回方式："><a href="#用户密码找回方式：" class="headerlink" title="用户密码找回方式："></a>用户密码找回方式：</h5><ul>
+<li>手机短信验证码<ul>
+<li><a href="https://www.secpulse.com/archives/36619.html" target="_blank" rel="noopener">https://www.secpulse.com/archives/36619.html</a></li>
+<li><a href="https://www.secpulse.com/archives/35564.html" target="_blank" rel="noopener">https://www.secpulse.com/archives/35564.html</a></li>
+<li><a href="https://www.secpulse.com/archives/35488.html（直接改返回包）" target="_blank" rel="noopener">https://www.secpulse.com/archives/35488.html（直接改返回包）</a></li>
+<li><a href="https://www.secpulse.com/archives/35169.html（通过越权修改）" target="_blank" rel="noopener">https://www.secpulse.com/archives/35169.html（通过越权修改）</a></li>
+<li><a href="https://www.secpulse.com/archives/35023.html" target="_blank" rel="noopener">https://www.secpulse.com/archives/35023.html</a></li>
+<li><a href="https://www.secpulse.com/archives/34710.html" target="_blank" rel="noopener">https://www.secpulse.com/archives/34710.html</a></li>
+<li><a href="https://www.secpulse.com/archives/33800.html" target="_blank" rel="noopener">https://www.secpulse.com/archives/33800.html</a></li>
+</ul>
+</li>
+<li>邮箱（密码找回链接）</li>
+<li>自动生成新密码</li>
+</ul>
+<h5 id="密码重置突破口："><a href="#密码重置突破口：" class="headerlink" title="密码重置突破口："></a>密码重置突破口：</h5><ul>
+<li>认证凭证暴力破解（多数为验证码4位及以下的纯数字，验证码时间长，不失效可爆破）<ul>
+<li><a href="https://bysec.io/detailsMasked.pyp?id=5" target="_blank" rel="noopener">https://bysec.io/detailsMasked.pyp?id=5</a></li>
+<li><a href="https://www.secpulse.com/archives/41168.html" target="_blank" rel="noopener">https://www.secpulse.com/archives/41168.html</a></li>
+</ul>
+</li>
+<li>认证凭证回显（明文传输）<ul>
+<li><a href="https://www.secpulse.com/archives/49496.html" target="_blank" rel="noopener">https://www.secpulse.com/archives/49496.html</a></li>
+</ul>
+</li>
+<li>认证凭证重复使用（比如验证码重复使用）</li>
+<li>重新绑定（如重新绑定邮箱、手机号且自己可控）<ul>
+<li><a href="https://www.test404.com/post-1352.html?wafcloud_antihack=2" target="_blank" rel="noopener">https://www.test404.com/post-1352.html?wafcloud_antihack=2</a></li>
+<li><a href="https://xz.aliyun.com/t/2011（密码重置里面、越权）" target="_blank" rel="noopener">https://xz.aliyun.com/t/2011（密码重置里面、越权）</a></li>
+<li><a href="https://bbs.ichunqiu.com/thread-23318-1-1.html" target="_blank" rel="noopener">https://bbs.ichunqiu.com/thread-23318-1-1.html</a></li>
+</ul>
+</li>
+<li>用户身份特性认证（token生成可控）</li>
+<li>服务器端认证为空、直接删除验证码、或者认证的特征值可控：<ul>
+<li><a href="https://bbs.ichunqiu.com/forum.php?mod=viewthread&amp;tid=23343（直接改为修改密码验证的特征值）" target="_blank" rel="noopener">https://bbs.ichunqiu.com/forum.php?mod=viewthread&amp;tid=23343（直接改为修改密码验证的特征值）</a></li>
+</ul>
+</li>
+<li>本地认证、修改返回值<ul>
+<li><a href="https://www.secpulse.com/archives/37864.html" target="_blank" rel="noopener">https://www.secpulse.com/archives/37864.html</a></li>
+<li><a href="https://bbs.ichunqiu.com/thread-23319-1-1.html" target="_blank" rel="noopener">https://bbs.ichunqiu.com/thread-23319-1-1.html</a></li>
+</ul>
+</li>
+<li>删除校验码绕过</li>
+<li>cookie覆盖<ul>
+<li><a href="https://bbs.ichunqiu.com/thread-38176-1-1.html" target="_blank" rel="noopener">https://bbs.ichunqiu.com/thread-38176-1-1.html</a></li>
+</ul>
+</li>
+</ul>
+<h4 id="任意用户登录："><a href="#任意用户登录：" class="headerlink" title="任意用户登录："></a>任意用户登录：</h4><ul>
+<li>空密码绕过（绕过前端改为空值）</li>
+<li>身份替换（登录成功产生session）</li>
+<li>认证凭证绕过</li>
+<li>枚举、越权<ul>
+<li><a href="https://bbs.ichunqiu.com/forum.php?mod=viewthread&amp;tid=24146（通过修改请求头里面的参数进行时间限制的绕过）" target="_blank" rel="noopener">https://bbs.ichunqiu.com/forum.php?mod=viewthread&amp;tid=24146（通过修改请求头里面的参数进行时间限制的绕过）</a></li>
+<li><a href="https://bbs.ichunqiu.com/forum.php?mod=viewthread&amp;tid=27614（通过修改cookie值来绕过验证码时间限制造成短信轰炸）" target="_blank" rel="noopener">https://bbs.ichunqiu.com/forum.php?mod=viewthread&amp;tid=27614（通过修改cookie值来绕过验证码时间限制造成短信轰炸）</a></li>
+</ul>
+</li>
+</ul>
+<h4 id="认证缺陷漏洞："><a href="#认证缺陷漏洞：" class="headerlink" title="认证缺陷漏洞："></a>认证缺陷漏洞：</h4><ul>
+<li>弱验证</li>
+<li>空验证</li>
+<li>认证凭证有效性、唯一性<ul>
+<li><a href="http://www.heavensec.org/index.php/1613.html" target="_blank" rel="noopener">http://www.heavensec.org/index.php/1613.html</a></li>
+</ul>
+</li>
+</ul>
+<h5 id="身份验证码之暴力破解-（https-bbs-ichunqiu-com-thread-45640-1-1-html）"><a href="#身份验证码之暴力破解-（https-bbs-ichunqiu-com-thread-45640-1-1-html）" class="headerlink" title="身份验证码之暴力破解  （https://bbs.ichunqiu.com/thread-45640-1-1.html）"></a>身份验证码之暴力破解  （<a href="https://bbs.ichunqiu.com/thread-45640-1-1.html）" target="_blank" rel="noopener">https://bbs.ichunqiu.com/thread-45640-1-1.html）</a></h5><ul>
+<li>无防护措施（没有对登录、注册、重置密码之类的功能进行一定的防护，所以当碰到没有验证码的，没有对输错密码次数进行限制，而且还是明文传输的系统，先可以考虑爆破）</li>
+<li>锁定机制——&gt;撞库（有些系统会有一些防护措施，比如超过一定的错误次数会将账号进行锁定，或者是某IP频繁的进行登录操作会封IP，这是后可以进行撞库，用弱密码遍历用户名；有些限制并没有在后台验证，也可以加入XFF等方式绕过）<ul>
+<li>修复：限制单位时间内执行某项操作的次数，要对限制的方法、次数等进行详细的说明，限制的验证也应该再服务端</li>
+</ul>
+</li>
+<li>验证码（可以防止自动化攻击）<ul>
+<li>图片验证码——&gt;绕过（图片验证码反复使用、验证码在前端校验、验证码可识别、验证码在客户端传输）</li>
+<li>短信验证码——&gt;爆破/绕过（与图片类似）</li>
+<li>修复：所有的验证码生存周期都应该是一次性的，无论校验成功与失败，且验证码加入干扰线，变形等防止机器识别，对于可爆破的参数加上人机识别，通过设置的阀值来判断；同时验证过程不应将有助于推测正确验证答案的信息返回到客户端。</li>
+<li><a href="https://bbs.ichunqiu.com/forum.php?mod=viewthread&amp;tid=23909" target="_blank" rel="noopener">https://bbs.ichunqiu.com/forum.php?mod=viewthread&amp;tid=23909</a></li>
+</ul>
+</li>
+</ul>
+<h4 id="越权："><a href="#越权：" class="headerlink" title="越权："></a>越权：</h4><ul>
+<li><p>水平越权</p>
+<ul>
+<li><p>实例：</p>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">https://www.bigniu.com/bug/view/926</span><br><span class="line">https://xz.aliyun.com/t/2011</span><br><span class="line">https://www.secpulse.com/archives/41142.html</span><br><span class="line">https://www.secpulse.com/archives/38473.html</span><br><span class="line">https://www.secpulse.com/archives/35169.html</span><br><span class="line">https://bbs.ichunqiu.com/thread-39287-1-1.html</span><br><span class="line">http://wooyun.jozxing.cc/static/bugs/wooyun-2016-0196245.html</span><br><span class="line">http://wooyun.jozxing.cc/static/bugs/wooyun-2016-0194518.html</span><br><span class="line">http://wooyun.jozxing.cc/static/bugs/wooyun-2016-0193632.html(越权删除+敏感信息泄露)</span><br><span class="line">http://wooyun.jozxing.cc/static/bugs/wooyun-2016-0192676.html</span><br><span class="line">http://wooyun.jozxing.cc/static/bugs/wooyun-2016-0192848.html（越权任意用户修改+信息泄露）</span><br><span class="line">http://wooyun.jozxing.cc/static/bugs/wooyun-2016-0193124.html（越权之信息泄露）</span><br><span class="line">http://wooyun.jozxing.cc/static/bugs/wooyun-2016-0193124.html（越权修改+密码重置）</span><br><span class="line">http://wooyun.jozxing.cc/static/bugs/wooyun-2016-0191930.html（整站越权+通过组合越权获取所有信息）</span><br><span class="line">http://wooyun.jozxing.cc/static/bugs/wooyun-2016-0191192.html（爆破+越权）</span><br><span class="line">http://wooyun.jozxing.cc/static/bugs/wooyun-2016-0190106.html（绕过signature字段达到越权）</span><br><span class="line">http://wooyun.jozxing.cc/static/bugs/wooyun-2016-0189823.html（越权之信息泄露）</span><br><span class="line">http://wooyun.jozxing.cc/static/bugs/wooyun-2016-0188760.html（越权之信息泄露）</span><br><span class="line">http://wooyun.jozxing.cc/static/bugs/wooyun-2016-0187544.html</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>垂直越权</p>
+<ul>
+<li><p>实例：</p>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">https://xz.aliyun.com/t/2011</span><br><span class="line">https://www.secpulse.com/archives/41174.html</span><br><span class="line">https://www.secpulse.com/archives/37083.html</span><br><span class="line">http://wooyun.jozxing.cc/static/bugs/wooyun-2016-0189507.html</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>未授权访问（登录凭证验证）</p>
+</li>
+<li><p>绕过授权模式（参数构造）</p>
+</li>
+</ul>
+<h4 id="敏感信息泄露："><a href="#敏感信息泄露：" class="headerlink" title="敏感信息泄露："></a>敏感信息泄露：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">https://www.bigniu.com/bug/view/930</span><br><span class="line">https://www.bigniu.com/bug/view/928</span><br><span class="line">https://www.bigniu.com/bug/view/927</span><br><span class="line">https://www.secpulse.com/archives/47842.html</span><br><span class="line">https://www.secpulse.com/archives/47482.html</span><br><span class="line">https://www.secpulse.com/archives/42603.html</span><br><span class="line">https://www.secpulse.com/archives/41375.html</span><br><span class="line">https://www.secpulse.com/archives/41253.html</span><br><span class="line">https://www.secpulse.com/archives/41144.html</span><br><span class="line">https://www.secpulse.com/archives/40909.html</span><br></pre></td></tr></table></figure>
+<h4 id="接口枚举：业务接口因为没有做验证或者验证机制缺陷，容易遭受枚举攻击、撞库、订单、优惠券遍历"><a href="#接口枚举：业务接口因为没有做验证或者验证机制缺陷，容易遭受枚举攻击、撞库、订单、优惠券遍历" class="headerlink" title="接口枚举：业务接口因为没有做验证或者验证机制缺陷，容易遭受枚举攻击、撞库、订单、优惠券遍历"></a>接口枚举：业务接口因为没有做验证或者验证机制缺陷，容易遭受枚举攻击、撞库、订单、优惠券遍历</h4><h2 id="补充："><a href="#补充：" class="headerlink" title="补充："></a>补充：</h2><blockquote>
+<p>在学习过程中对于遇见的一些新学习到的业务逻辑测试方法的总结</p>
+</blockquote>
+<h3 id="争对客户端刷新验证码的绕过"><a href="#争对客户端刷新验证码的绕过" class="headerlink" title="争对客户端刷新验证码的绕过"></a>争对客户端刷新验证码的绕过</h3><ol>
+<li><p>在一些有验证码的站点，每次进行验证的验证码都是通过第三方的接口调用的，有些验证码是通过<img src="">加载的，这个时候直接访问加载的地址显示直接就是验证码，所以，正对这种验证码的刷新就可以通过拦截数据包，刚好卡在验证码链接跳转的那一步，进行重放，通过这种方法来绕过。这里通过漏洞银行直播中的两张图来说明</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1539268118.0.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1539265914.99.png" alt=""></p>
+</li>
+</ol>
+<h3 id="对于滑动验证码的的绕过"><a href="#对于滑动验证码的的绕过" class="headerlink" title="对于滑动验证码的的绕过"></a>对于滑动验证码的的绕过</h3><ol>
+<li>现在有好多网站都是滑动验证码，在学习了漏洞银行直播中的业务逻辑挖掘做一个笔记：<ol>
+<li>首先在滑动验证码哪里查看JS代码，看一下JS代码，看组件是怎么构造加载的，然后确定滑动验证码需要的一些参数</li>
+<li>curl 等方式获取页面，查找一些需要的参数</li>
+<li>通过获取的参数构造正常滑动以后的链接作为payload</li>
+<li>通过curl 访问payload获取数据<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1539266990.35.png" alt=""></li>
+</ol>
+</li>
+</ol>
+<h3 id="net-Nlog日志泄露"><a href="#net-Nlog日志泄露" class="headerlink" title=".net  Nlog日志泄露"></a>.net  Nlog日志泄露</h3><ol>
+<li>对于现在许多.net的网站，一般在遇到.net的网站访问一些目录时报404/403等，就会放弃。其实.net的网站有Nlog日志，通过Nlog的特性构造一些payload就可以访问有些站点的Nlog日志，里面可能会包含敏感信息。<ol>
+<li>关于Nlog的特性一下文章有说明：<a href="http://www.cnblogs.com/felixnet/p/5498759.html" target="_blank" rel="noopener">http://www.cnblogs.com/felixnet/p/5498759.html</a></li>
+<li>关于payload主要就是拼接当前的一些时间等关键值</li>
+</ol>
+</li>
+</ol>
+<h3 id="xxe接口越权"><a href="#xxe接口越权" class="headerlink" title="xxe接口越权"></a>xxe接口越权</h3><ol>
+<li>xxe的越权，这里还是一些网站使用的接口权限设置不当造成的，路劲可以通过dirb探测等等。</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/安全/" rel="tag"><i class="fa fa-tag"></i> 安全</a>
+          
+            <a href="/tags/渗透测试/" rel="tag"><i class="fa fa-tag"></i> 渗透测试</a>
+          
+            <a href="/tags/漏洞挖掘/" rel="tag"><i class="fa fa-tag"></i> 漏洞挖掘</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/09/02/RSA总结/" rel="next" title="RSA总结">
+                <i class="fa fa-chevron-left"></i> RSA总结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/09/29/foreach的一些小坑/" rel="prev" title="foreach的一些小坑">
+                foreach的一些小坑 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Demos" />
+            
+              <p class="site-author-name" itemprop="name">Demos</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/demossl" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:demosqq@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.shentoushi.top/" title="渗透师导航" target="_blank">渗透师导航</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.asold.xyz" title="Aaron" target="_blank">Aaron</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://damit5.com" title="Damit5" target="_blank">Damit5</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://coco413.com/SecNavi/" title="SecNavi" target="_blank">SecNavi</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#逻辑漏洞挖掘学习（总结完善）"><span class="nav-number">1.</span> <span class="nav-text">逻辑漏洞挖掘学习（总结完善）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#工具：BurpSuit-主要的逻辑漏洞的挖掘工具"><span class="nav-number">1.1.</span> <span class="nav-text">工具：BurpSuit(主要的逻辑漏洞的挖掘工具)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#思路：复杂灵活"><span class="nav-number">1.2.</span> <span class="nav-text">思路：复杂灵活</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#核心：绕过真实身份认证或者正常业务流程达到预期目的"><span class="nav-number">1.3.</span> <span class="nav-text">核心：绕过真实身份认证或者正常业务流程达到预期目的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用户身份：认证（用户身份特性认证）"><span class="nav-number">1.4.</span> <span class="nav-text">用户身份：认证（用户身份特性认证）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#业务流程：对业务流程的熟悉程度（各类型网站-业务模式）"><span class="nav-number">1.5.</span> <span class="nav-text">业务流程：对业务流程的熟悉程度（各类型网站+业务模式）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#逻辑漏洞的类型："><span class="nav-number">1.6.</span> <span class="nav-text">逻辑漏洞的类型：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#支付漏洞：价格、数量、订单、结算、优惠券积分等利用（比如原价100元的A产品可以利用漏洞小于100元去购买，在支付中一般分为三步：订购、确认信息、结算）"><span class="nav-number">1.6.1.</span> <span class="nav-text">支付漏洞：价格、数量、订单、结算、优惠券积分等利用（比如原价100元的A产品可以利用漏洞小于100元去购买，在支付中一般分为三步：订购、确认信息、结算）</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#订单："><span class="nav-number">1.6.1.1.</span> <span class="nav-text">订单：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#结算："><span class="nav-number">1.6.1.2.</span> <span class="nav-text">结算：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#支付漏洞突破口："><span class="nav-number">1.6.1.3.</span> <span class="nav-text">支付漏洞突破口：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#支付漏洞实例："><span class="nav-number">1.6.1.4.</span> <span class="nav-text">支付漏洞实例：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#支付漏洞修复方案："><span class="nav-number">1.6.1.5.</span> <span class="nav-text">支付漏洞修复方案：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#密码重置漏洞："><span class="nav-number">1.6.2.</span> <span class="nav-text">密码重置漏洞：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#用户密码找回方式："><span class="nav-number">1.6.2.1.</span> <span class="nav-text">用户密码找回方式：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#密码重置突破口："><span class="nav-number">1.6.2.2.</span> <span class="nav-text">密码重置突破口：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#任意用户登录："><span class="nav-number">1.6.3.</span> <span class="nav-text">任意用户登录：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#认证缺陷漏洞："><span class="nav-number">1.6.4.</span> <span class="nav-text">认证缺陷漏洞：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#身份验证码之暴力破解-（https-bbs-ichunqiu-com-thread-45640-1-1-html）"><span class="nav-number">1.6.4.1.</span> <span class="nav-text">身份验证码之暴力破解  （https://bbs.ichunqiu.com/thread-45640-1-1.html）</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#越权："><span class="nav-number">1.6.5.</span> <span class="nav-text">越权：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#敏感信息泄露："><span class="nav-number">1.6.6.</span> <span class="nav-text">敏感信息泄露：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#接口枚举：业务接口因为没有做验证或者验证机制缺陷，容易遭受枚举攻击、撞库、订单、优惠券遍历"><span class="nav-number">1.6.7.</span> <span class="nav-text">接口枚举：业务接口因为没有做验证或者验证机制缺陷，容易遭受枚举攻击、撞库、订单、优惠券遍历</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#补充："><span class="nav-number">2.</span> <span class="nav-text">补充：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#争对客户端刷新验证码的绕过"><span class="nav-number">2.1.</span> <span class="nav-text">争对客户端刷新验证码的绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对于滑动验证码的的绕过"><span class="nav-number">2.2.</span> <span class="nav-text">对于滑动验证码的的绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#net-Nlog日志泄露"><span class="nav-number">2.3.</span> <span class="nav-text">.net  Nlog日志泄露</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#xxe接口越权"><span class="nav-number">2.4.</span> <span class="nav-text">xxe接口越权</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Demos</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共56.2k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

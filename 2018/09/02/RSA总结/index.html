@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="CTF,密码学,RSA," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Demos's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="关于RSA的一些总结 最近一段时间比赛比较多，密码学的题也是各种各样的，有时候会碰到RSA，想想上学期学的数论，RSA就讲了整整一个月，最后发现代码上还是应用不了，就像没学一样，毕竟在实际生活中好多加密算法都是设计好的。为了让学过的东西不要白学，抽点时间结合题目，对RSA进行一下总结，网上好多关于RSA的文章写的都挺好的，但还是喜欢自己动手做一遍。本文没有啥原创的东西，主要是对学习的一个记录。">
+<meta name="keywords" content="CTF,密码学,RSA">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RSA总结">
+<meta property="og:url" content="https://www.lsowl.top/2018/09/02/RSA总结/index.html">
+<meta property="og:site_name" content="Demos&#39;s Blog">
+<meta property="og:description" content="关于RSA的一些总结 最近一段时间比赛比较多，密码学的题也是各种各样的，有时候会碰到RSA，想想上学期学的数论，RSA就讲了整整一个月，最后发现代码上还是应用不了，就像没学一样，毕竟在实际生活中好多加密算法都是设计好的。为了让学过的东西不要白学，抽点时间结合题目，对RSA进行一下总结，网上好多关于RSA的文章写的都挺好的，但还是喜欢自己动手做一遍。本文没有啥原创的东西，主要是对学习的一个记录。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1535850694.5.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1535851071.47.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1535852949.7.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1535853531.62.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1535857638.43.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1535858774.6.png">
+<meta property="og:updated_time" content="2018-09-02T05:22:59.717Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RSA总结">
+<meta name="twitter:description" content="关于RSA的一些总结 最近一段时间比赛比较多，密码学的题也是各种各样的，有时候会碰到RSA，想想上学期学的数论，RSA就讲了整整一个月，最后发现代码上还是应用不了，就像没学一样，毕竟在实际生活中好多加密算法都是设计好的。为了让学过的东西不要白学，抽点时间结合题目，对RSA进行一下总结，网上好多关于RSA的文章写的都挺好的，但还是喜欢自己动手做一遍。本文没有啥原创的东西，主要是对学习的一个记录。">
+<meta name="twitter:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1535850694.5.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.lsowl.top/2018/09/02/RSA总结/"/>
+
+
+
+
+
+  <title>RSA总结 | Demos's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Demos's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">It's A Long Road</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.lsowl.top/2018/09/02/RSA总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Demos">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Demos's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">RSA总结</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-02T13:20:12+08:00">
+                2018-09-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/密码学/" itemprop="url" rel="index">
+                    <span itemprop="name">密码学</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="关于RSA的一些总结"><a href="#关于RSA的一些总结" class="headerlink" title="关于RSA的一些总结"></a>关于RSA的一些总结</h2><blockquote>
+<p>最近一段时间比赛比较多，密码学的题也是各种各样的，有时候会碰到RSA，想想上学期学的数论，RSA就讲了整整一个月，最后发现代码上还是应用不了，就像没学一样，毕竟在实际生活中好多加密算法都是设计好的。为了让学过的东西不要白学，抽点时间结合题目，对RSA进行一下总结，网上好多关于RSA的文章写的都挺好的，但还是喜欢自己动手做一遍。本文没有啥原创的东西，主要是对学习的一个记录。</p>
+</blockquote>
+<h3 id="RSA简介："><a href="#RSA简介：" class="headerlink" title="RSA简介："></a>RSA简介：</h3><p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1535850694.5.png" alt=""></p>
+<ul>
+<li><p>上图是对RSA算法非对称加解密的一个描述，也是RSA算法最根本的东西，下面说一下RSA算法被攻击的可能性（有没有在知道公钥的情况下推导出私钥）</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1535851071.47.png" alt=""></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">要知道的理论是：</span><br><span class="line">    ed≡1 (mod φ(n))。只有知道e和φ(n)，才能算出d。 </span><br><span class="line">    φ(n)=(p-1)(q-1)。只有知道p和q，才能算出φ(n)。 </span><br><span class="line">    n=pq。只有将n因数分解，才能算出p和q。</span><br><span class="line">所以：如果n可以被分解，那就可以推到出d,私钥就可以被破解，但实际上p,q是大素数，分解是很困难的</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>一些理论支撑：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">欧拉函数：φ(n)是小于等于n的数中与n互质的数的数目</span><br><span class="line">欧拉函数是积性函数——若p,q互质，φ(p*q)= φ(p) *φ(q) </span><br><span class="line">若p为质数，则φ(p)=p-1</span><br><span class="line"></span><br><span class="line">同余定理：给定一个正整数m，如果两个整数a和b满足（a-b）能够被m整除，即（a-b）/m得到一个整数，那么就称整数a与b对模m同余，记作a≡b(mod m)。 </span><br><span class="line">性质： </span><br><span class="line">1 自反性 a≡a (mod m) </span><br><span class="line">2 对称性 若a≡b(mod m)，则b≡a (mod m) </span><br><span class="line">3 传递性 若a≡b (mod m)，b≡c (mod m)，则a≡c (mod m) </span><br><span class="line">4 同余式相加 若a≡b (mod m)，c≡d(mod m)，则a+-c≡b+-d (mod m) </span><br><span class="line">5 同余式相乘 若a≡b (mod m)，c≡d(mod m)，则ac≡bd (mod m)</span><br><span class="line"></span><br><span class="line">求逆元：指有一个整数d，可以使得e*d被φ(n)除的余数为1，即e*d ≡ 1 (mod φ(n))，这个式子等于e*d - 1 = k*φ(n)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>一些程序代码上的支撑：（都是用python实现算法的应用）</p>
+<ul>
+<li><p>快速幂取模：等价于pow方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">mod</span><span class="params">(c,d,n)</span>:</span><span class="comment">#等价于自带的pow(c,d,n)</span></span><br><span class="line">    r=<span class="number">1</span></span><br><span class="line">    <span class="keyword">while</span> d&gt;<span class="number">0</span>:</span><br><span class="line">        c=c%n</span><br><span class="line">        <span class="keyword">if</span> d&amp;<span class="number">1</span>:</span><br><span class="line">            r=(r*c)%n</span><br><span class="line">        d&gt;&gt;=<span class="number">1</span></span><br><span class="line">        c=(c*c)%n</span><br><span class="line">    <span class="keyword">return</span> r</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>模逆运算（就是求逆元，主要基于扩展欧几里得算法）</p>
+<ul>
+<li><p>python实现代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">egcd</span> <span class="params">( a , b )</span>:</span></span><br><span class="line">     <span class="keyword">if</span> (b == <span class="number">0</span>):</span><br><span class="line">         <span class="keyword">return</span> <span class="number">1</span>, <span class="number">0</span>, a</span><br><span class="line">     <span class="keyword">else</span>:</span><br><span class="line">         x , y , q = egcd( b , a % b ) 	 <span class="comment"># q = GCD(a, b) = GCD(b, a%b)</span></span><br><span class="line">         x , y = y, ( x - (a // b) * y )</span><br><span class="line">         <span class="keyword">return</span> x, y, q </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">mod_inv</span><span class="params">(a,b)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> egcd(a,b)[<span class="number">0</span>]%b 				<span class="comment">#求a模b得逆元</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>出来通过自己编写实现之外还可以通过gmpy2和libnum这两个库函数实现：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#coding:utf-8</span></span><br><span class="line"><span class="keyword">from</span>  libnum <span class="keyword">import</span> invmod</span><br><span class="line"><span class="keyword">import</span> gmpy2</span><br><span class="line"><span class="keyword">print</span> invmod(<span class="number">47</span>,<span class="number">30</span>)</span><br><span class="line"><span class="keyword">print</span> gmpy2.invert(<span class="number">47</span>,<span class="number">30</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1535852949.7.png" alt=""></p>
+</li>
+</ul>
+</li>
+<li><p>欧几里得算法：就是求最大公约数，<code>gcd(a,b)==gcd(b,a%b),(b!=0)</code> 和 <code>gcd(a,0)==a</code>有递归实现和迭代实现两种：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 递归版</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">gcd</span><span class="params">(a, b)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> a <span class="keyword">if</span> <span class="keyword">not</span> b <span class="keyword">else</span> gcd(b, a % b)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 迭代版</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">gcd2</span><span class="params">(a, b)</span>:</span></span><br><span class="line">    <span class="keyword">while</span> b:</span><br><span class="line">        a, b = b, a % b</span><br><span class="line">    <span class="keyword">return</span> a</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>扩展欧几里得算法：本质上就是将欧几里得算法求最大公约数的过程最后转化为线性表达式：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 递归版</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">ext_euclid</span> <span class="params">( a , b )</span>:</span></span><br><span class="line">    <span class="keyword">if</span> (b == <span class="number">0</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>, <span class="number">0</span>, a</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        x1 , y1 , q = ext_euclid( b , a % b ) <span class="comment"># q = GCD(a, b) = GCD(b, a%b)</span></span><br><span class="line">        x , y = y1, ( x1 - (a // b) * y1 )</span><br><span class="line">        <span class="keyword">return</span> x, y, q</span><br><span class="line"><span class="comment"># 迭代版</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">egcd</span><span class="params">(a, b)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> b == <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">return</span> (<span class="number">1</span>, <span class="number">0</span>, a)</span><br><span class="line">    x, y = <span class="number">0</span>, <span class="number">1</span></span><br><span class="line">    s1, s2 = <span class="number">1</span>, <span class="number">0</span></span><br><span class="line">    r, q = a % b, a / b</span><br><span class="line">    <span class="keyword">while</span> r:</span><br><span class="line">        m, n = x, y</span><br><span class="line">        x = s1 - x * q</span><br><span class="line">        y = s2 - y * q</span><br><span class="line">        s1, s2 = m, n</span><br><span class="line">        a, b = b, r</span><br><span class="line">        r, q = a % b, a / b</span><br><span class="line">    <span class="keyword">return</span> (x, y, b)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>中国剩余定理，也叫孙子定理：用来求同于方程组（这里在数论中做题不复杂，一到代码是真的复杂）<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1535853531.62.png" alt=""></p>
+<p>直接贴上大佬的代码：（解决了互质与不互质两种情况）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">GCRT</span><span class="params">(mi, ai)</span>:</span></span><br><span class="line">    <span class="comment"># mi,ai分别表示模数和取模后的值,都为列表结构</span></span><br><span class="line">    <span class="keyword">assert</span> (isinstance(mi, list) <span class="keyword">and</span> isinstance(ai, list))</span><br><span class="line">    curm, cura = mi[<span class="number">0</span>], ai[<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">for</span> (m, a) <span class="keyword">in</span> zip(mi[<span class="number">1</span>:], ai[<span class="number">1</span>:]):</span><br><span class="line">        d = gmpy2.gcd(curm, m)</span><br><span class="line">        c = a - cura</span><br><span class="line">        <span class="keyword">assert</span> (c % d == <span class="number">0</span>) <span class="comment">#不成立则不存在解</span></span><br><span class="line">        K = c / d * gmpy2.invert(curm / d, m / d)</span><br><span class="line">        cura += curm * K</span><br><span class="line">        curm = curm * m / d</span><br><span class="line">        cura %= curm</span><br><span class="line">    <span class="keyword">return</span> (cura % curm, curm) <span class="comment">#(解,最小公倍数)</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="应用中一些函数、模块的支撑"><a href="#应用中一些函数、模块的支撑" class="headerlink" title="应用中一些函数、模块的支撑"></a>应用中一些函数、模块的支撑</h3><blockquote>
+<p>这里不得不感慨python的强大与方便，提供了gmpy2库、libnum库、pycrypto模块等第三方库，避免了从底层一步一步的写代码（其实也是太菜了，这种基于数论的代码是真的写不出来）</p>
+</blockquote>
+<ul>
+<li><p>gmpy2库、libnum库，主要提供各种数学运算的函数库，向求逆元，取模等运算直接调运函数就可以，很便捷</p>
+</li>
+<li><p>关于两个库的说明链接如下：</p>
+</li>
+</ul>
+<ul>
+<li>pycrypto模块是python中来处理加密解密等信息安全相关的一个重要模块，提供了对称加密、非对称加密、散列哈希的一些计算方法，满足我们在密码学应用上的使用，就RSA可以实现公私钥的提取，生成，利用公私钥进行加解密等，之前写过的一篇文章有介绍</li>
+</ul>
+<ul>
+<li><p>关于RSA中n的分解：</p>
+<p>有在线分解：[]:<a href="http://factordb.com/" target="_blank" rel="noopener">http://factordb.com/</a>  </p>
+<p>离线的[yafu]:<a href="https://sourceforge.net/projects/yafu/" target="_blank" rel="noopener">https://sourceforge.net/projects/yafu/</a>   （p,q相差较大或较小时可快速分解）</p>
+</li>
+<li><p>除了用代码，还可以用OpenSSL对一些标准格式的RSA加解密</p>
+<p>使用OpenSSL提取公钥信息：<code>openssl rsa -pubin -in (文件名) -text</code></p>
+<p>使用OpenSSL提取私钥信息：<code>openssl rsa -in (文件名) -text</code></p>
+<p>使用OpenSSL进行公钥加密：<code>openssl rsautl -encrypt -in test -out test.enc -inkey asn1pub.pem -pubin</code></p>
+<p>使用OpenSSL进行私钥解密：<code>openssl rsautl -decrypt -in test.enc -out test.dec -inkey asn1enc.pem</code></p>
+<p>使用OpenSSL进行私钥签名：<code>openssl rsautl -sign -in test -out test.sig-inkey asn1enc.pem</code></p>
+<p>使用OpenSSL进行公钥验证：<code>openssl rsautl -verify -in test.sig -out test.vfy -inkey asn1pub.pem -pubin</code></p>
+</li>
+</ul>
+<h3 id="一些实际的应用："><a href="#一些实际的应用：" class="headerlink" title="一些实际的应用："></a>一些实际的应用：</h3><ul>
+<li><p>RSA直接解密：</p>
+<p>若已知私钥d，则可以直接解密： <code>m=pow(c,d,n)</code> :</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">p:<span class="number">0x9a724c6747de9eadccd33f4d60ada91754b8be8c65590cafe66f69a2f4afbfd359e47ca6fd2dbde8948062dc116bc574f4313ab99b2bb6d8ae47beaa0c1ebeddL</span></span><br><span class="line"></span><br><span class="line">q:<span class="number">0x8c1c81cc005ce3dd6d684ebb88151dc0c53b1cef8a29b1cb8121860fb57d93117bf449aac4300dc6103ac6211c6f8ae68987d99aff0dd8967a4afa00f2116873L</span></span><br><span class="line"></span><br><span class="line">e:<span class="number">0x190a000845e9c8c2059242835432326369aaf8c7ca85e685bba968b386155a91f1f7ca1019ff23d119222e1f0dfdeb0915d2e97601ef94bf15ca6d9211e984e9038f263f4984355c397ed22d67c26da6d31acfc4d599c70cba80859bee099e5a2dc3ab23aecf58f73f44d07318f70985c623d9612efefb15bf8dab77d5d54e85L</span></span><br><span class="line"></span><br><span class="line">d:<span class="number">0x28b95b7e3159a851cbf537e007ae49864b7dbb93fc370a5L</span> </span><br><span class="line"></span><br><span class="line">c:<span class="number">0x23091e42fa7609c73f1941b320fad6d2ff6e47be588d1623f970f1fee7abd221c9834b208f3c888902fe87ca76ec1e1363757d93c6e25c49f1c61c72b141c0b8848b54a117427d8e30eeab89694eb5f849cafecb0e5361b9b2b0e3f89e0fdbcc66a6aad4a1a4a85d828083a01a5d569b7eeb6f9151794453382b524aa52993f9L</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">c=<span class="number">0x23091e42fa7609c73f1941b320fad6d2ff6e47be588d1623f970f1fee7abd221c9834b208f3c888902fe87ca76ec1e1363757d93c6e25c49f1c61c72b141c0b8848b54a117427d8e30eeab89694eb5f849cafecb0e5361b9b2b0e3f89e0fdbcc66a6aad4a1a4a85d828083a01a5d569b7eeb6f9151794453382b524aa52993f9</span></span><br><span class="line">d=<span class="number">0x28b95b7e3159a851cbf537e007ae49864b7dbb93fc370a5</span></span><br><span class="line">n=<span class="number">0x9a724c6747de9eadccd33f4d60ada91754b8be8c65590cafe66f69a2f4afbfd359e47ca6fd2dbde8948062dc116bc574f4313ab99b2bb6d8ae47beaa0c1ebedd</span> * <span class="number">0x8c1c81cc005ce3dd6d684ebb88151dc0c53b1cef8a29b1cb8121860fb57d93117bf449aac4300dc6103ac6211c6f8ae68987d99aff0dd8967a4afa00f2116873</span></span><br><span class="line"></span><br><span class="line">m=pow(c,d,n)</span><br><span class="line"><span class="keyword">print</span> hex(m)[<span class="number">2</span>:len(hex(m))<span class="number">-1</span>].decode(<span class="string">'hex'</span>)</span><br></pre></td></tr></table></figure>
+<p>若已知质数p和q，则通过依次计算欧拉函数、私钥d可解密。实现如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">rsa_decrypt</span><span class="params">(e, c, p, q)</span>:</span></span><br><span class="line">    phi = (p - <span class="number">1</span>) * (q - <span class="number">1</span>)</span><br><span class="line">    n = p * q</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        d = gmpy2.invert(e, phi) 	<span class="comment">#求e模phi的逆</span></span><br><span class="line">        <span class="keyword">return</span> pow(c, d, n)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="keyword">print</span> <span class="string">"e and phi are not coprime!"</span></span><br><span class="line">        <span class="keyword">raise</span> e</span><br></pre></td></tr></table></figure>
+<p>在选取加密指数e时要求phi，e互质，也就是<code>gcd(phi,e)==1</code> ，如果不满足是无法直接解密的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">x**33=1926041757553905692219721422025224638913707 mod 3436415358139016629092568198745009225773259</span><br><span class="line">tell me the smallest answer of x</span><br><span class="line">n = 3436415358139016629092568198745009225773259=3881 · 885445853681787330351086884500131209939</span><br><span class="line">e = 33</span><br><span class="line">c = 1926041757553905692219721422025224638913707</span><br><span class="line">phi=(p-1)*(q-1)</span><br><span class="line">gcd(phi,33)==3 -&gt; e = 11</span><br><span class="line">n分解以后不满足互素的要求，先用逆元11得到x^3的值,然后爆破X</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> gmpy2</span><br><span class="line"><span class="keyword">import</span> libnum</span><br><span class="line"></span><br><span class="line">c = <span class="number">1926041757553905692219721422025224638913707</span></span><br><span class="line">n = <span class="number">3436415358139016629092568198745009225773259</span></span><br><span class="line">e = <span class="number">33</span></span><br><span class="line">p = <span class="number">3881</span></span><br><span class="line">q = <span class="number">885445853681787330351086884500131209939</span></span><br><span class="line">phi = (p<span class="number">-1</span>)*(q<span class="number">-1</span>)</span><br><span class="line">d = libnum.invmod(e/<span class="number">3</span>, phi)</span><br><span class="line"><span class="keyword">print</span> d</span><br><span class="line">x3 = pow(c, d, n)</span><br><span class="line"><span class="keyword">print</span> x3</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">calc</span><span class="params">(i)</span>:</span></span><br><span class="line">    x, b = gmpy2.iroot(x3 + i *n, <span class="number">3</span>)</span><br><span class="line">    <span class="keyword">if</span> b == <span class="number">1</span>:</span><br><span class="line">        <span class="keyword">print</span> x</span><br><span class="line">        exit()</span><br><span class="line"><span class="keyword">for</span> j <span class="keyword">in</span> xrange(<span class="number">0</span>,<span class="number">100000000</span>):</span><br><span class="line">    calc(j)</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1535857638.43.png" alt=""></p>
+</li>
+<li><p>模不互质（<code>gcd(N1,N2)!=1</code>）适用情况：存在两个或更多模数，且<code>gcd(N1,N2)!=1</code> 多个模数n共用质数，则可以很容易利用欧几里得算法求得他们的质因数之一<code>gcd(N1,N2)</code> ，然后这个最大公约数可用于分解模数分别得到对应的p和q，即可进行解密。</p>
+</li>
+<li><p>共模攻击：适用情况：明文m、模数n相同，公钥指数e、密文c不同，gcd(e1,e2)==1 对同一明文的多次加密使用相同的模数和不同的公钥指数可能导致共模攻击。</p>
+<p>python实现的证明代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">common_modulus</span><span class="params">(n, e1, e2, c1, c2)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    ref: https://crypto.stackexchange.com/questions/16283/how-to-use-common-modulus-attack</span></span><br><span class="line"><span class="string">    ∵gcd(e1,e2)==1,∴由扩展欧几里得算法，存在e1*s1+e2*s2==1</span></span><br><span class="line"><span class="string">    ∴m==m^1==m^(e1*s1+e2*s2)==((m^e1)^s1)*((m^e2)^s2)==(c1^s1)*(c2^s2)</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="keyword">assert</span> (libnum.gcd(e1, e2) == <span class="number">1</span>)</span><br><span class="line">    _, s1, s2 = gmpy2.gcdext(e1, e2)</span><br><span class="line">    <span class="comment"># 若s1&lt;0，则c1^s1==(c1^-1)^(-s1)，其中c1^-1为c1模n的逆元。</span></span><br><span class="line">    m = pow(c1, s1, n) <span class="keyword">if</span> s1 &gt; <span class="number">0</span> <span class="keyword">else</span> pow(gmpy2.invert(c1, n), -s1, n)</span><br><span class="line">    m *= pow(c2, s2, n) <span class="keyword">if</span> s2 &gt; <span class="number">0</span> <span class="keyword">else</span> pow(gmpy2.invert(c2, n), -s2, n)</span><br><span class="line">    <span class="keyword">return</span> m % n</span><br></pre></td></tr></table></figure>
+<p>Xman-RSA(这道题利用了共模攻击和模不互素)</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> gmpy2 <span class="keyword">import</span> is_prime</span><br><span class="line"><span class="keyword">from</span> os <span class="keyword">import</span> urandom</span><br><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">bytes_to_num</span><span class="params">(b)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> int(b.encode(<span class="string">'hex'</span>), <span class="number">16</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">num_to_bytes</span><span class="params">(n)</span>:</span></span><br><span class="line">    b = hex(n)[<span class="number">2</span>:<span class="number">-1</span>]</span><br><span class="line">    b = <span class="string">'0'</span> + b <span class="keyword">if</span> len(b) % <span class="number">2</span> == <span class="number">1</span> <span class="keyword">else</span> b</span><br><span class="line">    <span class="keyword">return</span> b.decode(<span class="string">'hex'</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_a_prime</span><span class="params">(l)</span>:</span></span><br><span class="line">    random_seed = urandom(l)</span><br><span class="line"></span><br><span class="line">    num = bytes_to_num(random_seed)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">        <span class="keyword">if</span> is_prime(num):</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        num += <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> num</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">encrypt</span><span class="params">(s, e, n)</span>:</span></span><br><span class="line">    p = bytes_to_num(s)</span><br><span class="line">    p = pow(p, e, n)</span><br><span class="line">    <span class="keyword">return</span> num_to_bytes(p).encode(<span class="string">'hex'</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">separate</span><span class="params">(n)</span>:</span></span><br><span class="line">    p = n % <span class="number">4</span></span><br><span class="line">    t = (p * p) % <span class="number">4</span></span><br><span class="line">    <span class="keyword">return</span> t == <span class="number">1</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">f = open(<span class="string">'flag.txt'</span>, <span class="string">'r'</span>)</span><br><span class="line">flag = f.read()</span><br><span class="line"></span><br><span class="line">msg1 = <span class="string">""</span></span><br><span class="line">msg2 = <span class="string">""</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(len(flag)):</span><br><span class="line">    <span class="keyword">if</span> separate(i):</span><br><span class="line">        msg2 += flag[i]</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        msg1 += flag[i]</span><br><span class="line"></span><br><span class="line">p1 = get_a_prime(<span class="number">128</span>)</span><br><span class="line">p2 = get_a_prime(<span class="number">128</span>)</span><br><span class="line">p3 = get_a_prime(<span class="number">128</span>)</span><br><span class="line">n1 = p1 * p2</span><br><span class="line">n2 = p1 * p3</span><br><span class="line">e = <span class="number">0x1001</span></span><br><span class="line">c1 = encrypt(msg1, e, n1)</span><br><span class="line">c2 = encrypt(msg2, e, n2)</span><br><span class="line">print(c1)</span><br><span class="line">print(c2)</span><br><span class="line"></span><br><span class="line">e1 = <span class="number">0x1001</span></span><br><span class="line">e2 = <span class="number">0x101</span></span><br><span class="line">p4 = get_a_prime(<span class="number">128</span>)</span><br><span class="line">p5 = get_a_prime(<span class="number">128</span>)</span><br><span class="line">n3 = p4 * p5</span><br><span class="line">c1 = num_to_bytes(pow(n1, e1, n3)).encode(<span class="string">'hex'</span>)</span><br><span class="line">c2 = num_to_bytes(pow(n1, e2, n3)).encode(<span class="string">'hex'</span>)</span><br><span class="line">print(c1)</span><br><span class="line">print(c2)</span><br><span class="line"></span><br><span class="line">print(base64.b64encode(num_to_bytes(n2)))</span><br><span class="line">print(base64.b64encode(num_to_bytes(n3)))</span><br></pre></td></tr></table></figure>
+<p>n2，n3已知，利用共模攻击得到n1，由<code>gcd(n1,n2)==p1</code> 分解n1，n2得到flag：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="comment"># by https://findneo.github.io/</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"><span class="keyword">import</span> libnum</span><br><span class="line"><span class="keyword">import</span> gmpy2</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fix_py</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="comment"># decode encryption.encrypted</span></span><br><span class="line">    s1 = <span class="string">'abdefghijklmpqrtuvwxyz'</span></span><br><span class="line">    s2 = <span class="string">'dmenwfoxgpyhirasbktclu'</span></span><br><span class="line">    f1 = open(<span class="string">'encryption.encrypted'</span>)</span><br><span class="line">    <span class="keyword">with</span> open(<span class="string">'encryption.py'</span>, <span class="string">'w'</span>) <span class="keyword">as</span> f2:</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> f1.readlines():</span><br><span class="line">            tmp = <span class="string">''</span></span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> i:</span><br><span class="line">                tmp += s2[s1.index(j)] <span class="keyword">if</span> j <span class="keyword">in</span> s1 <span class="keyword">else</span> j</span><br><span class="line">            f2.write(tmp)</span><br><span class="line"><span class="comment"># fix_py()</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">common_modulus</span><span class="params">(n, e1, e2, c1, c2)</span>:</span></span><br><span class="line">    <span class="keyword">assert</span> (libnum.gcd(e1, e2) == <span class="number">1</span>)</span><br><span class="line">    _, s1, s2 = gmpy2.gcdext(e1, e2)</span><br><span class="line">    m = pow(c1, s1, n) <span class="keyword">if</span> s1 &gt; <span class="number">0</span> <span class="keyword">else</span> pow(gmpy2.invert(c1, n), -s1, n)</span><br><span class="line">    m *= pow(c2, s2, n) <span class="keyword">if</span> s2 &gt; <span class="number">0</span> <span class="keyword">else</span> pow(gmpy2.invert(c2, n), -s2, n)</span><br><span class="line">    m %= n</span><br><span class="line">    <span class="keyword">return</span> m</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[n2, n3] = map(<span class="keyword">lambda</span> x: int(base64.b64decode(x).encode(<span class="string">'hex'</span>), <span class="number">16</span>),</span><br><span class="line">               open(<span class="string">'n2&amp;n3'</span>).readlines())</span><br><span class="line">[n1c1, n1c2] = map(<span class="keyword">lambda</span> x: int(x, <span class="number">16</span>), open(<span class="string">'n1.encrypted'</span>).readlines())</span><br><span class="line">[msg1c1, msg2c2] = map(<span class="keyword">lambda</span> x: int(x, <span class="number">16</span>), open(<span class="string">'ciphertext'</span>).readlines())</span><br><span class="line"><span class="comment"># 通过共模攻击得到n1</span></span><br><span class="line">e1 = <span class="number">0x1001</span></span><br><span class="line">e2 = <span class="number">0x101</span></span><br><span class="line">n1 = common_modulus(n3, e1, e2, n1c1, n1c2)</span><br><span class="line"><span class="comment"># n1,n2有一个共有质因数p1</span></span><br><span class="line"><span class="comment"># n1 += n3  # 存在n3比n1小的可能，并且确实如此;貌似主办方中途改题，把n1改成小于n3了。</span></span><br><span class="line">p1 = gmpy2.gcd(n1, n2)</span><br><span class="line"><span class="keyword">assert</span> (p1 != <span class="number">1</span>)</span><br><span class="line">p2 = n1 / p1</span><br><span class="line">p3 = n2 / p1</span><br><span class="line">e = <span class="number">0x1001</span></span><br><span class="line">d1 = gmpy2.invert(e, (p1 - <span class="number">1</span>) * (p2 - <span class="number">1</span>))</span><br><span class="line">d2 = gmpy2.invert(e, (p1 - <span class="number">1</span>) * (p3 - <span class="number">1</span>))</span><br><span class="line">msg1 = pow(msg1c1, d1, n1)</span><br><span class="line">msg2 = pow(msg2c2, d2, n2)</span><br><span class="line">msg1 = hex(msg1)[<span class="number">2</span>:].decode(<span class="string">'hex'</span>)</span><br><span class="line">msg2 = hex(msg2)[<span class="number">2</span>:].decode(<span class="string">'hex'</span>)</span><br><span class="line"><span class="keyword">print</span> msg1, msg2</span><br><span class="line"><span class="comment"># XA&#123;RP0I_0Itrsigi s.y</span></span><br><span class="line"><span class="comment"># MNCYT_55_neetnvmrap&#125;</span></span><br><span class="line"><span class="comment"># XMAN&#123;CRYPT0_I5_50_Interestingvim rsa.py&#125;</span></span><br></pre></td></tr></table></figure>
+<p> RSA-CRYPTO(有两个公钥文件和两个flag文件。提取公钥对比，n相同且可解密，共模攻击)</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> Crypto.PublicKey <span class="keyword">import</span> RSA</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> open(<span class="string">'./pubkey2.pem'</span>, <span class="string">'r'</span>) <span class="keyword">as</span> f:</span><br><span class="line">     key = RSA.importKey(f)</span><br><span class="line">     n = key.n</span><br><span class="line">     e = key.e</span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> (n)</span><br><span class="line"><span class="keyword">print</span> (e)</span><br><span class="line"><span class="comment">#提取两个公钥都是这个脚本</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1535858774.6.png" alt=""></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#coding:utf-8</span></span><br><span class="line"><span class="keyword">import</span> gmpy2</span><br><span class="line"><span class="keyword">import</span> string</span><br><span class="line"><span class="keyword">from</span> Crypto.Util.number <span class="keyword">import</span> long_to_bytes</span><br><span class="line"><span class="keyword">from</span> base64 <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line"><span class="comment">#共模攻击</span></span><br><span class="line">n =  <span class="number">0x8989a398988456b3fef4a6ad86df3c99577f8978048de5436befc30d8d8c94958912aa526ff333b66857306ebb8de36c2c396a84efdc5d382502daa1a3f3b6e97502d2e31c849330f5b4c95257a149a97f5954eaf89341147adcdd4e950fff74e30bbe622876b42eeac86df4ad9715d05b5604aa8179424c7d9ac46bd6b5f322b2b5728ba148704a25a8efcc1e7c84ea7e5ce3e01703f04f94a431d9954bd7ae2c7dd6e879b35f8a2d4a5efbe737257bf99bd9ee66b15aff233fc77b558a487da5952fbe2b923da9c5eb46788c050336b7e36a5ed82d5c1b2aeb0e45bee405cbe72481db2568aa829eeac87d201a5a8ff5ee6f0be38192ab2839635f6c664217L</span></span><br><span class="line">e1 = <span class="number">2333</span></span><br><span class="line">e2 = <span class="number">23333</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> open(<span class="string">'./flag1.enc'</span>,<span class="string">'r'</span>) <span class="keyword">as</span> f:</span><br><span class="line">    cipher1 =  f.read()</span><br><span class="line">    cipher1 = b64decode(cipher1).encode(<span class="string">'hex'</span>)</span><br><span class="line">    cipher1 = string.atoi(cipher1,base = <span class="number">16</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> open(<span class="string">'./flag2.enc'</span>,<span class="string">'r'</span>) <span class="keyword">as</span> f:</span><br><span class="line">    cipher2 = f.read()</span><br><span class="line">    cipher2 = b64decode(cipher2).encode(<span class="string">'hex'</span>)</span><br><span class="line">    cipher2 = string.atoi(cipher2,base = <span class="number">16</span>)  <span class="comment">#将字符串转为整型数字,base 指定进制</span></span><br><span class="line"></span><br><span class="line">gcd, s, t = gmpy2.gcdext(e1, e2)        <span class="comment">#返回一个三元素的元组 g == gcd（a，b）和g == a * s + b * t</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> s &lt; <span class="number">0</span>:</span><br><span class="line">    s = -s</span><br><span class="line">    cipher1 = gmpy2.invert(cipher1,n)   <span class="comment">#求cipher1模n的逆(求逆元)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> t &lt; <span class="number">0</span>:</span><br><span class="line">    t = -t</span><br><span class="line">    cipher2 = gmpy2.invert(cipher2,n)</span><br><span class="line"></span><br><span class="line"><span class="comment">#powmod（x，y，m）返回（x ** y）mod m。指数y可以是负数，如果x mod m的逆存在，则返回正确的结果。否则，引发ValueError</span></span><br><span class="line">plain = gmpy2.powmod(cipher1, s, n) * gmpy2.powmod(cipher2, t, n) % n</span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> long_to_bytes(plain)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>小明文攻击：适用情况：e较小，一般为3。公钥e很小，明文m也不大的话，于是<code>m^e=k*n+m</code> 中的的k值很小甚至为0，爆破k或直接开三次方即可。</p>
+<p>Jarvis OJ Extremely hard RSA</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> gmpy2,binascii,libnum,time</span><br><span class="line">n=<span class="number">0xB0BEE5E3E9E5A7E8D00B493355C618FC8C7D7D03B82E409951C182F398DEE3104580E7BA70D383AE5311475656E8A964D380CB157F48C951ADFA65DB0B122CA40E42FA709189B719A4F0D746E2F6069BAF11CEBD650F14B93C977352FD13B1EEA6D6E1DA775502ABFF89D3A8B3615FD0DB49B88A976BC20568489284E181F6F11E270891C8EF80017BAD238E363039A458470F1749101BC29949D3A4F4038D463938851579C7525A69984F15B5667F34209B70EB261136947FA123E549DFFF00601883AFD936FE411E006E4E93D1A00B0FEA541BBFC8C5186CB6220503A94B2413110D640C77EA54BA3220FC8F4CC6CE77151E29B3E06578C478BD1BEBE04589EF9A197F6F806DB8B3ECD826CAD24F5324CCDEC6E8FEAD2C2150068602C8DCDC59402CCAC9424B790048CCDD9327068095EFA010B7F196C74BA8C37B128F9E1411751633F78B7B9E56F71F77A1B4DAAD3FC54B5E7EF935D9A72FB176759765522B4BBC02E314D5C06B64D5054B7B096C601236E6CCF45B5E611C805D335DBAB0C35D226CC208D8CE4736BA39A0354426FAE006C7FE52D5267DCFB9C3884F51FDDFDF4A9794BCFE0E1557113749E6C8EF421DBA263AFF68739CE00ED80FD0022EF92D3488F76DEB62BDEF7BEA6026F22A1D25AA2A92D124414A8021FE0C174B9803E6BB5FAD75E186A946A17280770F1243F4387446CCCEB2222A965CC30B3929</span></span><br><span class="line">e=<span class="number">3</span></span><br><span class="line">res=<span class="number">0</span></span><br><span class="line">c=int(open(<span class="string">'extremelyhardRSA.rar/flag.enc'</span>,<span class="string">'rb'</span>).read().encode(<span class="string">'hex'</span>),<span class="number">16</span>)</span><br><span class="line"><span class="keyword">print</span> time.asctime()</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> xrange(<span class="number">200000000</span>):</span><br><span class="line">    <span class="keyword">if</span> gmpy2.iroot(c+n*i,<span class="number">3</span>)[<span class="number">1</span>]==<span class="number">1</span>:</span><br><span class="line">        res=gmpy2.iroot(c+n*i,<span class="number">3</span>)[<span class="number">0</span>]</span><br><span class="line">        <span class="keyword">print</span> i,res</span><br><span class="line">        <span class="keyword">print</span> libnum.n2s(res)</span><br><span class="line">        <span class="keyword">print</span> time.asctime()</span><br><span class="line">        <span class="keyword">break</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Rabin加密中的N可被分解:Rabin加密是RSA的衍生算法，e==2是Rabin加密典型特征,一般先通过其他方法分解得到p，q，然后解密.</p>
+<p>python实现：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">rabin_decrypt</span><span class="params">(c, p, q, e=<span class="number">2</span>)</span>:</span></span><br><span class="line">    n = p * q</span><br><span class="line">    mp = pow(c, (p + <span class="number">1</span>) / <span class="number">4</span>, p)</span><br><span class="line">    mq = pow(c, (q + <span class="number">1</span>) / <span class="number">4</span>, q)</span><br><span class="line">    yp = gmpy2.invert(p, q)</span><br><span class="line">    yq = gmpy2.invert(q, p)</span><br><span class="line">    r = (yp * p * mq + yq * q * mp) % n</span><br><span class="line">    rr = n - r</span><br><span class="line">    s = (yp * p * mq - yq * q * mp) % n</span><br><span class="line">    ss = n - s</span><br><span class="line">    <span class="keyword">return</span> (r, rr, s, ss)</span><br></pre></td></tr></table></figure>
+<p>Jarvis OJ hard RSA</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> gmpy2</span><br><span class="line"><span class="keyword">import</span> libnum</span><br><span class="line">n=<span class="number">0xC2636AE5C3D8E43FFB97AB09028F1AAC6C0BF6CD3D70EBCA281BFFE97FBE30DD</span></span><br><span class="line">p=<span class="number">275127860351348928173285174381581152299</span></span><br><span class="line">q=<span class="number">319576316814478949870590164193048041239</span></span><br><span class="line">e=<span class="number">2</span></span><br><span class="line">c=int(open(<span class="string">'hardRSA.rar/flag.enc'</span>,<span class="string">'rb'</span>).read().encode(<span class="string">'hex'</span>),<span class="number">16</span>)</span><br><span class="line">mp=pow(c,(p+<span class="number">1</span>)/<span class="number">4</span>,p)</span><br><span class="line">mq=pow(c,(q+<span class="number">1</span>)/<span class="number">4</span>,q)</span><br><span class="line">yp=gmpy2.invert(p,q)</span><br><span class="line">yq=gmpy2.invert(q,p)</span><br><span class="line">r=(yp*p*mq+yq*q*mp)%n</span><br><span class="line">rr=n-r</span><br><span class="line">s=(yp*p*mq-yq*q*mp)%n</span><br><span class="line">ss=n-s</span><br><span class="line"><span class="keyword">print</span> libnum.n2s(r)</span><br><span class="line"><span class="keyword">print</span> libnum.n2s(rr)</span><br><span class="line"><span class="keyword">print</span> libnum.n2s(s)</span><br><span class="line"><span class="keyword">print</span> libnum.n2s(ss)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Wiener’s Attack:适用情况：e过大或过小(低解密指数攻击)</p>
+<p>工具地址：[]:<a href="https://github.com/pablocelayes/rsa-wiener-attack" target="_blank" rel="noopener">https://github.com/pablocelayes/rsa-wiener-attack</a></p>
+<p>这里脚本运行报错的话，再脚本前加上：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span>   sys</span><br><span class="line">sys.setrecursionlimit(<span class="number">10000000</span>)</span><br></pre></td></tr></table></figure>
+<p>python实现：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> Crypto.PublicKey <span class="keyword">import</span> RSA</span><br><span class="line"><span class="keyword">import</span> ContinuedFractions, Arithmetic</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">wiener_hack</span><span class="params">(e, n)</span>:</span></span><br><span class="line">    frac = ContinuedFractions.rational_to_contfrac(e, n)</span><br><span class="line">    convergents = ContinuedFractions.convergents_from_contfrac(frac)</span><br><span class="line">    <span class="keyword">for</span> (k, d) <span class="keyword">in</span> convergents:</span><br><span class="line">        <span class="keyword">if</span> k != <span class="number">0</span> <span class="keyword">and</span> (e * d - <span class="number">1</span>) % k == <span class="number">0</span>:</span><br><span class="line">            phi = (e * d - <span class="number">1</span>) // k</span><br><span class="line">            s = n - phi + <span class="number">1</span></span><br><span class="line">            discr = s * s - <span class="number">4</span> * n</span><br><span class="line">            <span class="keyword">if</span> (discr &gt;= <span class="number">0</span>):</span><br><span class="line">                t = Arithmetic.is_perfect_square(discr)</span><br><span class="line">                <span class="keyword">if</span> t != <span class="number">-1</span> <span class="keyword">and</span> (s + t) % <span class="number">2</span> == <span class="number">0</span>:</span><br><span class="line">                    print(<span class="string">"Hacked!"</span>)</span><br><span class="line">                    <span class="keyword">return</span> d</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">False</span></span><br></pre></td></tr></table></figure>
+<p>nextrsa-Level2</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">n = <span class="number">0x92411fa0c93c1b27f89e436d8c4698bcf554938396803a5b62bd10c9bfcbf85a483bd87bb2d6a8dc00c32d8a7caf30d8899d90cb8f5838cae95f7ff5358847db1244006c140edfcc36adbdcaa16cd27432b4d50d2348b5c15c209364d7914ef50425e4c3da07612cc34e9b93b98d394b43f3eb0a5a806c70f06697b6189606eb9707104a7b6ff059011bac957e2aae9ec406a4ff8f8062400d2312a207a9e018f4b4e961c943dfc410a26828d2e88b24e4100162228a5bbf0824cf2f1c8e7b915efa385efeb505a9746e5d19967766618007ddf0d99525e9a41997217484d64c6a879d762098b9807bee46a219be76941b9ff31465463981e230eecec69691d1L</span></span><br><span class="line">e = <span class="number">0x6f6b385dd0f06043c20a7d8e5920802265e1baab9d692e7c20b69391cc5635dbcaae59726ec5882f168b3a292bd52c976533d3ad498b7f561c3dc01a76597e47cfe60614f247551b3dbe200e2196eaa001a1d183886eeacddfe82d80b38aea24de1a337177683ed802942827ce4d28e20efef92f38f1b1a18c66f9b45f5148cceabfd736de8ac4a49e63a8d35a83b664f9f3b00f822b6f11ff13257ee6e0c00ca5c98e661ea594a9e66f2bd56b33d9a13f5c997e67a37fcf9a0c7f04d119fe1ba261127357e64a4b069aefed3049c1c1fe4f964fd078b88bedd064abea385cfebd65e563f93c12d34eb6426e8aa321033cfd8fe8855b9e74d07fe4f9d70de46fL</span></span><br><span class="line">d = wiener_hack(e, n)</span><br><span class="line"><span class="keyword">print</span> d</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>私钥文件修复:适用情况：提供破损的私钥文件</p>
+<p>Jarvis OJ-God Like RSA  []:<a href="https://www.40huo.cn/blog/rsa-private-key-recovery-and-oaep.html" target="_blank" rel="noopener">https://www.40huo.cn/blog/rsa-private-key-recovery-and-oaep.html</a></p>
+</li>
+<li><p>LSB Oracle Attack:适用情况：可以选择密文并泄露最低位</p>
+<blockquote>
+<p>在一次RSA加密中，明文为m，模数为n，加密指数为e，密文为c。我们可以构造出<code>c&#39;=((2^e)*c)%n=((2^e)*(m^e))%n=((2*m)^e)%n</code> ， 因为m的两倍可能大于n，所以经过解密得到的明文是 <code>m&#39;=(2*m)%n</code> 。我们还能够知道 <code>m&#39;</code> 的最低位<code>lsb</code> 是1还是0。 因为n是奇数，而<code>2*m</code> 是偶数，所以如果<code>lsb</code>是0，说明<code>(2*m)%n</code> 是偶数，没有超过n，即<code>m&lt;n/2.0</code> ，反之则<code>m&gt;n/2.0</code> 。举个例子就能明白<code>2%3=2</code> 是偶数，而<code>4%3=1</code> 是奇数。以此类推，构造密文<code>c&quot;=(4^e)*c)%n</code> 使其解密后为<code>m&quot;=(4*m)%n</code> ，判断<code>m&quot;</code> 的奇偶性可以知道<code>m</code> 和 <code>n/4</code> 的大小关系。所以我们就有了一个二分算法，可以在对数时间内将m的范围逼近到一个足够狭窄的空间</p>
+</blockquote>
+</li>
+</ul>
+  <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> decimal</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">oracle</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">return</span> lsb == <span class="string">'odd'</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">partial</span><span class="params">(c, e, n)</span>:</span></span><br><span class="line">    k = n.bit_length()</span><br><span class="line">    decimal.getcontext().prec = k  <span class="comment"># for 'precise enough' floats</span></span><br><span class="line">    lo = decimal.Decimal(<span class="number">0</span>)</span><br><span class="line">    hi = decimal.Decimal(n)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(k):</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> oracle(c):</span><br><span class="line">            hi = (lo + hi) / <span class="number">2</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            lo = (lo + hi) / <span class="number">2</span></span><br><span class="line">        c = (c * pow(<span class="number">2</span>, e, n)) % n</span><br><span class="line">        <span class="comment"># print i, int(hi - lo)</span></span><br><span class="line">    <span class="keyword">return</span> int(hi)</span><br></pre></td></tr></table></figure>
+<p>  Baby RSA</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">e = 0x10001</span><br><span class="line">n = 0x0b765daa79117afe1a77da7ff8122872bbcbddb322bb078fe0786dc40c9033fadd639adc48c3f2627fb7cb59bb0658707fe516967464439bdec2d6479fa3745f57c0a5ca255812f0884978b2a8aaeb750e0228cbe28a1e5a63bf0309b32a577eecea66f7610a9a4e720649129e9dc2115db9d4f34dc17f8b0806213c035e22f2c5054ae584b440def00afbccd458d020cae5fd1138be6507bc0b1a10da7e75def484c5fc1fcb13d11be691670cf38b487de9c4bde6c2c689be5adab08b486599b619a0790c0b2d70c9c461346966bcbae53c5007d0146fc520fa6e3106fbfc89905220778870a7119831c17f98628563ca020652d18d72203529a784ca73716db</span><br><span class="line">c = 0x4f377296a19b3a25078d614e1c92ff632d3e3ded772c4445b75e468a9405de05d15c77532964120ae11f8655b68a630607df0568a7439bc694486ae50b5c0c8507e5eecdea4654eeff3e75fb8396e505a36b0af40bd5011990663a7655b91c9e6ed2d770525e4698dec9455db17db38fa4b99b53438b9e09000187949327980ca903d0eef114afc42b771657ea5458a4cb399212e943d139b7ceb6d5721f546b75cd53d65e025f4df7eb8637152ecbb6725962c7f66b714556d754f41555c691a34a798515f1e2a69c129047cb29a9eef466c206a7f4dbc2cea1a46a39ad3349a7db56c1c997dc181b1afcb76fa1bbbf118a4ab5c515e274ab2250dba1872be0</span><br><span class="line"></span><br><span class="line">λ nc 47.96.239.28 23333</span><br><span class="line">----------------------------- baby rsa -----------------------------</span><br><span class="line">Come and Decode your data</span><br><span class="line">If you give me ciphertext, I can tell you whether decoded data is even or odd</span><br><span class="line">You can input ciphertext(hexdecimal) now</span><br><span class="line">1</span><br><span class="line">odd</span><br></pre></td></tr></table></figure>
+  <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="comment"># by https://findneo.github.io/</span></span><br><span class="line"><span class="comment"># ref:</span></span><br><span class="line"><span class="comment"># https://crypto.stackexchange.com/questions/11053/rsa-least-significant-bit-oracle-attack</span></span><br><span class="line"><span class="comment"># https://ctf.rip/sharif-ctf-2016-lsb-oracle-crypto-challenge/</span></span><br><span class="line"><span class="comment"># https://introspelliam.github.io/2018/03/27/crypto/RSA-Least-Significant-Bit-Oracle-Attack/</span></span><br><span class="line"><span class="keyword">import</span> libnum, gmpy2, socket, time, decimal</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">oracle</span><span class="params">(c1)</span>:</span></span><br><span class="line">    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span><br><span class="line">    hostname = <span class="string">'47.96.239.28'</span></span><br><span class="line">    port = <span class="number">23333</span></span><br><span class="line">    s.connect((hostname, port))</span><br><span class="line">    s.recv(<span class="number">1024</span>)</span><br><span class="line">    s.send(hex(c1)[<span class="number">2</span>:].strip(<span class="string">"lL"</span>) + <span class="string">'\n'</span>)</span><br><span class="line">    res = s.recv(<span class="number">1024</span>).strip()</span><br><span class="line">    s.close()</span><br><span class="line">    <span class="keyword">if</span> res == <span class="string">'even'</span>: <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">    <span class="keyword">if</span> res == <span class="string">'odd'</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">assert</span> (<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">partial</span><span class="params">(c, n)</span>:</span></span><br><span class="line">    <span class="keyword">global</span> c_of_2</span><br><span class="line">    k = n.bit_length()</span><br><span class="line">    decimal.getcontext().prec = k  <span class="comment"># allows for 'precise enough' floats</span></span><br><span class="line">    lower = decimal.Decimal(<span class="number">0</span>)</span><br><span class="line">    upper = decimal.Decimal(n)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(k):</span><br><span class="line">        possible_plaintext = (lower + upper) / <span class="number">2</span></span><br><span class="line">        <span class="comment"># lower==0 when i&lt;1809</span></span><br><span class="line">        flag = oracle(c)</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> flag:</span><br><span class="line">            upper = possible_plaintext  <span class="comment"># plaintext is in the lower half</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            lower = possible_plaintext  <span class="comment"># plaintext is in the upper half</span></span><br><span class="line">        c = (c * c_of_2) % n  <span class="comment"># multiply y by the encryption of 2 again</span></span><br><span class="line">        <span class="keyword">print</span> i, flag, int(upper - lower)</span><br><span class="line">        <span class="comment"># time.sleep(0.2)</span></span><br><span class="line">    <span class="comment"># By now, our plaintext is revealed!</span></span><br><span class="line">    <span class="keyword">return</span> int(upper)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">print</span> <span class="string">"[*] Conducting Oracle attack..."</span></span><br><span class="line">    <span class="keyword">return</span> partial((c * c_of_2) % n, n)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    e = <span class="number">0x10001</span></span><br><span class="line">    n = <span class="number">0x0b765daa79117afe1a77da7ff8122872bbcbddb322bb078fe0786dc40c9033fadd639adc48c3f2627fb7cb59bb0658707fe516967464439bdec2d6479fa3745f57c0a5ca255812f0884978b2a8aaeb750e0228cbe28a1e5a63bf0309b32a577eecea66f7610a9a4e720649129e9dc2115db9d4f34dc17f8b0806213c035e22f2c5054ae584b440def00afbccd458d020cae5fd1138be6507bc0b1a10da7e75def484c5fc1fcb13d11be691670cf38b487de9c4bde6c2c689be5adab08b486599b619a0790c0b2d70c9c461346966bcbae53c5007d0146fc520fa6e3106fbfc89905220778870a7119831c17f98628563ca020652d18d72203529a784ca73716db</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>选择密文攻击:适用情况：可以构造任意密文并获得对应明文(在一个RSA加密过程中，明文为m，密文为c，模数为n，加密指数为e，选取x以满足<code>gcd(x,n)==1</code> 从而使x模n的逆存在，构造密文 <code>c&#39;=c*(x^e)</code> 使解密后明文为 <code>m&#39;=(m*x)%n</code> ，则<code>m=m&#39;*x^-1(mod n)</code>)</p>
+</li>
+<li><p>广播攻击:适用情况：模数n、密文c不同，明文m、加密指数e相同。一般会是e=k，然后给k组数据(使用不同的模数n，相同的公钥指数e加密相同的信息。就会得到多个(m^e) ==ci (mod ni)，将(m^e)视为一个整体M，这就是典型的中国剩余定理适用情况)</p>
+<p>nextrsa-Level9</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">m = random.randint(<span class="number">0x100000000000</span>, <span class="number">0xffffffffffff</span>)</span><br><span class="line">e = <span class="number">3</span></span><br><span class="line">n1 = <span class="number">0x43d819a4caf16806e1c540fd7c0e51a96a6dfdbe68735a5fd99a468825e5ee55c4087106f7d1f91e10d50df1f2082f0f32bb82f398134b0b8758353bdabc5ba2817f4e6e0786e176686b2e75a7c47d073f346d6adb2684a9d28b658dddc75b3c5d10a22a3e85c6c12549d0ce7577e79a068405d3904f3f6b9cc408c4cd8595bf67fe672474e0b94dc99072caaa4f866fc6c3feddc74f10d6a0fb31864f52adef71649684f1a72c910ec5ca7909cc10aef85d43a57ec91f096a2d4794299e967fcd5add6e9cfb5baf7751387e24b93dbc1f37315ce573dc063ecddd4ae6fb9127307cfc80a037e7ff5c40a5f7590c8b2f5bd06dd392fbc51e5d059cffbcb85555L</span></span><br><span class="line">n2 = <span class="number">0x60d175fdb0a96eca160fb0cbf8bad1a14dd680d353a7b3bc77e620437da70fd9153f7609efde652b825c4ae7f25decf14a3c8240ea8c5892003f1430cc88b0ded9dae12ebffc6b23632ac530ac4ae23fbffb7cfe431ff3d802f5a54ab76257a86aeec1cf47d482fec970fc27c5b376fbf2cf993270bba9b78174395de3346d4e221d1eafdb8eecc8edb953d1ccaa5fc250aed83b3a458f9e9d947c4b01a6e72ce4fee37e77faaf5597d780ad5f0a7623edb08ce76264f72c3ff17afc932f5812b10692bcc941a18b6f3904ca31d038baf3fc1968d1cc0588a656d0c53cd5c89cedba8a5230956af2170554d27f524c2027adce84fd4d0e018dc88ca4d5d26867L</span></span><br><span class="line">n3 = <span class="number">0x280f992dd63fcabdcb739f52c5ed1887e720cbfe73153adf5405819396b28cb54423d196600cce76c8554cd963281fc4b153e3b257e96d091e5d99567dd1fa9ace52511ace4da407f5269e71b1b13822316d751e788dc935d63916075530d7fb89cbec9b02c01aef19c39b4ecaa1f7fe2faf990aa938eb89730eda30558e669da5459ed96f1463a983443187359c07fba8e97024452087b410c9ac1e39ed1c74f380fd29ebdd28618d60c36e6973fc87c066cae05e9e270b5ac25ea5ca0bac5948de0263d8cc89d91c4b574202e71811d0ddf1ed23c1bc35f3a042aac6a0bdf32d37dede3536f70c257aafb4cfbe3370cd7b4187c023c35671de3888a1ed1303L</span></span><br><span class="line">c1 = pow(m, e, n1)</span><br><span class="line">c2 = pow(m, e, n2)</span><br><span class="line">c3 = pow(m, e, n3)</span><br><span class="line"><span class="keyword">print</span> m == gmpy2.iroot(CRT([n1, n2, n3], [c1, c2, c3]), e)[<span class="number">0</span>]</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><blockquote>
+<p>看了各位表哥写的关于RSA的文章，学到了很多，以前之学习了数论，在代码上实践的很少，对这些脚本进行学习，总结，在RSA这一块有了很大的帮助。各位表哥的脚本写的很好，值得学习。</p>
+</blockquote>
+<p>参考链接：</p>
+<p>[]:<a href="https://www.anquanke.com/post/id/84632" target="_blank" rel="noopener">https://www.anquanke.com/post/id/84632</a></p>
+<p>[]:<a href="https://github.com/findneo/RSA-ATTACK" target="_blank" rel="noopener">https://github.com/findneo/RSA-ATTACK</a></p>
+<p>[]:<a href="https://blog.csdn.net/qq_31481187/article/details/70448108" target="_blank" rel="noopener">https://blog.csdn.net/qq_31481187/article/details/70448108</a></p>
+<p>[]:<a href="https://blog.csdn.net/like98k/article/details/79352076" target="_blank" rel="noopener">https://blog.csdn.net/like98k/article/details/79352076</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/CTF/" rel="tag"><i class="fa fa-tag"></i> CTF</a>
+          
+            <a href="/tags/密码学/" rel="tag"><i class="fa fa-tag"></i> 密码学</a>
+          
+            <a href="/tags/RSA/" rel="tag"><i class="fa fa-tag"></i> RSA</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/31/python-pycrypto模块浅学/" rel="next" title="python-pycrypto模块浅学">
+                <i class="fa fa-chevron-left"></i> python-pycrypto模块浅学
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/09/17/逻辑漏洞挖掘学习总结/" rel="prev" title="逻辑漏洞挖掘学习总结">
+                逻辑漏洞挖掘学习总结 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Demos" />
+            
+              <p class="site-author-name" itemprop="name">Demos</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/demossl" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:demosqq@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.shentoushi.top/" title="渗透师导航" target="_blank">渗透师导航</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.asold.xyz" title="Aaron" target="_blank">Aaron</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://damit5.com" title="Damit5" target="_blank">Damit5</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://coco413.com/SecNavi/" title="SecNavi" target="_blank">SecNavi</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#关于RSA的一些总结"><span class="nav-number">1.</span> <span class="nav-text">关于RSA的一些总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#RSA简介："><span class="nav-number">1.1.</span> <span class="nav-text">RSA简介：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#应用中一些函数、模块的支撑"><span class="nav-number">1.2.</span> <span class="nav-text">应用中一些函数、模块的支撑</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#一些实际的应用："><span class="nav-number">1.3.</span> <span class="nav-text">一些实际的应用：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结："><span class="nav-number">1.4.</span> <span class="nav-text">总结：</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Demos</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共56.2k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

